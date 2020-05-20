@@ -64,7 +64,7 @@ export class ToolsSidebarComponent implements OnInit {
     __session_active?: boolean;
   };
 
-  oskariUrl = '/Oskari/dist/1.1.1/geoportal';
+  oskariUrl = '/Oskari/dist/1.2.1/geoportal';
 
   dateGP: Date;
   dateStringGP = '';
@@ -95,8 +95,8 @@ export class ToolsSidebarComponent implements OnInit {
   displayTools: boolean;
 
   // Properties to determine which plugin is active
-  upAct: boolean;
-  stAct: boolean;
+  upAct = false;
+  stAct = false;
 
   // Properties for range sliders
   filterRangeST: number[];
@@ -762,6 +762,8 @@ export class ToolsSidebarComponent implements OnInit {
    */
   // Displays the main UP dialog, as well as sends requests needed for the different elements needed for operations.
   showUP() {
+    this.upAct = true;
+    this.stAct = false;
     this.indSelectItems = [];
     this.indsEditResult = [];
     this.selectedScenarios = [];
@@ -2497,6 +2499,8 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Shows the main ST dialog and loads important variables to run its calculations
   showST() {
+    this.upAct = false;
+    this.stAct = true;
     this.loadDataLayerST();
     this.loadSTColumns();
     this.loadSTMethods();
@@ -2897,6 +2901,10 @@ export class ToolsSidebarComponent implements OnInit {
         (layers) => (this.layerSettings = layers),
         (error) => {
           this.logErrorHandler(error);
+        }, () => {
+          this.layerSettings.forEach(
+            stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+          );
         }
       );
       this.filterList = [];
@@ -3263,6 +3271,10 @@ export class ToolsSidebarComponent implements OnInit {
         (settings) => (this.settingsSTManage = settings),
         (error) => {
           this.logErrorHandler(error);
+        }, () => {
+          this.settingsSTManage.forEach(
+            stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+          );
         }
       );
     }
@@ -3313,6 +3325,10 @@ export class ToolsSidebarComponent implements OnInit {
                 (stngs) => (this.settingsSTManage = stngs),
                 (error) => {
                   this.logErrorHandler(error);
+                }, () => {
+                  this.settingsSTManage.forEach(
+                    stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                  );
                 }
               );
           }
@@ -3331,6 +3347,10 @@ export class ToolsSidebarComponent implements OnInit {
               (lyrs) => (this.layerSettings = lyrs),
               (error) => {
                 this.logErrorHandler(error);
+              }, () => {
+                this.layerSettings.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
               }
             );
           }
@@ -3361,6 +3381,10 @@ export class ToolsSidebarComponent implements OnInit {
                 (stngs) => (this.settingsSTManage = stngs),
                 (error) => {
                   this.logErrorHandler(error);
+                }, () => {
+                  this.settingsSTManage.forEach(
+                    stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                  );
                 }
               );
           }
@@ -3379,6 +3403,10 @@ export class ToolsSidebarComponent implements OnInit {
               (lyrs) => (this.layerSettings = lyrs),
               (error) => {
                 this.logErrorHandler(error);
+              }, () => {
+                this.layerSettings.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
               }
             );
           }
@@ -3438,6 +3466,10 @@ export class ToolsSidebarComponent implements OnInit {
               (stngs) => (this.settingsSTManage = stngs),
               (error) => {
                 this.logErrorHandler(error);
+              }, () => {
+                this.settingsSTManage.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
               }
             );
         }
@@ -3452,6 +3484,10 @@ export class ToolsSidebarComponent implements OnInit {
             (layers) => (this.layerSettings = layers),
             (error) => {
               this.logErrorHandler(error);
+            }, () => {
+              this.layerSettings.forEach(
+                stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+              );
             }
           );
         }
@@ -3951,6 +3987,10 @@ export class ToolsSidebarComponent implements OnInit {
               (stngs) => (this.settingsSTManage = stngs),
               (error) => {
                 this.logErrorHandler(error);
+              }, () => {
+                this.settingsSTManage.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
               }
             );
           if (this.selectedStudyAreaST) {
@@ -3958,6 +3998,10 @@ export class ToolsSidebarComponent implements OnInit {
               (layers) => (this.layerSettings = layers),
               (error) => {
                 this.logErrorHandler(error);
+              }, () => {
+                this.layerSettings.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
               }
             );
           }
@@ -3991,6 +4035,10 @@ export class ToolsSidebarComponent implements OnInit {
               (stngs) => (this.settingsSTManage = stngs),
               (error) => {
                 this.logErrorHandler(error);
+              }, () => {
+                this.settingsSTManage.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
               }
             );
           if (this.selectedStudyAreaST) {
@@ -3998,6 +4046,10 @@ export class ToolsSidebarComponent implements OnInit {
               (layers) => (this.layerSettings = layers),
               (error) => {
                 this.logErrorHandler(error);
+              }, () => {
+                this.layerSettings.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
               }
             );
           }
@@ -4056,6 +4108,10 @@ export class ToolsSidebarComponent implements OnInit {
             (stngs) => (this.settingsSTManage = stngs),
             (error) => {
               this.logErrorHandler(error);
+            }, () => {
+              this.settingsSTManage.forEach(
+                stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+              );
             }
           );
         if (this.selectedStudyAreaST) {
@@ -4063,6 +4119,10 @@ export class ToolsSidebarComponent implements OnInit {
             (layers) => (this.layerSettings = layers),
             (error) => {
               this.logErrorHandler(error);
+            }, () => {
+              this.layerSettings.forEach(
+                stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+              );
             }
           );
         }
