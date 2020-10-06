@@ -508,6 +508,8 @@ export class ToolsSidebarComponent implements OnInit {
   valuesST = [];
   freeValuesST = [];
 
+  optionalStyles = [];
+
   oskariHeatmap: Heatmap;
   oskariResponse: any;
 
@@ -3108,7 +3110,7 @@ export class ToolsSidebarComponent implements OnInit {
         layerInspireName: 'Inspire theme name',
         layerOrganizationName: 'Organization name',
         showLayer: true,
-        opacity: 60,
+        opacity: 85,
         layerName: 'Index Values',
         layerDescription: 'Displays index values of Suitability evaluations.',
         layerPermissions: {
@@ -3118,52 +3120,65 @@ export class ToolsSidebarComponent implements OnInit {
         optionalStyles: [],
       };
       if(this.isFreeScaleST) {
-        this.colors = this.colors.domain([geoVals[0], geoVals[-1]]);
+        this.colors = this.colors.domain([geoVals[0], geoVals[geoVals.length - 1]]);
+        this.filterRangeST[0] = geoVals[0],
+        this.filterRangeST[1] = geoVals[geoVals.length - 1];
       } else {
         this.colors = this.colors.domain([0,100]);
       }
-      this.valuesST.forEach((val) => {
-        if (val >= this.filterRangeST[0] && val <= this.filterRangeST[1]) {
-          this.layerOptions['optionalStyles'].push({
-            property: { key: 'value', value: val },
-            stroke: {
-              color: this.colors(val / 100).toString(),
-            },
-            fill: {
-              color: this.colors(val / 100).toString(),
-            },
-          });
-        } else {
-          this.layerOptions['optionalStyles'].push({
-            property: { key: 'value', value: val },
-            stroke: {
-              color: 'transparent',
-            },
-            fill: {
-              color: 'transparent',
-            },
-          });
-        }
-      });
-      Oskari.getSandbox().postRequestByName('VectorLayerRequest', [
-        this.layerOptions,
-      ]);
-      Oskari.getSandbox().postRequestByName(
-        'MapModulePlugin.RemoveFeaturesFromMapRequest',
-        [null, null, 'ST_VECTOR_LAYER']
-      );
-      Oskari.getSandbox().postRequestByName(this.rn, [
-        this.geojsonObject,
-        this.layerOptions,
-      ]);
-      this.stResult = false;
-      this.closeAccordionST();
-      this.messageService.add({
-        severity: 'success',
-        summary: 'Success!',
-        detail: 'Process completed successfully!',
-      });
-      this.unblockDocument();
+      try {
+        this.valuesST.forEach((val) => {
+          if (val >= this.filterRangeST[0] && val <= this.filterRangeST[1]) {
+            this.layerOptions['optionalStyles'].push({
+              property: { key: 'value', value: val },
+              stroke: {
+                color: this.colors(val).toString(),
+              },
+              fill: {
+                color: this.colors(val).toString(),
+              },
+            });
+          } else {
+            this.layerOptions['optionalStyles'].push({
+              property: { key: 'value', value: val },
+              stroke: {
+                color: 'transparent',
+              },
+              fill: {
+                color: 'transparent',
+              },
+            });
+          }
+        });
+        Oskari.getSandbox().postRequestByName('VectorLayerRequest', [
+          this.layerOptions,
+        ]);
+        Oskari.getSandbox().postRequestByName(
+          'MapModulePlugin.RemoveFeaturesFromMapRequest',
+          [null, null, 'ST_VECTOR_LAYER']
+        );
+        Oskari.getSandbox().postRequestByName(this.rn, [
+          this.geojsonObject,
+          this.layerOptions,
+        ]);
+        this.stResult = false;
+        this.closeAccordionST();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success!',
+          detail: 'Process completed successfully!',
+        });
+        this.unblockDocument();
+      } catch(e) {
+        this.unblockDocument();
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error!',
+          detail:
+            'Error: ' + e,
+        });
+      }
+      
     } else {
       this.unblockDocument();
       this.closeAccordionST();
@@ -3202,10 +3217,10 @@ export class ToolsSidebarComponent implements OnInit {
           this.layerOptions['optionalStyles'].push({
             property: { key: 'value', value: val },
             stroke: {
-              color: this.colors(val / 100).toString(),
+              color: this.colors(val).toString(),
             },
             fill: {
-              color: this.colors(val / 100).toString(),
+              color: this.colors(val).toString(),
             },
           });
         } else {
