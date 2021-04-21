@@ -45,6 +45,7 @@ import { WfsUptService } from 'src/app/services/wfs-upt.service';
 import { saveAs } from 'file-saver';
 import { ShareLayersService } from 'src/app/services/share-layers.service';
 import { RoleService } from 'src/app/services/role.service';
+import { isNullOrUndefined, isUndefined } from 'util';
 
 declare var Oskari: any;
 
@@ -80,8 +81,8 @@ export class ToolsSidebarComponent implements OnInit {
 
   // UPT WFS variables
   wfsStudyArea: SelectItem[];
-  wfsSelectedStudyArea: Layer;
-  uptWfs: TreeNode[];
+  wfsSelectedStudyArea: Layer[];
+  uptWfs: SelectItem[];
   selectedUptWfs: TreeNode;
   colFieldsNameArrayUptWfs = [];
   listManageDataUptWfs: any[];
@@ -108,6 +109,8 @@ export class ToolsSidebarComponent implements OnInit {
 
   shareLayersList: any[];
   shareLayer: any;
+
+  tmpLayerId: string;
 
   /**
    * UP Variables
@@ -383,11 +386,13 @@ export class ToolsSidebarComponent implements OnInit {
   columnHeaderDistancesST = '';
 
   selectedLayersST: any[] = [];
+  selectedPublicLayersST: any[] = [];
   filtersST$: Observable<SelectItem[]>;
   filterList: any[];
   filtersST: SelectItem[];
-  selectedFiltersST: number[];
+  selectedFiltersST: string[];
   selectedFiltersArrayST = [];
+  selectedPublicFiltersArrayST = [];
   studyAreaST: SelectItem[];
   stdAreaSTDistances: Layer;
   stdAreaSTEvalDist: Layer;
@@ -440,28 +445,30 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Colors used for the color scale dialog
   scaleColorsST = [
-    "#630000",
-    "#9e0142",
-    "#d53e4f",
-    "#f46d43",
-    "#fee08b",
-    "#abdda4",
-    "#66c2a5",
-    "#3288bd",
-    "#5e4fa2",
-    "#240058"
+    "#5E4FA2",
+                      "#3288BD",
+                      "#66C2A5",
+                      "#ABDDA4",
+                      "#E6F598",
+                      "#FEE08B",
+                      "#FDAE61",
+                      "#F46D43",
+                      "#D53E4F",
+                      "#9E0142",
+                      "#630000",
   ];
 
   // Color scaling for the heatmap
   colors = chroma.scale(this.scaleColorsST);
 
   // Numbers used for the color scale dialog
-  scaleNumbersST: any[] = ['10', '20', '30', '40', '50', '60', '70', '80', '90', '100'];
+  scaleNumbersST: any[] = ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'];
 
   // LayersST
   isNewLayer = false;
   stdAreaLayer: SelectItem[];
   stdAreaManageLayer: Layer;
+  stdAreaManagePublicLayer: Layer;
   manageLayer: LayerST;
   selLayer: LayerST;
   selLayerColumns: any[];
@@ -596,9 +603,122 @@ export class ToolsSidebarComponent implements OnInit {
   }
 
   // Pending functionality. Toggles WFS dialog.
-  /* toggleUptWfs() {
+  toggleUptWfs() {
+    this.loadUptWfsLayers();
     this.displayUptWfs = !this.displayUptWfs;
-  }*/
+  }
+
+  testWFS() {
+    this.blockDocument();
+    this.messageService.add({
+      severity: 'info',
+      summary: 'In Progress!',
+      detail: 'Your operation is being processed.',
+    });
+    this.wfsUptService.testPostWFS().subscribe(
+      () => {},
+      () => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error!',
+          detail: 'An error ocurred during the operation!',
+        });
+        this.unblockDocument();
+      },
+      () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success!',
+          detail: 'Feature data was imported successfully!',
+        });
+        this.unblockDocument();
+      }
+    );
+  }
+
+  importUptWfs() {
+    this.blockDocument();
+    this.messageService.add({
+      severity: 'info',
+      summary: 'In Progress!',
+      detail: 'Your operation is being processed.',
+    });
+    let lyrId = [];
+    this.wfsSelectedStudyArea.forEach((lyr) => {
+      lyr.id = lyr.id.replace("pub_","");
+      lyrId.push(lyr.id);
+    });
+    this.wfsUptService.importUptWfs(lyrId).subscribe(
+      () => {},
+      (error) => {
+        this.logErrorHandler(error);
+        this.unblockDocument();
+      },
+      () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success!',
+          detail: 'Feature data was imported successfully!',
+        });
+        this.unblockDocument();
+      }
+    );
+  }
+
+  deleteUptWfs() {
+    this.messageService.add({
+      key: 'confirmDeleteWfs',
+      sticky: true,
+      severity: 'warn',
+      summary: 'Warning!',
+      detail:
+        'This operation will delete all imported data from the selected WFS. This process is irreversible. ' +
+        'Confirm to delete, cancel to go back',
+    });
+  }
+
+  confirmDeleteWfs() {
+    this.blockDocument();
+    this.messageService.add({
+      severity: 'info',
+      summary: 'In Progress!',
+      detail: 'Your operation is being processed.',
+    });
+    let lyrId = [];
+    console.log(this.wfsSelectedStudyArea);
+    this.wfsSelectedStudyArea.forEach((lyr) => {
+      console.log(lyr);
+      lyr.id = lyr.id.replace("pub_","");
+      lyrId.push(lyr.id);
+    });
+    console.log(lyrId)
+    this.wfsUptService.deleteUptWfs(lyrId).subscribe(
+      () => {},
+      (error) => {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error!',
+          detail: 'An error ocurred during the operation!',
+        });
+        this.unblockDocument();
+        this.messageService.clear('confirmDeleteWfs');
+        this.logErrorHandler(error);
+      },
+      () => {
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Success!',
+          detail: 'Feature data was deleted successfully!',
+        });
+        this.unblockDocument();
+        this.messageService.clear('confirmDeleteWfs');
+      }
+    );
+  }
+
+  cancelDeleteWfs() {
+    this.messageService.clear('confirmDeleteWfs');
+  }
 
   // Toggles Share Layers dialog.
   toggleShare() {
@@ -709,24 +829,16 @@ export class ToolsSidebarComponent implements OnInit {
   }
 
   // Pending functionality. Sends a request to get the WFS layers.
-  /* loadUptWfsLayers() {
+  loadUptWfsLayers() {
     this.wfsUptService.getUptWfsLayers().subscribe(
       (lyr) => {
-        this.uptWfs = lyr;
+        this.wfsStudyArea = lyr;
       },
       (error) => {
         this.logErrorHandler(error);
       }
     );
-    this.layersService.getStudyAreas().subscribe(
-      (studyArea) => {
-        this.wfsStudyArea = studyArea;
-      },
-      (error) => {
-        this.logErrorHandler(error);
-      }
-    );
-  }*/
+  }
 
   // Pending functionality: Sends a request to get WFS columns
   /* loadUptWfsColumns(event) {
@@ -768,6 +880,9 @@ export class ToolsSidebarComponent implements OnInit {
    */
   // Displays the main UP dialog, as well as sends requests needed for the different elements needed for operations.
   showUP() {
+    let privStdArea = [];
+    let pubStdArea = [];
+    let stdAreaArray = [];
     this.upAct = true;
     this.stAct = false;
     this.indSelectItems = [];
@@ -794,10 +909,25 @@ export class ToolsSidebarComponent implements OnInit {
     );
     this.layersService.getStudyAreas().subscribe(
       (studyArea) => {
-        this.studyArea = studyArea;
+        privStdArea = studyArea;
       },
       (error) => {
         this.logErrorHandler(error);
+      },
+      () => {
+        stdAreaArray = stdAreaArray.concat(privStdArea);
+        this.layersService.getPublicStudyAreas().subscribe(
+          (studyArea) => {
+            pubStdArea = studyArea;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            stdAreaArray = stdAreaArray.concat(pubStdArea);
+            this.studyArea = stdAreaArray;
+          }
+        );
       }
     );
     this.classificationService.getClassifications().subscribe(
@@ -946,9 +1076,19 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request for results from the UP calculator and formats them for the Results section of UP.
   getUPResults() {
     if (this.selectedScenarios.length > 0) {
-      this.scenariosCopy = this.selectedScenarios;
       this.okayResults = true;
-      this.resultsService.getScenarios(this.selectedScenarios).subscribe(
+      let copyScenario = [];
+      this.selectedScenarios.forEach(
+        (scenario) => {
+          copyScenario.push(Object.assign({}, scenario));
+        }
+      );
+      Object.values(copyScenario).forEach(
+        (scenario) => {
+          scenario.scenarioId = scenario.scenarioId.replace("priv_","").replace("pub_","");
+        }
+      );
+      this.resultsService.getScenarios(copyScenario).subscribe(
         (scnr) => {
           this.scenarioResults = scnr;
         },
@@ -1157,6 +1297,9 @@ export class ToolsSidebarComponent implements OnInit {
   calculateScenarios() {
     if (this.selectedScenarios.length > 0) {
       let interval;
+      let pubScenarios = [];
+      let privScenarios = [];
+      let copyScenarios = this.selectedScenarios;
       this.clearEvaluation();
       this.messageService.add({
         severity: 'info',
@@ -1164,15 +1307,48 @@ export class ToolsSidebarComponent implements OnInit {
         detail: 'Your operation is being processed.',
       });
       this.okayResults = true;
-      this.resultsService.calculateScenarios(this.selectedScenarios).subscribe(
-        () => {},
-        (error) => {
-          this.logErrorHandler(error);
-        },
-        () => {
-          interval = setInterval(() => this.getStatusUP(interval), 5000);
+      copyScenarios.forEach(
+        (scenario) => {
+          if(scenario.scenarioId.includes("pub_")) {
+            scenario.scenarioId = scenario.scenarioId.replace("pub_","")
+            pubScenarios.push(scenario)
+          } else if(scenario.scenarioId.includes("priv_")) {
+            scenario.scenarioId = scenario.scenarioId.replace("priv_","")
+            privScenarios.push(scenario)
+          }
         }
       );
+      if(pubScenarios.length > 0 && privScenarios.length > 0) {
+        this.resultsService.calculateScenariosBoth(privScenarios, pubScenarios).subscribe(
+          () => {},
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            interval = setInterval(() => this.getStatusUP(interval), 5000);
+          }
+        );
+      } else if(pubScenarios.length > 0) {
+        this.resultsService.calculatePublicScenarios(pubScenarios).subscribe(
+          () => {},
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            interval = setInterval(() => this.getStatusUP(interval), 5000);
+          }
+        );
+      } else if(privScenarios.length > 0) {
+        this.resultsService.calculateScenarios(privScenarios).subscribe(
+          () => {},
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            interval = setInterval(() => this.getStatusUP(interval), 5000);
+          }
+        );
+      }
     } else {
       this.messageService.add({
         severity: 'error',
@@ -1185,7 +1361,18 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to get the latest status of the UP evaluation. If completed, calls getUPBuffers and getUPResults.
   getStatusUP(i) {
     let statusFlag = false;
-    this.statusService.statusUP(this.selectedScenarios).subscribe(
+    let copyScenario = [];
+    this.selectedScenarios.forEach(
+      (scenario) => {
+        copyScenario.push(Object.assign({}, scenario));
+      }
+    );
+    Object.values(copyScenario).forEach(
+      (scenario) => {
+        scenario.scenarioId = scenario.scenarioId.replace("priv_","").replace("pub_","");
+      }
+    );
+    this.statusService.statusUP(copyScenario).subscribe(
       (sts) => {
         this.statusUP = sts;
       },
@@ -1232,7 +1419,16 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request for buffers generated from Buffers modules and saves them into Oskari.
   getUPBuffers() {
-    this.resultsService.getUPBuffers(this.selectedScenarios).subscribe(
+    let privStdArea = [];
+    let pubStdArea = [];
+    let stdAreaArray = [];
+    let copyScenario = this.selectedScenarios;
+    copyScenario.forEach(
+      (scenario) => {
+        scenario.scenarioId = scenario.scenarioId.replace("priv_","").replace("pub_","");
+      }
+    );
+    this.resultsService.getUPBuffers(copyScenario).subscribe(
       (buffers) => (this.buffersUP = buffers),
       (error) => {
         this.logErrorHandler(error);
@@ -1252,10 +1448,25 @@ export class ToolsSidebarComponent implements OnInit {
         });
         this.layersService.getStudyAreas().subscribe(
           (studyArea) => {
-            this.studyArea = studyArea;
+            privStdArea = studyArea;
           },
           (error) => {
             this.logErrorHandler(error);
+          },
+          () => {
+            stdAreaArray = stdAreaArray.concat(privStdArea);
+            this.layersService.getPublicStudyAreas().subscribe(
+              (studyArea) => {
+                pubStdArea = studyArea;
+              },
+              (error) => {
+                this.logErrorHandler(error);
+              },
+              () => {
+                stdAreaArray = stdAreaArray.concat(pubStdArea);
+                this.studyArea = stdAreaArray;
+              }
+            );
           }
         );
       }
@@ -1303,61 +1514,116 @@ export class ToolsSidebarComponent implements OnInit {
         name: this.scenarioName,
         indicators: this.selIndText,
         isBase: this.isBaseUP ? 1 : 0,
-        studyArea: this.selectedStudyAreaUP.id,
-        studyAreaId: this.selectedStudyAreaUP.id,
+        studyArea: this.selectedStudyAreaUP.id.replace("priv_","").replace("pub_",""),
+        studyAreaId: this.selectedStudyAreaUP.id.replace("priv_","").replace("pub_",""),
       };
-      this.scenarioService.postScenario(this.newScenario).subscribe(
-        (scenario) => {
-          if (!scenario.name.toLowerCase().includes('error')) {
-            this.newScenario = null;
-            this.newScenario = {
-              scenarioId: scenario.scenarioId,
-              name: scenario.name,
-              indicators: scenario.indicators,
-              isBase: scenario.isBase,
-              studyArea: scenario.studyArea,
-              studyAreaId: scenario.studyAreaId,
-            };
-            this.getScenarios();
-            this.messageService.add({
-              severity: 'success',
-              summary: 'Success!',
-              detail: 'Scenario created successfully.',
-            });
-            this.unblockDocument();
-            if (scenario.has_assumptions === 0) {
-              this.messageService.clear();
+      if(this.selectedStudyAreaUP.id.includes("priv_")) {
+        this.scenarioService.postScenario(this.newScenario).subscribe(
+          (scenario) => {
+            if (!scenario.name.toLowerCase().includes('error')) {
+              this.newScenario = null;
+              this.newScenario = {
+                scenarioId: scenario.scenarioId,
+                name: scenario.name,
+                indicators: scenario.indicators,
+                isBase: scenario.isBase,
+                studyArea: scenario.studyArea,
+                studyAreaId: scenario.studyAreaId,
+              };
+              this.getScenarios();
               this.messageService.add({
-                key: 'loadAssumptions',
-                sticky: true,
-                severity: 'warn',
-                summary: 'Warning!',
-                detail:
-                  'Your scenario belongs to a study area that lacks assumptions, which are required in order to use ' +
-                  'it for calculations. You can upload or create assumptions in the Assumptions tab under the Advanced Options ' +
-                  'module. Click \'YES \' to open the module, or click \'NO\' to do this later.',
+                severity: 'success',
+                summary: 'Success!',
+                detail: 'Scenario created successfully.',
               });
+              this.unblockDocument();
+              if (scenario.has_assumptions === 0) {
+                this.messageService.clear();
+                this.messageService.add({
+                  key: 'loadAssumptions',
+                  sticky: true,
+                  severity: 'warn',
+                  summary: 'Warning!',
+                  detail:
+                    'Your scenario belongs to a study area that lacks assumptions, which are required in order to use ' +
+                    'it for calculations. You can upload or create assumptions in the Assumptions tab under the Advanced Options ' +
+                    'module. Click \'YES \' to open the module, or click \'NO\' to do this later.',
+                });
+              }
+              this.collapseCreateScenario();
+              this.finishCreateScenario();
+              this.openManageData();
+            } else {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Error!',
+                detail: 'An error ocurred during the operation.',
+              });
+              this.unblockDocument();
             }
-            this.collapseCreateScenario();
-            this.finishCreateScenario();
-            this.openManageData();
-          } else {
-            this.messageService.add({
-              severity: 'error',
-              summary: 'Error!',
-              detail: 'An error ocurred during the operation.',
-            });
+          },
+          (error) => {
             this.unblockDocument();
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.selectedScenarios = [];
           }
-        },
-        (error) => {
-          this.unblockDocument();
-          this.logErrorHandler(error);
-        },
-        () => {
-          this.selectedScenarios = [];
-        }
-      );
+        );
+      } else if(this.selectedStudyAreaUP.id.includes("pub_")) {
+        this.scenarioService.postPublicScenario(this.newScenario).subscribe(
+          (scenario) => {
+            if (!scenario.name.toLowerCase().includes('error')) {
+              this.newScenario = null;
+              this.newScenario = {
+                scenarioId: scenario.scenarioId,
+                name: scenario.name,
+                indicators: scenario.indicators,
+                isBase: scenario.isBase,
+                studyArea: scenario.studyArea,
+                studyAreaId: scenario.studyAreaId,
+              };
+              this.getScenarios();
+              this.messageService.add({
+                severity: 'success',
+                summary: 'Success!',
+                detail: 'Scenario created successfully.',
+              });
+              this.unblockDocument();
+              if (scenario.has_assumptions === 0) {
+                this.messageService.clear();
+                this.messageService.add({
+                  key: 'loadAssumptions',
+                  sticky: true,
+                  severity: 'warn',
+                  summary: 'Warning!',
+                  detail:
+                    'Your scenario belongs to a study area that lacks assumptions, which are required in order to use ' +
+                    'it for calculations. You can upload or create assumptions in the Assumptions tab under the Advanced Options ' +
+                    'module. Click \'YES \' to open the module, or click \'NO\' to do this later.',
+                });
+              }
+              this.collapseCreateScenario();
+              this.finishCreateScenario();
+              this.openManageData();
+            } else {
+              this.messageService.add({
+                severity: 'error',
+                summary: 'Error!',
+                detail: 'An error ocurred during the operation.',
+              });
+              this.unblockDocument();
+            }
+          },
+          (error) => {
+            this.unblockDocument();
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.selectedScenarios = [];
+          }
+        );
+      }
     }
   }
 
@@ -1377,11 +1643,24 @@ export class ToolsSidebarComponent implements OnInit {
   // Loads the PrimeNG tree element in the Manage Data section of the main UP dialog using the Scenario ID
   loadUPLayers() {
     if (this.scenarioManage) {
-      this.nodeService
-        .getUPLayers(this.scenarioManage.scenarioId)
-        .then((layersUP) => {
-          this.layersUP = layersUP;
-        });
+      let tmpScenario = this.scenarioManage.scenarioId;
+      if(tmpScenario.includes("priv_")) {
+        tmpScenario = tmpScenario.replace("priv_","")
+        this.nodeService.getUPTables(tmpScenario).subscribe(
+          (tables) => (this.layersUP = tables),
+          (error) => {
+            this.logErrorHandler(error);
+          }
+        );
+      } else if(tmpScenario.includes("pub_")) {
+        tmpScenario = tmpScenario.replace("pub_","")
+        this.nodeService.getUPPublicTables(tmpScenario).subscribe(
+          (tables) => (this.layersUP = tables),
+          (error) => {
+            this.logErrorHandler(error);
+          }
+        );
+      } 
     }
   }
 
@@ -1418,31 +1697,60 @@ export class ToolsSidebarComponent implements OnInit {
   // Loads the options for the dropdowns in the UP Manage Data dialog using the layer ID.
   loadDataColumnsUP(event) {
     if (event.node.type.toLowerCase() === 'layer') {
-      this.listService.getColumn(event.node.data).subscribe(
-        (listManageDataUP) => {
-          this.colFieldsNameArrayUP = [];
-          listManageDataUP.forEach((data) =>
-            this.colFieldsNameArrayUP.push({ name: data })
-          );
-          this.listManageDataUP = this.colFieldsNameArrayUP;
-          this.columnsHeaderUP = event.node.label;
-        },
-        (error) => {
-          this.logErrorHandler(error);
-        }
-      );
+      let directory = event.node.parent.data;
+      if(directory.includes("my_data")) {
+        this.listService.getColumn(event.node.data).subscribe(
+          (listManageDataUP) => {
+            this.colFieldsNameArrayUP = [];
+            listManageDataUP.forEach((data) =>
+              this.colFieldsNameArrayUP.push({ name: data })
+            );
+            this.listManageDataUP = this.colFieldsNameArrayUP;
+            this.columnsHeaderUP = event.node.label;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          }
+        );
+      } else if(directory.includes("public_data")) {
+        this.listService.getPublicColumn(event.node.data).subscribe(
+          (listManageDataUP) => {
+            this.colFieldsNameArrayUP = [];
+            listManageDataUP.forEach((data) =>
+              this.colFieldsNameArrayUP.push({ name: data })
+            );
+            this.listManageDataUP = this.colFieldsNameArrayUP;
+            this.columnsHeaderUP = event.node.label;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          }
+        );
+      }
     }
   }
 
   // Loads the PrimeNG tree element in the Advanced dialog on the Clear Tables tab
   loadTablesUP() {
     if (this.upTablesScenario) {
-      this.nodeService.getUPTables(this.upTablesScenario.scenarioId).subscribe(
-        (tables) => (this.tablesUP = tables),
-        (error) => {
-          this.logErrorHandler(error);
-        }
-      );
+      let tmpScenario = this.upTablesScenario.scenarioId;
+      if(tmpScenario.includes("priv_")) {
+        tmpScenario = tmpScenario.replace("priv_","")
+        this.nodeService.getUPTables(tmpScenario).subscribe(
+          (tables) => (this.tablesUP = tables),
+          (error) => {
+            this.logErrorHandler(error);
+          }
+        );
+      } else if(tmpScenario.includes("pub_")) {
+        tmpScenario = tmpScenario.replace("pub_","")
+        this.nodeService.getUPPublicTables(tmpScenario).subscribe(
+          (tables) => (this.tablesUP = tables),
+          (error) => {
+            this.logErrorHandler(error);
+          }
+        );
+      } 
     }
   }
 
@@ -1467,8 +1775,10 @@ export class ToolsSidebarComponent implements OnInit {
       detail: 'Table data is being deleted!',
     });
     this.messageService.clear('confirmDeleteTableUP');
-    this.upMiscService
-      .deleteTableUP(this.upTablesScenario.scenarioId, this.selectedTable.data)
+    let tmpScenario = this.upTablesScenario.scenarioId;
+    if(tmpScenario.includes("priv_")) {
+      this.upMiscService
+      .deleteTableUP(tmpScenario.replace("priv_",""), this.selectedTable.data)
       .subscribe(
         () => {},
         (error) => {
@@ -1484,6 +1794,25 @@ export class ToolsSidebarComponent implements OnInit {
           this.loadUPLayers();
         }
       );
+    } else if(tmpScenario.includes("pub_")) {
+      this.upMiscService
+      .deletePublicTableUP(tmpScenario.replace("pub_",""), this.selectedTable.data)
+      .subscribe(
+        () => {},
+        (error) => {
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Table data deleted successfully!',
+          });
+          this.loadTablesUP();
+          this.loadUPLayers();
+        }
+      );
+    } 
   }
 
   // Hides the confirmDeleteTableUP message
@@ -1493,6 +1822,7 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to import data through the UP Manage Data dialog
   importDataUP() {
+    let directory = this.selectedLayer.parent.data;
     this.blockDocument();
     this.messageService.add({
       severity: 'info',
@@ -1508,41 +1838,90 @@ export class ToolsSidebarComponent implements OnInit {
       layerUPName: this.selectedLayerUP.data,
       table: this.columnDataGP,
       tableUP: this.listDataUP,
-      scenarioId: this.scenarioManage.scenarioId,
+      scenarioId: this.scenarioManage.scenarioId.replace("priv_","").replace("pub_",""),
     };
-    this.dataCopyService.copyDataUP(this.dataCopy).subscribe(
-      () => {},
-      (error) => {
-        this.unblockDocument();
-        this.logErrorHandler(error);
-      },
-      () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success!',
-          detail: 'Process completed successfully.',
-        });
-        this.loadUPLayers();
-        this.classificationService.getClassifications().subscribe(
-          (clsf) => (this.classifications = clsf),
-          (error) => {
-            this.logErrorHandler(error);
-          }
-        );
-        this.unblockDocument();
-        this.columnFieldsArrayUP = [];
-        this.hideManageDataUP();
-      }
-    );
+    if(directory.includes("my_data")) {
+      this.dataCopyService.copyDataUP(this.dataCopy).subscribe(
+        () => {},
+        (error) => {
+          this.unblockDocument();
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Process completed successfully.',
+          });
+          this.loadUPLayers();
+          this.classificationService.getClassifications().subscribe(
+            (clsf) => (this.classifications = clsf),
+            (error) => {
+              this.logErrorHandler(error);
+            }
+          );
+          this.unblockDocument();
+          this.columnFieldsArrayUP = [];
+          this.hideManageDataUP();
+        }
+      );
+    } else if(directory.includes("public_data")) {
+      this.dataCopyService.copyPublicDataUP(this.dataCopy).subscribe(
+        () => {},
+        (error) => {
+          this.unblockDocument();
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Process completed successfully.',
+          });
+          this.loadUPLayers();
+          this.classificationService.getClassifications().subscribe(
+            (clsf) => (this.classifications = clsf),
+            (error) => {
+              this.logErrorHandler(error);
+            }
+          );
+          this.unblockDocument();
+          this.columnFieldsArrayUP = [];
+          this.hideManageDataUP();
+        }
+      );
+    }
     this.columnFieldsArrayUP = [];
   }
 
   // Sends a request to get the list of Scenarios
   getScenarios() {
+    let tmpScenarioArray = [];
     this.scenarioService.getScenarios().subscribe(
-      (scenarios) => (this.scenarios = scenarios),
+      (scenarios) => {
+        scenarios.forEach(scenario => {
+          scenario.scenarioId = "priv_" + scenario.scenarioId;
+        });
+        tmpScenarioArray = scenarios;
+      },
       (error) => {
         this.logErrorHandler(error);
+      },
+      () => {
+        this.scenarioService.getPublicScenarios().subscribe(
+          (scenarios) => {
+            scenarios.forEach(scenario => {
+              scenario.scenarioId = "pub_" + scenario.scenarioId;
+            });
+            tmpScenarioArray = tmpScenarioArray.concat(scenarios);
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.scenarios = tmpScenarioArray;
+          }
+        );
       }
     );
   }
@@ -1565,34 +1944,57 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to update the Scenario
   updateScenario() {
-    this.scenarioService.putScenario(this.scenarioManage).subscribe(
-      () => {
-        this.messageService.add({
-          severity: 'info',
-          summary: 'In process!',
-          detail: 'Your scenario is being updated!',
-        });
-      },
-      (error) => {
-        this.logErrorHandler(error);
-      },
-      () => {
-        this.scenarioService.getScenarios().subscribe(
-          (scenarios) => (this.scenarios = scenarios),
-          (error) => {
-            this.logErrorHandler(error);
-          }
-        );
-        this.selectedScenarios = [];
-        this.scenarioManage = null;
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success!',
-          detail: 'Scenario updated successfully!',
-        });
-        this.hideEditScenario();
-      }
-    );
+    if(this.scenarioManage.scenarioId.includes("priv_")) {
+      this.scenarioManage.scenarioId = this.scenarioManage.scenarioId.replace("priv_","");
+      this.scenarioService.putScenario(this.scenarioManage).subscribe(
+        () => {
+          this.messageService.add({
+            severity: 'info',
+            summary: 'In process!',
+            detail: 'Your scenario is being updated!',
+          });
+        },
+        (error) => {
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.getScenarios();
+          this.selectedScenarios = [];
+          this.scenarioManage = null;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Scenario updated successfully!',
+          });
+          this.hideEditScenario();
+        }
+      );
+    } else if(this.scenarioManage.scenarioId.includes("pub_")) {
+      this.scenarioManage.scenarioId = this.scenarioManage.scenarioId.replace("pub_","");
+      this.scenarioService.putPublicScenario(this.scenarioManage).subscribe(
+        () => {
+          this.messageService.add({
+            severity: 'info',
+            summary: 'In process!',
+            detail: 'Your scenario is being updated!',
+          });
+        },
+        (error) => {
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.getScenarios();
+          this.selectedScenarios = [];
+          this.scenarioManage = null;
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Scenario updated successfully!',
+          });
+          this.hideEditScenario();
+        }
+      );
+    } 
   }
 
   // Hides the Scenario Details dialog
@@ -1615,36 +2017,61 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to delete the selected Scenario
   confirmDeleteScenario() {
-    this.scenarioService.deleteScenario(this.scenarioManage).subscribe(
-      () => {
-        this.messageService.add({
-          severity: 'info',
-          summary: 'In process!',
-          detail: 'Your scenario is being deleted!',
-        });
-      },
-      (error) => {
-        this.logErrorHandler(error);
-      },
-      () => {
-        this.scenarioService.getScenarios().subscribe(
-          (scenarios) => (this.scenarios = scenarios),
-          (error) => {
-            this.logErrorHandler(error);
-          }
-        );
-        this.layers = [];
-        this.tablesUP = [];
-        this.selectedScenarios = [];
-        this.messageService.clear('confirmDeleteScenario');
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success!',
-          detail: 'Scenario deleted successfully!',
-        });
-        this.hideEditScenario();
-      }
-    );
+    if(this.scenarioManage.scenarioId.includes("priv_")) {
+      this.scenarioManage.scenarioId = this.scenarioManage.scenarioId.replace("priv_","");
+      this.scenarioService.deleteScenario(this.scenarioManage).subscribe(
+        () => {
+          this.messageService.add({
+            severity: 'info',
+            summary: 'In process!',
+            detail: 'Your scenario is being deleted!',
+          });
+        },
+        (error) => {
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.getScenarios();
+          this.layers = [];
+          this.tablesUP = [];
+          this.selectedScenarios = [];
+          this.messageService.clear('confirmDeleteScenario');
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Scenario deleted successfully!',
+          });
+          this.hideEditScenario();
+        }
+      );
+    } else if(this.scenarioManage.scenarioId.includes("pub_")) {
+      this.scenarioManage.scenarioId = this.scenarioManage.scenarioId.replace("pub_","");
+      this.scenarioService.deletePublicScenario(this.scenarioManage).subscribe(
+        () => {
+          this.messageService.add({
+            severity: 'info',
+            summary: 'In process!',
+            detail: 'Your scenario is being deleted!',
+          });
+        },
+        (error) => {
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.getScenarios();
+          this.layers = [];
+          this.tablesUP = [];
+          this.selectedScenarios = [];
+          this.messageService.clear('confirmDeleteScenario');
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Scenario deleted successfully!',
+          });
+          this.hideEditScenario();
+        }
+      );
+    } 
   }
 
   // Closes the confirmDeleteScenario message
@@ -1655,14 +2082,35 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to get the Assumptions related to the selected Scenario
   loadAssumptions() {
     if (this.asmptScenarioManage) {
-      this.assumptionService
-        .getAssumptions(this.asmptScenarioManage.scenarioId)
+      if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+        this.assumptionService
+        .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
         .subscribe(
-          (assumptions) => (this.assumptions = assumptions),
+          (assumptions) => {
+            assumptions.forEach(assumption => {
+              assumption.id = "priv_" + assumption.id;
+            });
+            this.assumptions = assumptions;
+          },
           (error) => {
             this.logErrorHandler(error);
           }
         );
+      } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+        this.assumptionService
+        .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+        .subscribe(
+          (assumptions) => {
+            assumptions.forEach(assumption => {
+              assumption.id = "pub_" + assumption.id;
+            });
+            this.assumptions = assumptions;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          }
+        );
+      } 
     }
   }
 
@@ -1674,8 +2122,9 @@ export class ToolsSidebarComponent implements OnInit {
       summary: 'In process!',
       detail: 'Your file is being uploaded!',
     });
-    this.assumptionService
-      .uploadAssumption(this.asmptStudyAreaFile.id, event.files[0])
+    if(this.asmptStudyAreaFile.id.includes("priv_")) {
+      this.assumptionService
+      .uploadAssumption(this.asmptStudyAreaFile.id.replace("priv_",""), event.files[0])
       .subscribe(
         () => {},
         (error) => {
@@ -1684,14 +2133,35 @@ export class ToolsSidebarComponent implements OnInit {
         },
         () => {
           if (this.asmptScenarioManage) {
-            this.assumptionService
-              .getAssumptions(this.asmptScenarioManage.scenarioId)
+            if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+              this.assumptionService
+              .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
               .subscribe(
-                (asmpt) => (this.assumptions = asmpt),
+                (assumptions) => {
+                  assumptions.forEach(assumption => {
+                    assumption.id = "priv_" + assumption.id;
+                  });
+                  this.assumptions = assumptions;
+                },
                 (error) => {
                   this.logErrorHandler(error);
                 }
               );
+            } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+              this.assumptionService
+              .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+              .subscribe(
+                (assumptions) => {
+                  assumptions.forEach(assumption => {
+                    assumption.id = "pub_" + assumption.id;
+                  });
+                  this.assumptions = assumptions;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                }
+              );
+            } 
           }
           this.messageService.add({
             severity: 'success',
@@ -1701,6 +2171,56 @@ export class ToolsSidebarComponent implements OnInit {
           this.unblockDocument();
         }
       );
+    } else if(this.asmptStudyAreaFile.id.includes("pub_")) {
+      this.assumptionService
+      .uploadPublicAssumption(this.asmptStudyAreaFile.id.replace("pub_",""), event.files[0])
+      .subscribe(
+        () => {},
+        (error) => {
+          this.unblockDocument();
+          this.logErrorHandler(error);
+        },
+        () => {
+          if (this.asmptScenarioManage) {
+            if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+              this.assumptionService
+              .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+              .subscribe(
+                (assumptions) => {
+                  assumptions.forEach(assumption => {
+                    assumption.id = "priv_" + assumption.id;
+                  });
+                  this.assumptions = assumptions;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                }
+              );
+            } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+              this.assumptionService
+              .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+              .subscribe(
+                (assumptions) => {
+                  assumptions.forEach(assumption => {
+                    assumption.id = "pub_" + assumption.id;
+                  });
+                  this.assumptions = assumptions;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                }
+              );
+            } 
+          }
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'File uploaded successfully!!',
+          });
+          this.unblockDocument();
+        }
+      );
+    } 
   }
 
   // Shows the Assumption Detail dialog and tags the selected assumption as not new
@@ -1720,67 +2240,221 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to either save or update an assumption, depending on its tag
   saveAssumption() {
     if (this.isNewAssumption) {
-      this.assumptionService.createAssumption(this.assumptionManage).subscribe(
-        () =>
-          this.messageService.add({
-            severity: 'info',
-            summary: 'In process!',
-            detail: 'Your assumption is being created!',
-          }),
-        (error) => {
-          this.logErrorHandler(error);
-        },
-        () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success!',
-            detail: 'Assumption created successfully!',
-          });
-          if (this.asmptScenarioManage) {
-            this.assumptionService
-              .getAssumptions(this.asmptScenarioManage.scenarioId)
-              .subscribe(
-                (asmpt) => (this.assumptions = asmpt),
-                (error) => {
-                  this.logErrorHandler(error);
-                }
-              );
+      if(this.assumptionManage.id.includes("priv_")) {
+        this.assumptionManage.id = this.assumptionManage.id.replace("priv_","");
+        this.assumptionService.createAssumption(this.assumptionManage).subscribe(
+          () =>
+            this.messageService.add({
+              severity: 'info',
+              summary: 'In process!',
+              detail: 'Your assumption is being created!',
+            }),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Assumption created successfully!',
+            });
+            if (this.asmptScenarioManage) {
+              if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+                this.assumptionService
+                .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+                .subscribe(
+                  (assumptions) => {
+                    assumptions.forEach(assumption => {
+                      assumption.id = "priv_" + assumption.id;
+                    });
+                    this.assumptions = assumptions;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }
+                );
+              } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+                this.assumptionService
+                .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+                .subscribe(
+                  (assumptions) => {
+                    assumptions.forEach(assumption => {
+                      assumption.id = "pub_" + assumption.id;
+                    });
+                    this.assumptions = assumptions;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }
+                );
+              } 
+            }
+            this.assumptionManage = null;
+            this.editAssumptions = false;
           }
-          this.assumptionManage = null;
-          this.editAssumptions = false;
-        }
-      );
+        );
+      } else if(this.assumptionManage.id.includes("pub_")) {
+        this.assumptionManage.id = this.assumptionManage.id.replace("pub_","");
+        this.assumptionService.createPublicAssumption(this.assumptionManage).subscribe(
+          () =>
+            this.messageService.add({
+              severity: 'info',
+              summary: 'In process!',
+              detail: 'Your assumption is being created!',
+            }),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Assumption created successfully!',
+            });
+            if (this.asmptScenarioManage) {
+              if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+                this.assumptionService
+                .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+                .subscribe(
+                  (assumptions) => {
+                    assumptions.forEach(assumption => {
+                      assumption.id = "priv_" + assumption.id;
+                    });
+                    this.assumptions = assumptions;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }
+                );
+              } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+                this.assumptionService
+                .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+                .subscribe(
+                  (assumptions) => {
+                    assumptions.forEach(assumption => {
+                      assumption.id = "pub_" + assumption.id;
+                    });
+                    this.assumptions = assumptions;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }
+                );
+              } 
+            }
+            this.assumptionManage = null;
+            this.editAssumptions = false;
+          }
+        );
+      } 
     } else {
-      this.assumptionService.updateAssumption(this.assumptionManage).subscribe(
-        () =>
-          this.messageService.add({
-            severity: 'info',
-            summary: 'In process!',
-            detail: 'Your assumption is being updated!',
-          }),
-        (error) => {
-          this.logErrorHandler(error);
-        },
-        () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success!',
-            detail: 'Assumption updated successfully!',
-          });
-          if (this.asmptScenarioManage) {
-            this.assumptionService
-              .getAssumptions(this.asmptScenarioManage.scenarioId)
-              .subscribe(
-                (asmpt) => (this.assumptions = asmpt),
-                (error) => {
-                  this.logErrorHandler(error);
-                }
-              );
+      if(this.assumptionManage.id.includes("priv_")) {
+        this.assumptionManage.id = this.assumptionManage.id.replace("priv_","");
+        this.assumptionService.updateAssumption(this.assumptionManage).subscribe(
+          () =>
+            this.messageService.add({
+              severity: 'info',
+              summary: 'In process!',
+              detail: 'Your assumption is being updated!',
+            }),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Assumption updated successfully!',
+            });
+            if (this.asmptScenarioManage) {
+              if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+                this.assumptionService
+                .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+                .subscribe(
+                  (assumptions) => {
+                    assumptions.forEach(assumption => {
+                      assumption.id = "priv_" + assumption.id;
+                    });
+                    this.assumptions = assumptions;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }
+                );
+              } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+                this.assumptionService
+                .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+                .subscribe(
+                  (assumptions) => {
+                    assumptions.forEach(assumption => {
+                      assumption.id = "pub_" + assumption.id;
+                    });
+                    this.assumptions = assumptions;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }
+                );
+              } 
+            }
+            this.assumptionManage = null;
+            this.editAssumptions = false;
           }
-          this.assumptionManage = null;
-          this.editAssumptions = false;
-        }
-      );
+        );
+      } else if(this.assumptionManage.id.includes("pub_")) {
+        this.assumptionManage.id = this.assumptionManage.id.replace("pub_","");
+        this.assumptionService.updatePublicAssumption(this.assumptionManage).subscribe(
+          () =>
+            this.messageService.add({
+              severity: 'info',
+              summary: 'In process!',
+              detail: 'Your assumption is being updated!',
+            }),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Assumption updated successfully!',
+            });
+            if (this.asmptScenarioManage) {
+              if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+                this.assumptionService
+                .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+                .subscribe(
+                  (assumptions) => {
+                    assumptions.forEach(assumption => {
+                      assumption.id = "priv_" + assumption.id;
+                    });
+                    this.assumptions = assumptions;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }
+                );
+              } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+                this.assumptionService
+                .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+                .subscribe(
+                  (assumptions) => {
+                    assumptions.forEach(assumption => {
+                      assumption.id = "pub_" + assumption.id;
+                    });
+                    this.assumptions = assumptions;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }
+                );
+              } 
+            }
+            this.assumptionManage = null;
+            this.editAssumptions = false;
+          }
+        );
+      } 
     }
   }
 
@@ -1808,37 +2482,115 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to delete an assumption
   confirmDeleteAssumption() {
-    this.assumptionService.deleteAssumption(this.assumptionManage).subscribe(
-      () =>
-        this.messageService.add({
-          severity: 'info',
-          summary: 'In process!',
-          detail: 'Your assumption is being deleted!',
-        }),
-      (error) => {
-        this.logErrorHandler(error);
-      },
-      () => {
-        if (this.asmptScenarioManage) {
-          this.assumptionService
-            .getAssumptions(this.asmptScenarioManage.scenarioId)
-            .subscribe(
-              (asmpt) => (this.assumptions = asmpt),
-              (error) => {
-                this.logErrorHandler(error);
-              }
-            );
+    if(this.assumptionManage.id.includes("priv_")) {
+      this.assumptionManage.id = this.assumptionManage.id.replace("priv_","");
+      this.assumptionService.deleteAssumption(this.assumptionManage).subscribe(
+        () =>
+          this.messageService.add({
+            severity: 'info',
+            summary: 'In process!',
+            detail: 'Your assumption is being deleted!',
+          }),
+        (error) => {
+          this.logErrorHandler(error);
+        },
+        () => {
+          if (this.asmptScenarioManage) {
+            if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+              this.assumptionService
+              .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+              .subscribe(
+                (assumptions) => {
+                  assumptions.forEach(assumption => {
+                    assumption.id = "priv_" + assumption.id;
+                  });
+                  this.assumptions = assumptions;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                }
+              );
+            } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+              this.assumptionService
+              .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+              .subscribe(
+                (assumptions) => {
+                  assumptions.forEach(assumption => {
+                    assumption.id = "pub_" + assumption.id;
+                  });
+                  this.assumptions = assumptions;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                }
+              );
+            } 
+          }
+          this.assumptionManage = null;
+          this.messageService.clear('confirmDeleteAssumption');
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Assumption deleted successfully!',
+          });
+          this.editAssumptions = false;
         }
-        this.assumptionManage = null;
-        this.messageService.clear('confirmDeleteAssumption');
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success!',
-          detail: 'Assumption deleted successfully!',
-        });
-        this.editAssumptions = false;
-      }
-    );
+      );
+    } else if(this.assumptionManage.id.includes("pub_")) {
+      this.assumptionManage.id = this.assumptionManage.id.replace("pub_","");
+      this.assumptionService.deletePublicAssumption(this.assumptionManage).subscribe(
+        () =>
+          this.messageService.add({
+            severity: 'info',
+            summary: 'In process!',
+            detail: 'Your assumption is being deleted!',
+          }),
+        (error) => {
+          this.logErrorHandler(error);
+        },
+        () => {
+          if (this.asmptScenarioManage) {
+            if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+              this.assumptionService
+              .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+              .subscribe(
+                (assumptions) => {
+                  assumptions.forEach(assumption => {
+                    assumption.id = "priv_" + assumption.id;
+                  });
+                  this.assumptions = assumptions;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                }
+              );
+            } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+              this.assumptionService
+              .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+              .subscribe(
+                (assumptions) => {
+                  assumptions.forEach(assumption => {
+                    assumption.id = "pub_" + assumption.id;
+                  });
+                  this.assumptions = assumptions;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                }
+              );
+            } 
+          }
+          this.assumptionManage = null;
+          this.messageService.clear('confirmDeleteAssumption');
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Assumption deleted successfully!',
+          });
+          this.editAssumptions = false;
+        }
+      );
+    } 
   }
 
   // Closes the cancelDeleteAssumption
@@ -2566,14 +3318,32 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to get the study areas for ST
   loadSTStudyArea() {
+    let privStdArea = [];
+    let pubStdArea = [];
+    let stdAreaArray = [];
     this.layersService.getStudyAreas().subscribe(
       (studyArea) => {
-        this.studyAreaST = studyArea;
-        this.stdAreaLayer = studyArea;
-        this.stdAreaFilter = studyArea;
+        privStdArea = studyArea;
       },
       (error) => {
         this.logErrorHandler(error);
+      },
+      () => {
+        stdAreaArray = stdAreaArray.concat(privStdArea);
+        this.layersService.getPublicStudyAreas().subscribe(
+          (studyArea) => {
+            pubStdArea = studyArea;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            stdAreaArray = stdAreaArray.concat(pubStdArea);
+            this.studyAreaST = stdAreaArray;
+            this.stdAreaLayer = stdAreaArray;
+            this.stdAreaFilter = stdAreaArray;
+          }
+        );
       }
     );
   }
@@ -2658,21 +3428,45 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to fill the dropdowns for the Copy Data module for ST
   loadSTDataDistanceColumns(event) {
     if (event.node.type.toLowerCase() !== 'directory') {
-      this.listService.getSTColumnWithId(event.node.data).subscribe(
-        (listManageDataST) => {
-          this.colFieldsNameArrayST = [];
-          this.layerSTId = null;
-          listManageDataST.forEach((data) =>
-            this.colFieldsNameArrayST.push({ name: data })
-          );
-          this.layerSTId = event.node.data;
-          this.listManageDistanceST = this.colFieldsNameArrayST;
-          this.columnHeaderDistancesST = event.node.label;
-        },
-        (error) => {
-          this.logErrorHandler(error);
-        }
-      );
+      let layerId = event.node.data.toString();
+      let directory = event.node.parent.data.toString();
+      this.tmpLayerId = event.node.data.toString();
+      if(directory.includes("my_data")) {
+        layerId = layerId.replace("priv_","");
+        this.listService.getSTColumnWithId(layerId).subscribe(
+          (listManageDataST) => {
+            this.colFieldsNameArrayST = [];
+            this.layerSTId = null;
+            listManageDataST.forEach((data) =>
+              this.colFieldsNameArrayST.push({ name: data })
+            );
+            this.layerSTId = event.node.data;
+            this.listManageDistanceST = this.colFieldsNameArrayST;
+            this.columnHeaderDistancesST = event.node.label;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          }
+        );
+      } else if(directory.includes("public_data")) {
+        layerId = layerId.replace("pub_","");
+        this.listService.getSTPublicColumnWithId(layerId).subscribe(
+          (listManageDataST) => {
+            this.colFieldsNameArrayST = [];
+            this.layerSTId = null;
+            listManageDataST.forEach((data) =>
+              this.colFieldsNameArrayST.push({ name: data })
+            );
+            this.layerSTId = event.node.data;
+            this.listManageDistanceST = this.colFieldsNameArrayST;
+            this.columnHeaderDistancesST = event.node.label;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          }
+        );
+      }
+      
     } else {
       this.colFieldsNameArrayST = [];
       this.layerSTId = null;
@@ -2705,21 +3499,44 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to fill the dropdown elements for the Register Layers tab in the Advanced dialog for ST
   loadDataColumnST(event) {
     if (event.node.type.toLowerCase() !== 'directory') {
-      this.listService.getSTColumnWithId(event.node.data).subscribe(
-        (listManageDataST) => {
-          this.colFieldsNameArrayST = [];
-          this.layerSTId = null;
-          listManageDataST.forEach((data) =>
-            this.colFieldsNameArrayST.push({ name: data })
-          );
-          this.layerSTId = event.node.data;
-          this.listManageDataST = this.colFieldsNameArrayST;
-          this.columnsHeaderST = event.node.label;
-        },
-        (error) => {
-          this.logErrorHandler(error);
-        }
-      );
+      let layerId = event.node.data.toString();
+      let directory = event.node.parent.data.toString();
+      this.tmpLayerId = event.node.data.toString();
+      if(directory.includes("my_data")) {
+        layerId = layerId.replace("priv_","");
+        this.listService.getSTColumnWithId(layerId).subscribe(
+          (listManageDataST) => {
+            this.colFieldsNameArrayST = [];
+            this.layerSTId = null;
+            listManageDataST.forEach((data) =>
+              this.colFieldsNameArrayST.push({ name: data })
+            );
+            this.layerSTId = layerId;
+            this.listManageDataST = this.colFieldsNameArrayST;
+            this.columnsHeaderST = event.node.label;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          }
+        );
+      } else if(directory.includes("public_data")) {
+        layerId = layerId.replace("pub_","");
+        this.listService.getSTPublicColumnWithId(layerId).subscribe(
+          (listManageDataST) => {
+            this.colFieldsNameArrayST = [];
+            this.layerSTId = null;
+            listManageDataST.forEach((data) =>
+              this.colFieldsNameArrayST.push({ name: data })
+            );
+            this.layerSTId = layerId;
+            this.listManageDataST = this.colFieldsNameArrayST;
+            this.columnsHeaderST = event.node.label;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          }
+        );
+      }
     } else {
       this.colFieldsNameArrayST = [];
       this.layerSTId = null;
@@ -2731,21 +3548,48 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to fill the dropdown elements for the Register Filters tab in the Advanced dialog for ST
   loadDataColumnFiltersST(event) {
     if (event.node.type.toLowerCase() !== 'directory') {
-      this.listService.getSTColumnFiltersWithId(event.node.data).subscribe(
-        (listManageDataFiltersST) => {
-          this.colFieldsNameArrayST = [];
-          this.filterSTId = null;
-          listManageDataFiltersST.forEach((data) =>
-            this.colFieldsNameArrayST.push({ name: data })
-          );
-          this.filterSTId = event.node.data;
-          this.listManageDataFiltersST = this.colFieldsNameArrayST;
-          this.columnsHeaderFiltersST = event.node.label;
-        },
-        (error) => {
-          this.logErrorHandler(error);
-        }
-      );
+      let layerId = event.node.data.toString();
+      let directory = event.node.parent.data.toString();
+      this.tmpLayerId = event.node.data.toString();
+      if(directory.includes("my_data")) {
+        layerId = layerId.replace("priv_","");
+        this.listService.getSTColumnFiltersWithId(layerId).subscribe(
+          (listManageDataFiltersST) => {
+            this.colFieldsNameArrayST = [];
+            this.filterSTId = null;
+            listManageDataFiltersST.forEach((data) =>
+              this.colFieldsNameArrayST.push({ name: data })
+            );
+            this.filterSTId = event.node.data;
+            this.listManageDataFiltersST = this.colFieldsNameArrayST;
+            this.columnsHeaderFiltersST = event.node.label;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          }
+        );
+      } else if(directory.includes("public_data")) {
+        layerId = layerId.replace("pub_","");
+        this.listService.getSTPublicColumnWithId(layerId).subscribe(
+          (listManageDataFiltersST) => {
+            this.colFieldsNameArrayST = [];
+            this.filterSTId = null;
+            listManageDataFiltersST.forEach((data) =>
+              this.colFieldsNameArrayST.push({ name: data })
+            );
+            this.filterSTId = event.node.data;
+            this.listManageDataFiltersST = this.colFieldsNameArrayST;
+            this.columnsHeaderFiltersST = event.node.label;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          }
+        );
+      }
+
+
+
+
     } else {
       this.colFieldsNameArrayST = [];
       this.filterSTId = null;
@@ -2757,46 +3601,95 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to copy data from the selected layer into the distance module
   importDataST() {
     if (this.stdAreaSTDistances != null) {
-      this.blockDocument();
-      this.messageService.add({
-        severity: 'info',
-        summary: 'In Progress!',
-        detail: 'Your operation is being processed.',
-      });
-      this.columnDataGP = [];
-      this.columnFieldsArrayST.forEach((data) =>
-        this.columnDataGP.push(data.name)
-      );
-      this.dataCopyST = {
-        layerName: this.selDistanceLayerST.data,
-        layerSTName: this.selTableST.data,
-        table: this.columnDataGP,
-        tableST: this.listDataDistancesST,
-        studyAreaId: this.stdAreaSTDistances.id,
-      };
-      this.dataCopyService.copyDataST(this.dataCopyST).subscribe(
-        (data) => {
-          this.dataCopyST = {
-            layerName: data.layerName,
-            layerSTName: data.layerSTName,
-            table: data.table,
-            tableST: data.tableST,
-            studyAreaId: data.studyAreaId,
-          };
-        },
-        (error) => {
-          this.unblockDocument();
-          this.logErrorHandler(error);
-        },
-        () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success!',
-            detail: 'Process completed successfully.',
-          });
-          this.unblockDocument();
-        }
-      );
+      let tmpId = this.stdAreaSTDistances.id;
+      let tmpLyrName = this.selDistanceLayerST.data;
+      if(tmpLyrName.includes("priv_")) {
+        tmpLyrName = tmpLyrName.replace("priv_","");
+        this.blockDocument();
+        this.messageService.add({
+          severity: 'info',
+          summary: 'In Progress!',
+          detail: 'Your operation is being processed.',
+        });
+        this.columnDataGP = [];
+        this.columnFieldsArrayST.forEach((data) =>
+          this.columnDataGP.push(data.name)
+        );
+        tmpId = tmpId.replace("priv_","").replace("pub_","");
+        this.dataCopyST = {
+          layerName: tmpLyrName,
+          layerSTName: this.selTableST.data,
+          table: this.columnDataGP,
+          tableST: this.listDataDistancesST,
+          studyAreaId: tmpId,
+        };
+        this.dataCopyService.copyDataST(this.dataCopyST).subscribe(
+          (data) => {
+            this.dataCopyST = {
+              layerName: data.layerName,
+              layerSTName: data.layerSTName,
+              table: data.table,
+              tableST: data.tableST,
+              studyAreaId: data.studyAreaId,
+            };
+          },
+          (error) => {
+            this.unblockDocument();
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Process completed successfully.',
+            });
+            this.unblockDocument();
+          }
+        );
+      } else if(tmpLyrName.includes("pub_")) {
+        tmpLyrName = tmpLyrName.replace("pub_","");
+        this.blockDocument();
+        this.messageService.add({
+          severity: 'info',
+          summary: 'In Progress!',
+          detail: 'Your operation is being processed.',
+        });
+        this.columnDataGP = [];
+        this.columnFieldsArrayST.forEach((data) =>
+          this.columnDataGP.push(data.name)
+        );
+        tmpId = tmpId.replace("priv_","").replace("pub_","");
+        this.dataCopyST = {
+          layerName: tmpLyrName,
+          layerSTName: this.selTableST.data,
+          table: this.columnDataGP,
+          tableST: this.listDataDistancesST,
+          studyAreaId: tmpId,
+        };
+        this.dataCopyService.copyPublicDataST(this.dataCopyST).subscribe(
+          (data) => {
+            this.dataCopyST = {
+              layerName: data.layerName,
+              layerSTName: data.layerSTName,
+              table: data.table,
+              tableST: data.tableST,
+              studyAreaId: data.studyAreaId,
+            };
+          },
+          (error) => {
+            this.unblockDocument();
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Process completed successfully.',
+            });
+            this.unblockDocument();
+          }
+        );
+      }
     } else {
       this.messageService.add({
         severity: 'error',
@@ -2815,47 +3708,164 @@ export class ToolsSidebarComponent implements OnInit {
         summary: 'In Progress!',
         detail: 'Your operation is being processed.',
       });
-      this.matchLayer = {
-        layerId: this.layerSTId,
-        layerLabel: this.layerSTLabel,
-        field: this.layerSTField.name,
-        mmuCode: this.layerSTMMU.name,
-      };
-      this.dataCopyService.copyLayersST(this.matchLayer).subscribe(
-        (data) => {
-          this.matchLayer = {
-            layerId: data.layerId,
-            layerLabel: data.layerLabel,
-            field: data.field,
-            mmuCode: data.mmuCode,
-          };
-        },
-        (error) => {
-          this.unblockDocument();
-          this.logErrorHandler(error);
-        },
-        () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success!',
-            detail: 'Process completed successfully.',
-          });
-          if (this.selectedStudyAreaST) {
-            this.loadSTOptions();
+      if(this.tmpLayerId.includes("priv_")) {
+        
+        this.matchLayer = {
+          layerId: this.tmpLayerId.replace("priv_",""),
+          layerLabel: this.layerSTLabel,
+          field: this.layerSTField.name,
+          mmuCode: this.layerSTMMU.name,
+        };
+        this.dataCopyService.copyLayersST(this.matchLayer).subscribe(
+          (data) => {
+            this.matchLayer = {
+              layerId: data.layerId,
+              layerLabel: data.layerLabel,
+              field: data.field,
+              mmuCode: data.mmuCode,
+            };
+          },
+          (error) => {
+            this.unblockDocument();
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Process completed successfully.',
+            });
+            if (this.selectedStudyAreaST) {
+              this.loadSTOptions();
+            }
+            if (this.stdAreaManageLayer) {
+              let tmpId = this.stdAreaManageLayer.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.layerSTService.getLayerST(corrId).subscribe(
+                  (layers) => {
+                    this.layersSTManage = layers;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicLayerST(corrId).subscribe(
+                      (layers) => {
+                        this.layersSTManage = this.layersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
+                  (layers) => {
+                    this.layersSTManage = layers;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicLayerSTPubStdArea(corrId).subscribe(
+                      (layers) => {
+                        this.layersSTManage = this.layersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+            }
+            this.unblockDocument();
           }
-          if (this.stdAreaManageLayer) {
-            this.layerSTService
-              .getLayerST(this.stdAreaManageLayer.id)
-              .subscribe(
-                (layers) => (this.layersSTManage = layers),
-                (error) => {
-                  this.logErrorHandler(error);
-                }
-              );
+        );
+      } else if(this.tmpLayerId.includes("pub_")) {
+        this.matchLayer = {
+          layerId: this.tmpLayerId.replace("pub_",""),
+          layerLabel: this.layerSTLabel,
+          field: this.layerSTField.name,
+          mmuCode: this.layerSTMMU.name,
+        };
+        this.dataCopyService.copyPublicLayersST(this.matchLayer).subscribe(
+          (data) => {
+            this.matchLayer = {
+              layerId: data.layerId,
+              layerLabel: data.layerLabel,
+              field: data.field,
+              mmuCode: data.mmuCode,
+            };
+          },
+          (error) => {
+            this.unblockDocument();
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Process completed successfully.',
+            });
+            if (this.selectedStudyAreaST) {
+              this.loadSTOptions();
+            }
+            if (this.stdAreaManageLayer) {
+              let tmpId = this.stdAreaManageLayer.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.layerSTService.getLayerST(corrId).subscribe(
+                  (layers) => {
+                    this.layersSTManage = layers;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicLayerST(corrId).subscribe(
+                      (layers) => {
+                        this.layersSTManage = this.layersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
+                  (layers) => {
+                    this.layersSTManage = layers;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicLayerSTPubStdArea(corrId).subscribe(
+                      (layers) => {
+                        this.layersSTManage = this.layersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+            }
+            this.unblockDocument();
           }
-          this.unblockDocument();
-        }
-      );
+        );
+      }
     } else {
       this.messageService.add({
         severity: 'error',
@@ -2873,43 +3883,153 @@ export class ToolsSidebarComponent implements OnInit {
       summary: 'In Progress!',
       detail: 'Your operation is being processed.',
     });
-    this.matchFilter = {
-      filterId: this.filterSTId,
-      filterLabel: this.filterSTLabel,
-    };
-    this.dataCopyService.copyFiltersST(this.matchFilter).subscribe(
-      (data) => {
-        this.matchFilter = {
-          filterId: data.layerId,
-          filterLabel: data.layerLabel,
-        };
-      },
-      (error) => {
-        this.unblockDocument();
-        this.logErrorHandler(error);
-      },
-      () => {
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success!',
-          detail: 'Process completed successfully.',
-        });
-        if (this.selectedStudyAreaST) {
-          this.loadSTOptions();
-        }
-        if (this.stdAreaManageFilter) {
-          this.layerSTService
-            .getFiltersST(this.stdAreaManageFilter.id)
-            .subscribe(
-              (layers) => (this.filtersSTManage = layers),
-              (error) => {
-                this.logErrorHandler(error);
+    if(this.tmpLayerId.includes("priv_")) {
+      this.matchFilter = {
+        filterId: this.tmpLayerId.replace("priv_",""),
+        filterLabel: this.filterSTLabel,
+      };
+      this.dataCopyService.copyFiltersST(this.matchFilter).subscribe(
+        (data) => {
+          this.matchFilter = {
+            filterId: data.layerId,
+            filterLabel: data.layerLabel,
+          };
+        },
+        (error) => {
+          this.unblockDocument();
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Process completed successfully.',
+          });
+          if (this.selectedStudyAreaST) {
+            this.loadSTOptions();
+          }
+          if (this.stdAreaManageFilter) {
+            let tmpId = this.stdAreaManageFilter.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.layerSTService
+                .getFiltersST(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .subscribe(
+                  (lyrs) => (this.filtersSTManage = lyrs),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicFilterST(corrId).subscribe(
+                      (layers) => {
+                        this.filtersSTManage = this.filtersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              } else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.layerSTService
+                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .subscribe(
+                  (lyrs) => (this.filtersSTManage = lyrs),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicFilterSTPubStdArea(corrId).subscribe(
+                      (layers) => {
+                        this.filtersSTManage = this.filtersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
               }
-            );
+          }
+          this.unblockDocument();
         }
-        this.unblockDocument();
-      }
-    );
+      );
+    } else if(this.tmpLayerId.includes("pub_")) {
+      this.matchFilter = {
+        filterId: this.tmpLayerId.replace("pub_",""),
+        filterLabel: this.filterSTLabel,
+      };
+      this.dataCopyService.copyPublicFiltersST(this.matchFilter).subscribe(
+        (data) => {
+          this.matchFilter = {
+            filterId: data.layerId,
+            filterLabel: data.layerLabel,
+          };
+        },
+        (error) => {
+          this.unblockDocument();
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Process completed successfully.',
+          });
+          if (this.selectedStudyAreaST) {
+            this.loadSTOptions();
+          }
+          if (this.stdAreaManageFilter) {
+            let tmpId = this.stdAreaManageFilter.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.layerSTService
+                .getFiltersST(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .subscribe(
+                  (lyrs) => (this.filtersSTManage = lyrs),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicFilterST(corrId).subscribe(
+                      (layers) => {
+                        this.filtersSTManage = this.filtersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              } else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.layerSTService
+                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .subscribe(
+                  (lyrs) => (this.filtersSTManage = lyrs),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicFilterSTPubStdArea(corrId).subscribe(
+                      (layers) => {
+                        this.filtersSTManage = this.filtersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+          }
+          this.unblockDocument();
+        }
+      );
+    }
   }
 
   // Sends requests to load Layers, Settings and Filters pertaining to the selected study area
@@ -2919,33 +4039,127 @@ export class ToolsSidebarComponent implements OnInit {
       this.selectedLayersST = [];
       this.selSetting = [];
       this.settingsString = '';
-      this.layersService.getLayers(this.selectedStudyAreaST.id).subscribe(
-        (layers) => (this.layerSettings = layers),
-        (error) => {
-          this.logErrorHandler(error);
-        }, () => {
-          this.layerSettings.forEach(
-            stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
-          );
-        }
-      );
-      this.filterList = [];
-      this.selectedFiltersST = [];
-      this.layersService.getFilters(this.selectedStudyAreaST.id).subscribe(
-        (filters) => (this.filterList = filters),
-        (error) => { 
-          this.logErrorHandler(error);
-        }
-      );
+      let tmpId = this.selectedStudyAreaST.id.toString();
+      let corrId;
+      if(tmpId.includes("priv_")) {
+        corrId = tmpId.replace("priv_","");
+        this.layersService.getLayers(corrId).subscribe(
+          (layers) => (this.layerSettings = layers),
+          (error) => {
+            this.logErrorHandler(error);
+          }, () => {
+            this.layersService.getPublicLayers(corrId).subscribe(
+              (layers) => (this.layerSettings = this.layerSettings.concat(layers)),
+              (error) => {
+                this.logErrorHandler(error);
+              }, () => {
+                this.layerSettings.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
+              }
+            );
+          }
+        );
+        this.filterList = [];
+        this.selectedFiltersST = [];
+        this.layersService.getFilters(corrId).subscribe(
+          (filters) => {
+            filters.forEach((filter) => {
+              filter.id = "priv_" + filter.id.toString()
+            });
+            this.filterList = filters;
+          },
+          (error) => { 
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.layersService.getFilterSTPubStdArea(corrId).subscribe(
+              (filters) => {
+                filters.forEach((filter) => {
+                  filter.id = "pub_" + filter.id.toString()
+                });
+                this.filterList = this.filterList.concat(filters);
+              },
+              (error) => { 
+                this.logErrorHandler(error);
+              },
+              () => {
+              }
+            );
+          }
+        );
+      } else if(tmpId.includes("pub_")) {
+        corrId = tmpId.replace("pub_","");
+        this.layersService.getLayersPubStdArea(corrId).subscribe(
+          (layers) => (this.layerSettings = layers),
+          (error) => {
+            this.logErrorHandler(error);
+          }, () => {
+            this.layersService.getPublicLayersPubStdArea(corrId).subscribe(
+              (layers) => (this.layerSettings = this.layerSettings.concat(layers)),
+              (error) => {
+                this.logErrorHandler(error);
+              }, () => {
+                this.layerSettings.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
+              }
+            );
+          }
+        );
+        this.filterList = [];
+        this.selectedFiltersST = [];
+        this.layersService.getPublicFilters(corrId).subscribe(
+          (filters) => {
+            filters.forEach((filter) => {
+              filter.id = "priv_" + filter.id.toString()
+            });
+            this.filterList = filters;
+          },
+          (error) => { 
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.layersService.getPublicFilterSTPubStdArea(corrId).subscribe(
+              (filters) => {
+                filters.forEach((filter) => {
+                  filter.id = "pub_" + filter.id.toString()
+                });
+                this.filterList = this.filterList.concat(filters);
+              },
+              (error) => { 
+                this.logErrorHandler(error);
+              },
+              () => {
+              }
+            );
+          }
+        );
+      }
+      
     }
   }
 
   // Sends a request to evaluate the selected Layers and Filters
   evaluateLayer() {
+    let tmpStngs = [];
+    let tmpPubStngs = [];
+    let tmpStrStngs = "";
+    let tmpStrPubStngs = "";
+    let stdAreaId = this.selectedStudyAreaST.id;
     this.stResult = true;
     this.selectedFiltersArrayST = [];
-    this.selectedFiltersST.forEach((fltr) =>
-      this.selectedFiltersArrayST.push(+fltr)
+    this.selectedPublicFiltersArrayST = [];
+    this.selectedFiltersST.forEach(
+      (fltr) => {
+        if(fltr.includes("priv_")) {
+          fltr = fltr.replace("priv_","");
+          this.selectedFiltersArrayST.push(fltr);
+        } else if(fltr.includes("pub_")) {
+          fltr = fltr.replace("pub_","");
+          this.selectedPublicFiltersArrayST.push(+fltr);
+        } 
+      }
     );
     if (this.selSetting.length == 0 || this.selSetting == null) {
       this.messageService.add({
@@ -2960,22 +4174,40 @@ export class ToolsSidebarComponent implements OnInit {
         detail: 'Please select a join method.',
       });
     } else {
-      this.blockDocument();
       this.settingsString = '';
       this.selectedLayersST = [];
+      this.selectedPublicLayersST = [];
       this.selSetting.forEach((setting) => {
-        this.selectedLayersST.push(setting.st_layer_id);
+        if(!isUndefined(setting.st_layer_id)) {
+          this.selectedLayersST.push(setting.st_layer_id);
+        } else if(!isUndefined(setting.st_public_layer_id)) {
+          this.selectedPublicLayersST.push(setting.st_public_layer_id);
+        }
       });
       this.selSetting.forEach(
-        (stng) => (stng.smaller_better = stng.smaller_better ? 1 : 0)
+        (stng) => {
+          if(!isUndefined(stng.st_layer_id)) {
+            tmpStngs.push(stng);
+          } else if(!isUndefined(stng.st_public_layer_id)) {
+            tmpPubStngs.push(stng);
+          }
+          stng.smaller_better = stng.smaller_better ? 1 : 0;
+        }
       );
-      this.settingsString = JSON.stringify(this.selSetting);
-      this.stEvaluationService
+      tmpStrStngs = JSON.stringify(tmpStngs);
+      tmpStrPubStngs = JSON.stringify(tmpPubStngs);
+      this.blockDocument();
+      if(stdAreaId.includes("priv_")) {
+        stdAreaId = stdAreaId.replace("priv_","");
+        this.stEvaluationService
         .postLayer(
-          this.selectedStudyAreaST.id,
+          stdAreaId,
           this.selectedLayersST,
+          this.selectedPublicLayersST,
           this.selectedFiltersArrayST,
-          this.settingsString,
+          this.selectedPublicFiltersArrayST,
+          tmpStrStngs,
+          tmpStrPubStngs,
           this.joinMethod.value
         )
         .subscribe(
@@ -2990,8 +4222,39 @@ export class ToolsSidebarComponent implements OnInit {
           },
           () => {
             this.printGeoJSON();
+            this.unblockDocument();
           }
         );
+      } else if(stdAreaId.includes("pub_")) {
+        stdAreaId = stdAreaId.replace("pub_","");
+        this.stEvaluationService
+        .postPublicLayer(
+          stdAreaId,
+          this.selectedLayersST,
+          this.selectedPublicLayersST,
+          this.selectedFiltersArrayST,
+          this.selectedPublicFiltersArrayST,
+          tmpStrStngs,
+          tmpStrPubStngs,
+          this.joinMethod.value
+        )
+        .subscribe(
+          (data) => {
+            this.geojsonObject = data[0];
+            this.fullGeojson = data;
+          },
+          (error) => {
+            this.unblockDocument();
+            this.stResult = true;
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.printGeoJSON();
+            this.unblockDocument();
+          }
+        );
+      }
+      
     }
   }
 
@@ -3004,19 +4267,37 @@ export class ToolsSidebarComponent implements OnInit {
       summary: 'In Progress!',
       detail: 'Your operation is being processed.',
     });
-    this.stEvaluationService.postStdArea(stdAreaEval).subscribe(
-      () => {},
-      (error) => {
-        this.unblockDocument();
-        this.logErrorHandler(error);
-      },
-      () => {
-        interval = setInterval(
-          () => this.getStatusST(interval, stdAreaEval),
-          5000
-        );
-      }
-    );
+    if(stdAreaEval.includes("priv_")) {
+      stdAreaEval = stdAreaEval.replace("priv_","");
+      this.stEvaluationService.postStdArea(stdAreaEval).subscribe(
+        () => {},
+        (error) => {
+          this.unblockDocument();
+          this.logErrorHandler(error);
+        },
+        () => {
+          interval = setInterval(
+            () => this.getStatusST(interval, stdAreaEval),
+            5000
+          );
+        }
+      );
+    } else if(stdAreaEval.includes("pub_")) {
+      stdAreaEval = stdAreaEval.replace("pub_","");
+      this.stEvaluationService.postStdArea(stdAreaEval).subscribe(
+        () => {},
+        (error) => {
+          this.unblockDocument();
+          this.logErrorHandler(error);
+        },
+        () => {
+          interval = setInterval(
+            () => this.getStatusST(interval, stdAreaEval),
+            5000
+          );
+        }
+      );
+    }
   }
 
   // Sends a request to get the current status of the distance evaluation process
@@ -3110,13 +4391,13 @@ export class ToolsSidebarComponent implements OnInit {
         geojson: JSON.stringify({ 0: this.geojsonObject }),
       };
       this.layerOptions = {
-        layerId: 'ST_VECTOR_LAYER',
-        layerInspireName: 'Inspire theme name',
-        layerOrganizationName: 'Organization name',
+        layerId: 'UH_OUTPUT',
+        layerInspireName: 'Contagion Hotspots',
+        layerOrganizationName: 'World Bank Group',
         showLayer: true,
         opacity: 85,
-        layerName: 'Index Values',
-        layerDescription: 'Displays index values of Suitability evaluations.',
+        layerName: 'Contagion Hotspots',
+        layerDescription: 'Displays predicted contagion hotspots.',
         layerPermissions: {
           publish: 'publication_permission_ok',
         },
@@ -3159,7 +4440,7 @@ export class ToolsSidebarComponent implements OnInit {
         ]);
         Oskari.getSandbox().postRequestByName(
           'MapModulePlugin.RemoveFeaturesFromMapRequest',
-          [null, null, 'ST_VECTOR_LAYER']
+          [null, null, 'UH_OUTPUT']
         );
         Oskari.getSandbox().postRequestByName(this.rn, [
           this.geojsonObject,
@@ -3173,6 +4454,7 @@ export class ToolsSidebarComponent implements OnInit {
           detail: 'Process completed successfully!',
         });
         this.unblockDocument();
+        this.oskariHeatmap['style'] = JSON.stringify(this.layerOptions['optionalStyles']);
       } catch(e) {
         this.unblockDocument();
         this.messageService.add({
@@ -3195,7 +4477,7 @@ export class ToolsSidebarComponent implements OnInit {
       });
       Oskari.getSandbox().postRequestByName(
         'MapModulePlugin.RemoveFeaturesFromMapRequest',
-        [null, null, 'ST_VECTOR_LAYER']
+        [null, null, 'UH_OUTPUT']
       );
     }
   }
@@ -3204,16 +4486,17 @@ export class ToolsSidebarComponent implements OnInit {
   filterGeoJSON(event) {
     if (this.geojsonObject != null && this.geojsonObject['features'] != null) {
       this.layerOptions = {
-        layerId: 'ST_VECTOR_LAYER',
-        layerInspireName: 'Inspire theme name',
-        layerOrganizationName: 'Organization name',
+        layerId: 'UH_OUTPUT',
+        layerInspireName: 'Contagion Hotspots',
+        layerOrganizationName: 'World Bank Group',
         showLayer: true,
-        opacity: 60,
-        layerName: 'Index Values',
-        layerDescription: 'Displays index values of Suitability evaluations.',
+        opacity: 85,
+        layerName: 'Contagion Hotspots',
+        layerDescription: 'Displays predicted contagion hotspots.',
         layerPermissions: {
           publish: 'publication_permission_ok',
         },
+        centerTo: true,
         optionalStyles: [],
       };
       this.valuesST.forEach((val) => {
@@ -3244,12 +4527,13 @@ export class ToolsSidebarComponent implements OnInit {
       ]);
       Oskari.getSandbox().postRequestByName(
         'MapModulePlugin.RemoveFeaturesFromMapRequest',
-        [null, null, 'ST_VECTOR_LAYER']
+        [null, null, 'UH_OUTPUT']
       );
       Oskari.getSandbox().postRequestByName(this.rn, [
         this.geojsonObject,
         this.layerOptions,
       ]);
+      this.oskariHeatmap['style'] = JSON.stringify(this.layerOptions['optionalStyles']);
     }
   }
 
@@ -3291,40 +4575,187 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to load the registered layers for the selected study area
   loadManageLayers() {
     if (this.stdAreaManageLayer) {
-      this.layerSTService.getLayerST(this.stdAreaManageLayer.id).subscribe(
-        (layers) => (this.layersSTManage = layers),
-        (error) => {
-          this.logErrorHandler(error);
-        }
-      );
+      let tmpId = this.stdAreaManageLayer.id.toString();
+      let corrId;
+      if(tmpId.includes("priv_")) {
+        corrId = tmpId.replace("priv_","");
+        this.layerSTService.getLayerST(corrId).subscribe(
+          (layers) => {
+            this.layersSTManage = layers;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.layerSTService.getPublicLayerST(corrId).subscribe(
+              (layers) => {
+                this.layersSTManage = this.layersSTManage.concat(layers);
+              },
+              (error) => {
+                this.logErrorHandler(error);
+              },
+            );
+          }
+        );
+      }
+      else if(tmpId.includes("pub_")) {
+        corrId = tmpId.replace("pub_","");
+        this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
+          (layers) => {
+            this.layersSTManage = layers;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.layerSTService.getPublicLayerSTPubStdArea(corrId).subscribe(
+              (layers) => {
+                this.layersSTManage = this.layersSTManage.concat(layers);
+              },
+              (error) => {
+                this.logErrorHandler(error);
+              },
+            );
+          }
+        );
+      }
     }
   }
+
+  /* loadManagePublicLayers() {
+    if (this.stdAreaManagePublicLayer) {
+      let tmpId = this.stdAreaManagePublicLayer.id.toString();
+      let corrId;
+      if(tmpId.includes("priv_")) {
+        corrId = tmpId.replace("priv_","");
+        this.layerSTService.getLayerST(corrId).subscribe(
+          (layers) => (this.layersSTManage = layers),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
+              (layers) => {
+                this.layersSTManage = this.layersSTManage.concat(layers);
+              },
+              (error) => {
+                this.logErrorHandler(error);
+              }
+            );
+          }
+        );
+      }
+      else if(tmpId.includes("pub_")) {
+        corrId = tmpId.replace("pub_","");
+        this.layerSTService.getPublicLayerST(corrId).subscribe(
+          (layers) => (this.layersSTManage = layers),
+          (error) => {
+            this.logErrorHandler(error);
+          }
+        );
+      }
+    }
+  } */
 
   // Sends a request to load the registered filters for the selected study area
   loadManageFilters() {
     if (this.stdAreaManageFilter) {
-      this.layerSTService.getFiltersST(this.stdAreaManageFilter.id).subscribe(
-        (filters) => (this.filtersSTManage = filters),
-        (error) => {
-          this.logErrorHandler(error);
-        }
-      );
+      let tmpId = this.stdAreaManageFilter.id.toString();
+      let corrId;
+      if(tmpId.includes("priv_")) {
+        corrId = tmpId.replace("priv_","");
+        this.layerSTService.getFiltersST(corrId).subscribe(
+          (layers) => {
+            this.filtersSTManage = layers;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.layerSTService.getPublicFilterST(corrId).subscribe(
+              (layers) => {
+                this.filtersSTManage = this.filtersSTManage.concat(layers);
+              },
+              (error) => {
+                this.logErrorHandler(error);
+              },
+            );
+          }
+        );
+      }
+      else if(tmpId.includes("pub_")) {
+        corrId = tmpId.replace("pub_","");
+        this.layerSTService.getFilterSTPubStdArea(corrId).subscribe(
+          (layers) => {
+            this.filtersSTManage = layers;
+          },
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.layerSTService.getPublicFilterSTPubStdArea(corrId).subscribe(
+              (layers) => {
+                this.filtersSTManage = this.filtersSTManage.concat(layers);
+              },
+              (error) => {
+                this.logErrorHandler(error);
+              },
+            );
+          }
+        );
+      }
     }
   }
 
   // Sends a request to load the registered settings for the selected study area
   loadManageSettings() {
     if (this.stdAreaManageSetting) {
-      this.settingsService.getSettings(this.stdAreaManageSetting.id).subscribe(
-        (settings) => (this.settingsSTManage = settings),
-        (error) => {
-          this.logErrorHandler(error);
-        }, () => {
-          this.settingsSTManage.forEach(
-            stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
-          );
-        }
-      );
+      let tmpId = this.stdAreaManageSetting.id.toString();
+      let corrId;
+      if(tmpId.includes("priv_")) {
+        corrId = tmpId.replace("priv_","");
+        this.settingsService.getSettings(corrId).subscribe(
+          (settings) => (this.settingsSTManage = settings),
+          (error) => {
+            this.logErrorHandler(error);
+          }, () => {
+            this.settingsService.getPublicSettings(corrId).subscribe(
+              (settings) => {
+                this.settingsSTManage = this.settingsSTManage.concat(settings)
+              },
+              (error) => {
+                this.logErrorHandler(error);
+              }, () => {
+                this.settingsSTManage.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
+              }
+            );
+          }
+        );
+      }
+      else if(tmpId.includes("pub_")) {
+        corrId = tmpId.replace("pub_","");
+        this.settingsService.getSettings(corrId).subscribe(
+          (settings) => (this.settingsSTManage = settings),
+          (error) => {
+            this.logErrorHandler(error);
+          }, () => {
+            this.settingsService.getPublicSettings(corrId).subscribe(
+              (settings) => {
+                this.settingsSTManage = this.settingsSTManage.concat(settings)
+              },
+              (error) => {
+                this.logErrorHandler(error);
+              }, () => {
+                this.settingsSTManage.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
+              }
+            );
+          }
+        );
+      }
     }
   }
 
@@ -3332,136 +4763,551 @@ export class ToolsSidebarComponent implements OnInit {
   selectLayer(event) {
     this.isNewLayer = false;
     this.manageLayer = this.cloneLayer(event.data);
-    this.listService.getSTColumnWithId(event.data.user_layer_id).subscribe(
-      (columns) => {
-        this.colFieldsNameArrayST = [];
-        columns.forEach((data) =>
-          this.colFieldsNameArrayST.push({ name: data })
-        );
-        this.selLayerColumns = this.colFieldsNameArrayST;
-      },
-      (error) => {
-        this.logErrorHandler(error);
-      }
-    );
+    let cpLayer = event.data;
+    if(!isUndefined(cpLayer.user_layer_id)) {
+      let tmpId = cpLayer.user_layer_id;
+      this.listService.getSTColumnWithId(tmpId).subscribe(
+        (columns) => {
+          this.colFieldsNameArrayST = [];
+          columns.forEach((data) =>
+            this.colFieldsNameArrayST.push({ name: data })
+          );
+          this.selLayerColumns = this.colFieldsNameArrayST;
+        },
+        (error) => {
+          this.logErrorHandler(error);
+        }
+      );
+    } else if(!isUndefined(cpLayer.public_layer_id)) {
+      let tmpId = cpLayer.public_layer_id;
+      this.listService.getSTPublicColumnWithId(tmpId).subscribe(
+        (columns) => {
+          this.colFieldsNameArrayST = [];
+          columns.forEach((data) =>
+            this.colFieldsNameArrayST.push({ name: data })
+          );
+          this.selLayerColumns = this.colFieldsNameArrayST;
+        },
+        (error) => {
+          this.logErrorHandler(error);
+        }
+      );
+    }
     this.editLayers = true;
   }
 
   // Sends a request to save the selected layer
   saveLayer() {
     if (this.isNewLayer) {
-      this.layerSTService.createLayerST(this.manageLayer).subscribe(
-        () =>
-          this.messageService.add({
-            severity: 'info',
-            summary: 'In process!',
-            detail: 'Your layer is being created!',
-          }),
-        (error) => {
-          this.logErrorHandler(error);
-        },
-        () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success!',
-            detail: 'Layer created successfully!',
-          });
-          if (this.stdAreaManageSetting) {
-            this.settingsService
-              .getSettings(this.stdAreaManageSetting.id)
-              .subscribe(
-                (stngs) => (this.settingsSTManage = stngs),
+      if(!isUndefined(this.manageLayer.user_layer_id)) {
+        this.layerSTService.createLayerST(this.manageLayer).subscribe(
+          () =>
+            this.messageService.add({
+              severity: 'info',
+              summary: 'In process!',
+              detail: 'Your layer is being created!',
+            }),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Layer created successfully!',
+            });
+            if (this.stdAreaManageSetting) {
+              let tmpId = this.stdAreaManageSetting.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+            }
+            if (this.stdAreaManageLayer) {
+              let tmpId = this.stdAreaManageLayer.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.layerSTService.getLayerST(corrId).subscribe(
+                  (layers) => {
+                    this.layersSTManage = layers;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicLayerST(corrId).subscribe(
+                      (layers) => {
+                        this.layersSTManage = this.layersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
+                  (layers) => {
+                    this.layersSTManage = layers;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicLayerSTPubStdArea(corrId).subscribe(
+                      (layers) => {
+                        this.layersSTManage = this.layersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+            }
+            if (this.selectedStudyAreaST) {
+              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace("pub_","").replace("priv_","")).subscribe(
+                (lyrs) => (this.layerSettings = lyrs),
                 (error) => {
                   this.logErrorHandler(error);
                 }, () => {
-                  this.settingsSTManage.forEach(
+                  this.layerSettings.forEach(
                     stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
                   );
                 }
               );
+            }
+            this.editLayers = false;
           }
-          if (this.stdAreaManageLayer) {
-            this.layerSTService
-              .getLayerST(this.stdAreaManageLayer.id)
-              .subscribe(
-                (lyrs) => (this.layersSTManage = lyrs),
-                (error) => {
-                  this.logErrorHandler(error);
-                }
-              );
-          }
-          if (this.selectedStudyAreaST) {
-            this.layersService.getLayers(this.selectedStudyAreaST.id).subscribe(
-              (lyrs) => (this.layerSettings = lyrs),
-              (error) => {
-                this.logErrorHandler(error);
-              }, () => {
-                this.layerSettings.forEach(
-                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+        );
+      } else if(!isUndefined(this.manageLayer.public_layer_id)) {
+        this.layerSTService.createPublicLayerST(this.manageLayer).subscribe(
+          () =>
+            this.messageService.add({
+              severity: 'info',
+              summary: 'In process!',
+              detail: 'Your layer is being created!',
+            }),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Layer created successfully!',
+            });
+            if (this.stdAreaManageSetting) {
+              let tmpId = this.stdAreaManageSetting.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
                 );
               }
-            );
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+            }
+            if (this.stdAreaManageLayer) {
+              let tmpId = this.stdAreaManageLayer.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.layerSTService.getLayerST(corrId).subscribe(
+                  (layers) => {
+                    this.layersSTManage = layers;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicLayerST(corrId).subscribe(
+                      (layers) => {
+                        this.layersSTManage = this.layersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
+                  (layers) => {
+                    this.layersSTManage = layers;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicLayerSTPubStdArea(corrId).subscribe(
+                      (layers) => {
+                        this.layersSTManage = this.layersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+            }
+            if (this.selectedStudyAreaST) {
+              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace("pub_","").replace("priv_","")).subscribe(
+                (lyrs) => (this.layerSettings = lyrs),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.layerSettings.forEach(
+                    stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                  );
+                }
+              );
+            }
+            this.editLayers = false;
           }
-          this.editLayers = false;
-        }
-      );
+        );
+      }
     } else {
-      this.layerSTService.updateLayerST(this.manageLayer).subscribe(
-        () =>
-          this.messageService.add({
-            severity: 'info',
-            summary: 'In process!',
-            detail: 'Your layer is being updated!',
-          }),
-        (error) => {
-          this.logErrorHandler(error);
-        },
-        () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success!',
-            detail: 'Layer updated successfully!',
-          });
-          if (this.stdAreaManageSetting) {
-            this.settingsService
-              .getSettings(this.stdAreaManageSetting.id)
-              .subscribe(
-                (stngs) => (this.settingsSTManage = stngs),
+      if(!isUndefined(this.manageLayer.user_layer_id)) {
+        this.layerSTService.updateLayerST(this.manageLayer).subscribe(
+          () =>
+            this.messageService.add({
+              severity: 'info',
+              summary: 'In process!',
+              detail: 'Your layer is being updated!',
+            }),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Layer updated successfully!',
+            });
+            if (this.stdAreaManageSetting) {
+              let tmpId = this.stdAreaManageSetting.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+            }
+            if (this.stdAreaManageLayer) {
+              let tmpId = this.stdAreaManageLayer.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.layerSTService.getLayerST(corrId).subscribe(
+                  (layers) => {
+                    this.layersSTManage = layers;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicLayerST(corrId).subscribe(
+                      (layers) => {
+                        this.layersSTManage = this.layersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
+                  (layers) => {
+                    this.layersSTManage = layers;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicLayerSTPubStdArea(corrId).subscribe(
+                      (layers) => {
+                        this.layersSTManage = this.layersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+            }
+            if (this.selectedStudyAreaST) {
+              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace("pub_","").replace("priv_","")).subscribe(
+                (lyrs) => (this.layerSettings = lyrs),
                 (error) => {
                   this.logErrorHandler(error);
                 }, () => {
-                  this.settingsSTManage.forEach(
+                  this.layerSettings.forEach(
                     stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
                   );
                 }
               );
+            }
+            this.manageLayer = null;
+            this.editLayers = false;
           }
-          if (this.stdAreaManageLayer) {
-            this.layerSTService
-              .getLayerST(this.stdAreaManageLayer.id)
-              .subscribe(
-                (lyrs) => (this.layersSTManage = lyrs),
-                (error) => {
-                  this.logErrorHandler(error);
-                }
-              );
-          }
-          if (this.selectedStudyAreaST) {
-            this.layersService.getLayers(this.selectedStudyAreaST.id).subscribe(
-              (lyrs) => (this.layerSettings = lyrs),
-              (error) => {
-                this.logErrorHandler(error);
-              }, () => {
-                this.layerSettings.forEach(
-                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+        );
+      } else if(!isUndefined(this.manageLayer.public_layer_id)) {
+        this.layerSTService.updatePublicLayerST(this.manageLayer).subscribe(
+          () =>
+            this.messageService.add({
+              severity: 'info',
+              summary: 'In process!',
+              detail: 'Your layer is being updated!',
+            }),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Layer updated successfully!',
+            });
+            if (this.stdAreaManageSetting) {
+              let tmpId = this.stdAreaManageSetting.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
                 );
               }
-            );
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+            }
+            if (this.stdAreaManageLayer) {
+              let tmpId = this.stdAreaManageLayer.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.layerSTService.getLayerST(corrId).subscribe(
+                  (layers) => {
+                    this.layersSTManage = layers;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicLayerST(corrId).subscribe(
+                      (layers) => {
+                        this.layersSTManage = this.layersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
+                  (layers) => {
+                    this.layersSTManage = layers;
+                  },
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicLayerSTPubStdArea(corrId).subscribe(
+                      (layers) => {
+                        this.layersSTManage = this.layersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+            }
+            if (this.selectedStudyAreaST) {
+              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace("pub_","").replace("priv_","")).subscribe(
+                (lyrs) => (this.layerSettings = lyrs),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.layerSettings.forEach(
+                    stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                  );
+                }
+              );
+            }
+            this.manageLayer = null;
+            this.editLayers = false;
           }
-          this.manageLayer = null;
-          this.editLayers = false;
-        }
-      );
+        );
+      }
     }
   }
 
@@ -3489,59 +5335,263 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to delete the selected layer
   confirmDeleteLayer() {
-    this.layerSTService.deleteLayerST(this.manageLayer).subscribe(
-      () =>
-        this.messageService.add({
-          severity: 'info',
-          summary: 'In process!',
-          detail: 'Your layer is being deleted!',
-        }),
-      (error) => {
-        this.logErrorHandler(error);
-      },
-      () => {
-        this.manageLayer = null;
-        this.messageService.clear('confirmDeleteLayer');
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success!',
-          detail: 'Layer deleted successfully!',
-        });
-        if (this.stdAreaManageSetting) {
-          this.settingsService
-            .getSettings(this.stdAreaManageSetting.id)
-            .subscribe(
-              (stngs) => (this.settingsSTManage = stngs),
+    if(!isUndefined(this.manageLayer.user_layer_id)) {
+      this.layerSTService.deleteLayerST(this.manageLayer).subscribe(
+        () =>
+          this.messageService.add({
+            severity: 'info',
+            summary: 'In process!',
+            detail: 'Your layer is being deleted!',
+          }),
+        (error) => {
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.manageLayer = null;
+          this.messageService.clear('confirmDeleteLayer');
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Layer deleted successfully!',
+          });
+          if (this.stdAreaManageSetting) {
+            let tmpId = this.stdAreaManageSetting.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+          }
+          if (this.stdAreaManageLayer) {
+            let tmpId = this.stdAreaManageLayer.id.toString();
+            let corrId;
+            if(tmpId.includes("priv_")) {
+              corrId = tmpId.replace("priv_","");
+              this.layerSTService.getLayerST(corrId).subscribe(
+                (layers) => {
+                  this.layersSTManage = layers;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                },
+                () => {
+                  this.layerSTService.getPublicLayerST(corrId).subscribe(
+                    (layers) => {
+                      this.layersSTManage = this.layersSTManage.concat(layers);
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    },
+                  );
+                }
+              );
+            }
+            else if(tmpId.includes("pub_")) {
+              corrId = tmpId.replace("pub_","");
+              this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
+                (layers) => {
+                  this.layersSTManage = layers;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                },
+                () => {
+                  this.layerSTService.getPublicLayerSTPubStdArea(corrId).subscribe(
+                    (layers) => {
+                      this.layersSTManage = this.layersSTManage.concat(layers);
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    },
+                  );
+                }
+              );
+            }
+          }
+          if (this.selectedStudyAreaST) {
+            this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace("pub_","").replace("priv_","")).subscribe(
+              (layers) => (this.layerSettings = layers),
               (error) => {
                 this.logErrorHandler(error);
               }, () => {
-                this.settingsSTManage.forEach(
+                this.layerSettings.forEach(
                   stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
                 );
               }
             );
-        }
-        this.layerSTService.getLayerST(this.stdAreaManageLayer.id).subscribe(
-          (lyrs) => (this.layersSTManage = lyrs),
-          (error) => {
-            this.logErrorHandler(error);
           }
-        );
-        if (this.selectedStudyAreaST) {
-          this.layersService.getLayers(this.selectedStudyAreaST.id).subscribe(
-            (layers) => (this.layerSettings = layers),
-            (error) => {
-              this.logErrorHandler(error);
-            }, () => {
-              this.layerSettings.forEach(
-                stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+          this.editLayers = false;
+        }
+      );
+    } else if(!isUndefined(this.manageLayer.public_layer_id)) {
+      this.layerSTService.deletePublicLayerST(this.manageLayer).subscribe(
+        () =>
+          this.messageService.add({
+            severity: 'info',
+            summary: 'In process!',
+            detail: 'Your layer is being deleted!',
+          }),
+        (error) => {
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.manageLayer = null;
+          this.messageService.clear('confirmDeleteLayer');
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Layer deleted successfully!',
+          });
+          if (this.stdAreaManageSetting) {
+            let tmpId = this.stdAreaManageSetting.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+          }
+          if (this.stdAreaManageLayer) {
+            let tmpId = this.stdAreaManageLayer.id.toString();
+            let corrId;
+            if(tmpId.includes("priv_")) {
+              corrId = tmpId.replace("priv_","");
+              this.layerSTService.getLayerST(corrId).subscribe(
+                (layers) => {
+                  this.layersSTManage = layers;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                },
+                () => {
+                  this.layerSTService.getPublicLayerST(corrId).subscribe(
+                    (layers) => {
+                      this.layersSTManage = this.layersSTManage.concat(layers);
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    },
+                  );
+                }
               );
             }
-          );
+            else if(tmpId.includes("pub_")) {
+              corrId = tmpId.replace("pub_","");
+              this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
+                (layers) => {
+                  this.layersSTManage = layers;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                },
+                () => {
+                  this.layerSTService.getPublicLayerSTPubStdArea(corrId).subscribe(
+                    (layers) => {
+                      this.layersSTManage = this.layersSTManage.concat(layers);
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    },
+                  );
+                }
+              );
+            }
+          }
+          if (this.selectedStudyAreaST) {
+            this.layersService.getLayers(this.selectedStudyAreaST.id.replace("pub_","").replace("priv_","")).subscribe(
+              (layers) => (this.layerSettings = layers),
+              (error) => {
+                this.logErrorHandler(error);
+              }, () => {
+                this.layerSettings.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
+              }
+            );
+          }
+          this.editLayers = false;
         }
-        this.editLayers = false;
-      }
-    );
+      );
+    }
   }
 
   // Closes the confirmDeleteLayer message
@@ -3559,87 +5609,508 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to update the selected filter
   saveFilter() {
     if (this.isNewFilter) {
-      this.layerSTService.createFilterST(this.manageFilter).subscribe(
-        () =>
-          this.messageService.add({
-            severity: 'info',
-            summary: 'In process!',
-            detail: 'Your filter is being created!',
-          }),
-        (error) => {
-          this.logErrorHandler(error);
-        },
-        () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success!',
-            detail: 'Filter created successfully!',
-          });
-          if (this.stdAreaManageFilter) {
-            this.layerSTService
-              .getFiltersST(this.stdAreaManageFilter.id)
-              .subscribe(
-                (fltr) => (this.filtersSTManage = fltr),
+      if(!isUndefined(this.manageFilter.user_layer_id)) {
+        this.layerSTService.createFilterST(this.manageFilter).subscribe(
+          () =>
+            this.messageService.add({
+              severity: 'info',
+              summary: 'In process!',
+              detail: 'Your layer is being created!',
+            }),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Layer created successfully!',
+            });
+            if (this.stdAreaManageSetting) {
+              let tmpId = this.stdAreaManageSetting.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+            }
+            if (this.stdAreaManageFilter) {
+              let tmpId = this.stdAreaManageFilter.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.layerSTService
+                .getFiltersST(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .subscribe(
+                  (lyrs) => (this.filtersSTManage = lyrs),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicFilterST(corrId).subscribe(
+                      (layers) => {
+                        this.filtersSTManage = this.filtersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              } else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("priv_","");
+                this.layerSTService
+                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .subscribe(
+                  (lyrs) => (this.filtersSTManage = lyrs),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicFilterSTPubStdArea(corrId).subscribe(
+                      (layers) => {
+                        this.filtersSTManage = this.filtersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+            }
+            if (this.selectedStudyAreaST) {
+              this.layersService.getFilters(this.selectedStudyAreaST.id.toString().replace("pub_","").replace("priv_","")).subscribe(
+                (lyrs) => (this.layerSettings = lyrs),
                 (error) => {
                   this.logErrorHandler(error);
+                }, () => {
+                  this.layerSettings.forEach(
+                    stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                  );
                 }
               );
+            }
+            this.editLayers = false;
           }
-          if (this.selectedStudyAreaST) {
-            this.layersService
-              .getFilters(this.selectedStudyAreaST.id)
-              .subscribe(
-                (flts) => (this.filterList = flts),
+        );
+      } else if(!isUndefined(this.manageLayer.public_layer_id)) {
+        this.layerSTService.createPublicLayerST(this.manageLayer).subscribe(
+          () =>
+            this.messageService.add({
+              severity: 'info',
+              summary: 'In process!',
+              detail: 'Your layer is being created!',
+            }),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Layer created successfully!',
+            });
+            if (this.stdAreaManageSetting) {
+              let tmpId = this.stdAreaManageSetting.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+            }
+            if (this.stdAreaManageFilter) {
+              let tmpId = this.stdAreaManageFilter.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.layerSTService
+                .getFiltersST(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .subscribe(
+                  (lyrs) => (this.filtersSTManage = lyrs),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicFilterST(corrId).subscribe(
+                      (layers) => {
+                        this.filtersSTManage = this.filtersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              } else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.layerSTService
+                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .subscribe(
+                  (lyrs) => (this.filtersSTManage = lyrs),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicFilterSTPubStdArea(corrId).subscribe(
+                      (layers) => {
+                        this.filtersSTManage = this.filtersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+            }
+            if (this.selectedStudyAreaST) {
+              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace("pub_","").replace("priv_","")).subscribe(
+                (lyrs) => (this.layerSettings = lyrs),
                 (error) => {
                   this.logErrorHandler(error);
+                }, () => {
+                  this.layerSettings.forEach(
+                    stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                  );
                 }
               );
+            }
+            this.editLayers = false;
           }
-          this.manageFilter = null;
-          this.editFilters = false;
-        }
-      );
+        );
+      }
     } else {
-      this.layerSTService.updateFilterST(this.manageFilter).subscribe(
-        () =>
-          this.messageService.add({
-            severity: 'info',
-            summary: 'In process!',
-            detail: 'Your filter is being updated!',
-          }),
-        (error) => {
-          this.logErrorHandler(error);
-        },
-        () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success!',
-            detail: 'Filter updated successfully!',
-          });
-          if (this.stdAreaManageFilter) {
-            this.layerSTService
-              .getFiltersST(this.stdAreaManageFilter.id)
-              .subscribe(
-                (fltr) => (this.filtersSTManage = fltr),
-                (error) => {
-                  this.logErrorHandler(error);
-                }
-              );
+      if(!isUndefined(this.manageFilter.user_layer_id)) {
+        this.layerSTService.updateFilterST(this.manageFilter).subscribe(
+          () =>
+            this.messageService.add({
+              severity: 'info',
+              summary: 'In process!',
+              detail: 'Your filter is being updated!',
+            }),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Filter updated successfully!',
+            });
+            if (this.stdAreaManageFilter) {
+              let tmpId = this.stdAreaManageFilter.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.layerSTService
+                .getFiltersST(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .subscribe(
+                  (lyrs) => (this.filtersSTManage = lyrs),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicFilterST(corrId).subscribe(
+                      (layers) => {
+                        this.filtersSTManage = this.filtersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              } else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.layerSTService
+                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .subscribe(
+                  (lyrs) => (this.filtersSTManage = lyrs),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicFilterSTPubStdArea(corrId).subscribe(
+                      (layers) => {
+                        this.filtersSTManage = this.filtersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+            }
+            if (this.selectedStudyAreaST) {
+              this.layersService
+                .getFilters(this.selectedStudyAreaST.id)
+                .subscribe(
+                  (flts) => (this.filterList = flts),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }
+                );
+            }
+            if (this.stdAreaManageSetting) {
+              let tmpId = this.stdAreaManageSetting.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+            }
+            this.manageFilter = null;
+            this.editFilters = false;
           }
-          if (this.selectedStudyAreaST) {
-            this.layersService
-              .getFilters(this.selectedStudyAreaST.id)
-              .subscribe(
-                (flts) => (this.filterList = flts),
-                (error) => {
-                  this.logErrorHandler(error);
-                }
-              );
+        );
+      }
+      else if(!isUndefined(this.manageFilter.public_layer_id)) {
+        this.layerSTService.updatePublicFilterST(this.manageFilter).subscribe(
+          () =>
+            this.messageService.add({
+              severity: 'info',
+              summary: 'In process!',
+              detail: 'Your filter is being updated!',
+            }),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Filter updated successfully!',
+            });
+            if (this.stdAreaManageFilter) {
+              let tmpId = this.stdAreaManageFilter.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.layerSTService
+                .getFiltersST(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .subscribe(
+                  (lyrs) => (this.filtersSTManage = lyrs),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicFilterST(corrId).subscribe(
+                      (layers) => {
+                        this.filtersSTManage = this.filtersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              } else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.layerSTService
+                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .subscribe(
+                  (lyrs) => (this.filtersSTManage = lyrs),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  },
+                  () => {
+                    this.layerSTService.getPublicFilterSTPubStdArea(corrId).subscribe(
+                      (layers) => {
+                        this.filtersSTManage = this.filtersSTManage.concat(layers);
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      },
+                    );
+                  }
+                );
+              }
+            }
+            if (this.selectedStudyAreaST) {
+              this.layersService
+                .getFilters(this.selectedStudyAreaST.id)
+                .subscribe(
+                  (flts) => (this.filterList = flts),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }
+                );
+            }
+            if (this.stdAreaManageSetting) {
+              let tmpId = this.stdAreaManageSetting.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+            }
+            this.manageFilter = null;
+            this.editFilters = false;
           }
-          this.manageFilter = null;
-          this.editFilters = false;
-        }
-      );
+        );
+      }
     }
   }
 
@@ -3667,41 +6138,255 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to delete the selected filter
   confirmDeleteFilter() {
-    this.layerSTService.deleteFilterST(this.manageFilter).subscribe(
-      () =>
-        this.messageService.add({
-          severity: 'info',
-          summary: 'In process!',
-          detail: 'Your filter is being deleted!',
-        }),
-      (error) => {
-        this.logErrorHandler(error);
-      },
-      () => {
-        this.manageFilter = null;
-        this.messageService.clear('confirmDeleteFilter');
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success!',
-          detail: 'Filter deleted successfully!',
-        });
-        this.layerSTService.getFiltersST(this.stdAreaManageFilter.id).subscribe(
-          (fltr) => (this.filtersSTManage = fltr),
-          (error) => {
-            this.logErrorHandler(error);
-          }
-        );
-        if (this.selectedStudyAreaST) {
-          this.layersService.getFilters(this.selectedStudyAreaST.id).subscribe(
-            (fltr) => (this.filterList = fltr),
-            (error) => {
-              this.logErrorHandler(error);
+    if(!isUndefined(this.manageFilter.user_layer_id)) {
+      this.layerSTService.deleteFilterST(this.manageFilter).subscribe(
+        () =>
+          this.messageService.add({
+            severity: 'info',
+            summary: 'In process!',
+            detail: 'Your filter is being deleted!',
+          }),
+        (error) => {
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.manageFilter = null;
+          this.messageService.clear('confirmDeleteFilter');
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Filter deleted successfully!',
+          });
+          if (this.stdAreaManageSetting) {
+            let tmpId = this.stdAreaManageSetting.id.toString();
+            let corrId;
+            if(tmpId.includes("priv_")) {
+              corrId = tmpId.replace("priv_","");
+              this.settingsService.getSettings(corrId).subscribe(
+                (settings) => (this.settingsSTManage = settings),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.settingsService.getPublicSettings(corrId).subscribe(
+                    (settings) => {
+                      this.settingsSTManage = this.settingsSTManage.concat(settings)
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    }, () => {
+                      this.settingsSTManage.forEach(
+                        stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                      );
+                    }
+                  );
+                }
+              );
             }
-          );
+            else if(tmpId.includes("pub_")) {
+              corrId = tmpId.replace("pub_","");
+              this.settingsService.getSettings(corrId).subscribe(
+                (settings) => (this.settingsSTManage = settings),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.settingsService.getPublicSettings(corrId).subscribe(
+                    (settings) => {
+                      this.settingsSTManage = this.settingsSTManage.concat(settings)
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    }, () => {
+                      this.settingsSTManage.forEach(
+                        stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                      );
+                    }
+                  );
+                }
+              );
+            }
+          }
+          if (this.stdAreaManageFilter) {
+            let tmpId = this.stdAreaManageFilter.id.toString();
+            let corrId;
+            if(tmpId.includes("priv_")) {
+              corrId = tmpId.replace("priv_","");
+              this.layerSTService.getFiltersST(corrId).subscribe(
+                (layers) => {
+                  this.filtersSTManage = layers;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                },
+                () => {
+                  this.layerSTService.getPublicFilterST(corrId).subscribe(
+                    (layers) => {
+                      this.filtersSTManage = this.filtersSTManage.concat(layers);
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    },
+                  );
+                }
+              );
+            }
+            else if(tmpId.includes("pub_")) {
+              corrId = tmpId.replace("pub_","");
+              this.layerSTService.getFilterSTPubStdArea(corrId).subscribe(
+                (layers) => {
+                  this.filtersSTManage = layers;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                },
+                () => {
+                  this.layerSTService.getPublicFilterSTPubStdArea(corrId).subscribe(
+                    (layers) => {
+                      this.filtersSTManage = this.filtersSTManage.concat(layers);
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    },
+                  );
+                }
+              );
+            }
+          }
+          if (this.selectedStudyAreaST) {
+            this.layersService.getFilters(this.selectedStudyAreaST.id.replace("pub_","").replace("priv_","")).subscribe(
+              (fltr) => (this.filterList = fltr),
+              (error) => {
+                this.logErrorHandler(error);
+              }
+            );
+          }
+          this.editFilters = false;
         }
-        this.editFilters = false;
-      }
-    );
+      );
+    } else if(!isUndefined(this.manageFilter.public_layer_id)) {
+      this.layerSTService.deletePublicFilterST(this.manageFilter).subscribe(
+        () =>
+          this.messageService.add({
+            severity: 'info',
+            summary: 'In process!',
+            detail: 'Your filter is being deleted!',
+          }),
+        (error) => {
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.manageFilter = null;
+          this.messageService.clear('confirmDeleteFilter');
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Filter deleted successfully!',
+          });
+          if (this.stdAreaManageSetting) {
+            let tmpId = this.stdAreaManageSetting.id.toString();
+            let corrId;
+            if(tmpId.includes("priv_")) {
+              corrId = tmpId.replace("priv_","");
+              this.settingsService.getSettings(corrId).subscribe(
+                (settings) => (this.settingsSTManage = settings),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.settingsService.getPublicSettings(corrId).subscribe(
+                    (settings) => {
+                      this.settingsSTManage = this.settingsSTManage.concat(settings)
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    }, () => {
+                      this.settingsSTManage.forEach(
+                        stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                      );
+                    }
+                  );
+                }
+              );
+            }
+            else if(tmpId.includes("pub_")) {
+              corrId = tmpId.replace("pub_","");
+              this.settingsService.getSettings(corrId).subscribe(
+                (settings) => (this.settingsSTManage = settings),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.settingsService.getPublicSettings(corrId).subscribe(
+                    (settings) => {
+                      this.settingsSTManage = this.settingsSTManage.concat(settings)
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    }, () => {
+                      this.settingsSTManage.forEach(
+                        stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                      );
+                    }
+                  );
+                }
+              );
+            }
+          }
+          if (this.stdAreaManageFilter) {
+            let tmpId = this.stdAreaManageFilter.id.toString();
+            let corrId;
+            if(tmpId.includes("priv_")) {
+              corrId = tmpId.replace("priv_","");
+              this.layerSTService.getFiltersST(corrId).subscribe(
+                (layers) => {
+                  this.filtersSTManage = layers;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                },
+                () => {
+                  this.layerSTService.getPublicFilterST(corrId).subscribe(
+                    (layers) => {
+                      this.filtersSTManage = this.filtersSTManage.concat(layers);
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    },
+                  );
+                }
+              );
+            }
+            else if(tmpId.includes("pub_")) {
+              corrId = tmpId.replace("pub_","");
+              this.layerSTService.getFilterSTPubStdArea(corrId).subscribe(
+                (layers) => {
+                  this.filtersSTManage = layers;
+                },
+                (error) => {
+                  this.logErrorHandler(error);
+                },
+                () => {
+                  this.layerSTService.getPublicFilterSTPubStdArea(corrId).subscribe(
+                    (layers) => {
+                      this.filtersSTManage = this.filtersSTManage.concat(layers);
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    },
+                  );
+                }
+              );
+            }
+          }
+          if (this.selectedStudyAreaST) {
+            this.layersService.getFilters(this.selectedStudyAreaST.id.replace("pub_","").replace("priv_","")).subscribe(
+              (fltr) => (this.filterList = fltr),
+              (error) => {
+                this.logErrorHandler(error);
+              }
+            );
+          }
+          this.editFilters = false;
+        }
+      );
+    }
   }
 
   // Closes the confirmDeleteFilter message
@@ -4013,52 +6698,169 @@ export class ToolsSidebarComponent implements OnInit {
       this.manageSetting.smaller_better = this.manageSetting.smaller_better
         ? 1
         : 0;
-      this.settingsService.postSettings(this.manageSetting).subscribe(
-        () =>
-          this.messageService.add({
-            severity: 'info',
-            summary: 'In process!',
-            detail: 'Your settings are being created!',
-          }),
-        (error) => {
-          this.logErrorHandler(error);
-        },
-        () => {
-          this.messageService.add({
-            severity: 'success',
-            summary: 'Success!',
-            detail: 'Settings created successfully!',
-          });
-          this.settingsService
-            .getSettings(this.stdAreaManageSetting.id)
-            .subscribe(
-              (stngs) => (this.settingsSTManage = stngs),
-              (error) => {
-                this.logErrorHandler(error);
-              }, () => {
-                this.settingsSTManage.forEach(
-                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
-                );
-              }
-            );
-          if (this.selectedStudyAreaST) {
-            this.layersService.getLayers(this.selectedStudyAreaST.id).subscribe(
-              (layers) => (this.layerSettings = layers),
-              (error) => {
-                this.logErrorHandler(error);
-              }, () => {
-                this.layerSettings.forEach(
-                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
-                );
-              }
-            );
+      if(!isUndefined(this.manageSetting.st_layer_id)) {
+        this.settingsService.postSettings(this.manageSetting).subscribe(
+          () =>
+            this.messageService.add({
+              severity: 'info',
+              summary: 'In process!',
+              detail: 'Your settings are being created!',
+            }),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Settings created successfully!',
+            });
+            let tmpId = this.stdAreaManageSetting.id.toString();
+            let corrId;
+            if(tmpId.includes("priv_")) {
+              corrId = tmpId.replace("priv_","");
+              this.settingsService.getSettings(corrId).subscribe(
+                (settings) => (this.settingsSTManage = settings),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.settingsService.getPublicSettings(corrId).subscribe(
+                    (settings) => {
+                      this.settingsSTManage = this.settingsSTManage.concat(settings)
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    }, () => {
+                      this.settingsSTManage.forEach(
+                        stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                      );
+                    }
+                  );
+                }
+              );
+            }
+            else if(tmpId.includes("pub_")) {
+              corrId = tmpId.replace("pub_","");
+              this.settingsService.getSettings(corrId).subscribe(
+                (settings) => (this.settingsSTManage = settings),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.settingsService.getPublicSettings(corrId).subscribe(
+                    (settings) => {
+                      this.settingsSTManage = this.settingsSTManage.concat(settings)
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    }, () => {
+                      this.settingsSTManage.forEach(
+                        stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                      );
+                    }
+                  );
+                }
+              );
+            }
+            if (this.selectedStudyAreaST) {
+              this.layersService.getLayers(this.selectedStudyAreaST.id).subscribe(
+                (layers) => (this.layerSettings = layers),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.layerSettings.forEach(
+                    stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                  );
+                }
+              );
+            }
+            this.manageSetting = null;
+            this.editSettings = false;
           }
-          this.manageSetting = null;
-          this.editSettings = false;
-        }
-      );
+        );
+      } else if(!isUndefined(this.manageSetting.st_public_layer_id)) {
+        this.settingsService.postPublicSettings(this.manageSetting).subscribe(
+          () =>
+            this.messageService.add({
+              severity: 'info',
+              summary: 'In process!',
+              detail: 'Your settings are being created!',
+            }),
+          (error) => {
+            this.logErrorHandler(error);
+          },
+          () => {
+            this.messageService.add({
+              severity: 'success',
+              summary: 'Success!',
+              detail: 'Settings created successfully!',
+            });
+            let tmpId = this.stdAreaManageSetting.id.toString();
+            let corrId;
+            if(tmpId.includes("priv_")) {
+              corrId = tmpId.replace("priv_","");
+              this.settingsService.getSettings(corrId).subscribe(
+                (settings) => (this.settingsSTManage = settings),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.settingsService.getPublicSettings(corrId).subscribe(
+                    (settings) => {
+                      this.settingsSTManage = this.settingsSTManage.concat(settings)
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    }, () => {
+                      this.settingsSTManage.forEach(
+                        stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                      );
+                    }
+                  );
+                }
+              );
+            }
+            else if(tmpId.includes("pub_")) {
+              corrId = tmpId.replace("pub_","");
+              this.settingsService.getSettings(corrId).subscribe(
+                (settings) => (this.settingsSTManage = settings),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.settingsService.getPublicSettings(corrId).subscribe(
+                    (settings) => {
+                      this.settingsSTManage = this.settingsSTManage.concat(settings)
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    }, () => {
+                      this.settingsSTManage.forEach(
+                        stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                      );
+                    }
+                  );
+                }
+              );
+            }
+            if (this.selectedStudyAreaST) {
+              this.layersService.getLayers(this.selectedStudyAreaST.id).subscribe(
+                (layers) => (this.layerSettings = layers),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.layerSettings.forEach(
+                    stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                  );
+                }
+              );
+            }
+            this.manageSetting = null;
+            this.editSettings = false;
+          }
+        );
+      }
+      
     } else {
-      this.manageSetting.smaller_better = this.manageSetting.smaller_better
+      if(!isUndefined(this.manageSetting.st_layer_id)) {
+        this.manageSetting.smaller_better = this.manageSetting.smaller_better
         ? 1
         : 0;
       this.settingsService.putSettings(this.manageSetting).subscribe(
@@ -4077,18 +6879,52 @@ export class ToolsSidebarComponent implements OnInit {
             summary: 'Success!',
             detail: 'Settings updated successfully!',
           });
-          this.settingsService
-            .getSettings(this.stdAreaManageSetting.id)
-            .subscribe(
-              (stngs) => (this.settingsSTManage = stngs),
-              (error) => {
-                this.logErrorHandler(error);
-              }, () => {
-                this.settingsSTManage.forEach(
-                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
-                );
-              }
-            );
+          let tmpId = this.stdAreaManageSetting.id.toString();
+            let corrId;
+            if(tmpId.includes("priv_")) {
+              corrId = tmpId.replace("priv_","");
+              this.settingsService.getSettings(corrId).subscribe(
+                (settings) => (this.settingsSTManage = settings),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.settingsService.getPublicSettings(corrId).subscribe(
+                    (settings) => {
+                      this.settingsSTManage = this.settingsSTManage.concat(settings)
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    }, () => {
+                      this.settingsSTManage.forEach(
+                        stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                      );
+                    }
+                  );
+                }
+              );
+            }
+            else if(tmpId.includes("pub_")) {
+              corrId = tmpId.replace("pub_","");
+              this.settingsService.getSettings(corrId).subscribe(
+                (settings) => (this.settingsSTManage = settings),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.settingsService.getPublicSettings(corrId).subscribe(
+                    (settings) => {
+                      this.settingsSTManage = this.settingsSTManage.concat(settings)
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    }, () => {
+                      this.settingsSTManage.forEach(
+                        stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                      );
+                    }
+                  );
+                }
+              );
+            }
           if (this.selectedStudyAreaST) {
             this.layersService.getLayers(this.selectedStudyAreaST.id).subscribe(
               (layers) => (this.layerSettings = layers),
@@ -4105,6 +6941,90 @@ export class ToolsSidebarComponent implements OnInit {
           this.editSettings = false;
         }
       );
+      } else if(!isUndefined(this.manageSetting.st_public_layer_id)) {
+        this.manageSetting.smaller_better = this.manageSetting.smaller_better
+        ? 1
+        : 0;
+      this.settingsService.putPublicSettings(this.manageSetting).subscribe(
+        () =>
+          this.messageService.add({
+            severity: 'info',
+            summary: 'In process!',
+            detail: 'Your settings are being updated!',
+          }),
+        (error) => {
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Settings updated successfully!',
+          });
+          let tmpId = this.stdAreaManageSetting.id.toString();
+            let corrId;
+            if(tmpId.includes("priv_")) {
+              corrId = tmpId.replace("priv_","");
+              this.settingsService.getSettings(corrId).subscribe(
+                (settings) => (this.settingsSTManage = settings),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.settingsService.getPublicSettings(corrId).subscribe(
+                    (settings) => {
+                      this.settingsSTManage = this.settingsSTManage.concat(settings)
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    }, () => {
+                      this.settingsSTManage.forEach(
+                        stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                      );
+                    }
+                  );
+                }
+              );
+            }
+            else if(tmpId.includes("pub_")) {
+              corrId = tmpId.replace("pub_","");
+              this.settingsService.getSettings(corrId).subscribe(
+                (settings) => (this.settingsSTManage = settings),
+                (error) => {
+                  this.logErrorHandler(error);
+                }, () => {
+                  this.settingsService.getPublicSettings(corrId).subscribe(
+                    (settings) => {
+                      this.settingsSTManage = this.settingsSTManage.concat(settings)
+                    },
+                    (error) => {
+                      this.logErrorHandler(error);
+                    }, () => {
+                      this.settingsSTManage.forEach(
+                        stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                      );
+                    }
+                  );
+                }
+              );
+            }
+          if (this.selectedStudyAreaST) {
+            this.layersService.getLayers(this.selectedStudyAreaST.id).subscribe(
+              (layers) => (this.layerSettings = layers),
+              (error) => {
+                this.logErrorHandler(error);
+              }, () => {
+                this.layerSettings.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
+              }
+            );
+          }
+          this.manageSetting = null;
+          this.editSettings = false;
+        }
+      );
+      }
+      
     }
   }
 
@@ -4132,51 +7052,168 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to delete the selected settings
   confirmDeleteSettings() {
-    this.settingsService.deleteSettings(this.manageSetting).subscribe(
-      () =>
-        this.messageService.add({
-          severity: 'info',
-          summary: 'In process!',
-          detail: 'Your settings are being deleted!',
-        }),
-      (error) => {
-        this.logErrorHandler(error);
-      },
-      () => {
-        this.manageSetting = null;
-        this.messageService.clear('confirmDeleteSettings');
-        this.messageService.add({
-          severity: 'success',
-          summary: 'Success!',
-          detail: 'Settings deleted successfully!',
-        });
-        this.settingsService
-          .getSettings(this.stdAreaManageSetting.id)
-          .subscribe(
-            (stngs) => (this.settingsSTManage = stngs),
-            (error) => {
-              this.logErrorHandler(error);
-            }, () => {
-              this.settingsSTManage.forEach(
-                stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
-              );
-            }
-          );
-        if (this.selectedStudyAreaST) {
-          this.layersService.getLayers(this.selectedStudyAreaST.id).subscribe(
-            (layers) => (this.layerSettings = layers),
-            (error) => {
-              this.logErrorHandler(error);
-            }, () => {
-              this.layerSettings.forEach(
-                stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
-              );
-            }
-          );
+    if(!isUndefined(this.manageSetting.st_layer_id)) {
+      this.settingsService.deleteSettings(this.manageSetting).subscribe(
+        () =>
+          this.messageService.add({
+            severity: 'info',
+            summary: 'In process!',
+            detail: 'Your settings are being deleted!',
+          }),
+        (error) => {
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.manageSetting = null;
+          this.messageService.clear('confirmDeleteSettings');
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Settings deleted successfully!',
+          });
+          let tmpId = this.stdAreaManageSetting.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+          if (this.selectedStudyAreaST) {
+            this.layersService.getLayers(this.selectedStudyAreaST.id).subscribe(
+              (layers) => (this.layerSettings = layers),
+              (error) => {
+                this.logErrorHandler(error);
+              }, () => {
+                this.layerSettings.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
+              }
+            );
+          }
+          this.editSettings = false;
         }
-        this.editSettings = false;
-      }
-    );
+      );
+    } else if(!isUndefined(this.manageSetting.st_public_layer_id)) {
+      this.settingsService.deletePublicSettings(this.manageSetting).subscribe(
+        () =>
+          this.messageService.add({
+            severity: 'info',
+            summary: 'In process!',
+            detail: 'Your settings are being deleted!',
+          }),
+        (error) => {
+          this.logErrorHandler(error);
+        },
+        () => {
+          this.manageSetting = null;
+          this.messageService.clear('confirmDeleteSettings');
+          this.messageService.add({
+            severity: 'success',
+            summary: 'Success!',
+            detail: 'Settings deleted successfully!',
+          });
+          let tmpId = this.stdAreaManageSetting.id.toString();
+              let corrId;
+              if(tmpId.includes("priv_")) {
+                corrId = tmpId.replace("priv_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+              else if(tmpId.includes("pub_")) {
+                corrId = tmpId.replace("pub_","");
+                this.settingsService.getSettings(corrId).subscribe(
+                  (settings) => (this.settingsSTManage = settings),
+                  (error) => {
+                    this.logErrorHandler(error);
+                  }, () => {
+                    this.settingsService.getPublicSettings(corrId).subscribe(
+                      (settings) => {
+                        this.settingsSTManage = this.settingsSTManage.concat(settings)
+                      },
+                      (error) => {
+                        this.logErrorHandler(error);
+                      }, () => {
+                        this.settingsSTManage.forEach(
+                          stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                        );
+                      }
+                    );
+                  }
+                );
+              }
+          if (this.selectedStudyAreaST) {
+            this.layersService.getLayers(this.selectedStudyAreaST.id).subscribe(
+              (layers) => (this.layerSettings = layers),
+              (error) => {
+                this.logErrorHandler(error);
+              }, () => {
+                this.layerSettings.forEach(
+                  stng => stng.normalization_method = stng.normalization_method === 1 ? 3 : stng.normalization_method
+                );
+              }
+            );
+          }
+          this.editSettings = false;
+        }
+      );
+    }
+    
   }
 
   // Closes the confirmDeleteSettings message

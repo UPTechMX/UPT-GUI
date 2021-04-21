@@ -25,6 +25,12 @@ export class ListService {
         );
     }
 
+    getPublicColumn(id: string): Observable<any[]> {
+        return this.http.get<any>('/action?action_route=LayersUPHandler&action=list_public_columns&layer_id=' + id).pipe(
+            map(response => response.columns as any[])
+        );
+    }
+
     getSTColumn(): Observable<StColumn[]> {
         try {
             return this.http.get<any>('/action?action_route=LayersSTHandler&action=list_st_columns&table=layers').pipe(
@@ -48,6 +54,16 @@ export class ListService {
     getSTColumnWithId(id: string): Observable<any[]> {
         try {
             return this.http.get<any>('/action?action_route=LayersSTHandler&action=list_columns&layer_id=' + id).pipe(
+                map(response => response.columns as any[])
+            );
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    getSTPublicColumnWithId(id: string): Observable<any[]> {
+        try {
+            return this.http.get<any>('/action?action_route=LayersSTHandler&action=list_public_columns&layer_id=' + id).pipe(
                 map(response => response.columns as any[])
             );
         } catch (e) {
