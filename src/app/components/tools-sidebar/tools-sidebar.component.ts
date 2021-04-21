@@ -64,7 +64,7 @@ export class ToolsSidebarComponent implements OnInit {
     __session_active?: boolean;
   };
 
-  oskariUrl = '/Oskari/dist/wbidp/geoportal';
+  oskariUrl = '/Oskari/dist/1.2.1/geoportal';
 
   geojsonTest;
   numArrTest = [];
@@ -440,19 +440,24 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Colors used for the color scale dialog
   scaleColorsST = [
-    '#C70039',
-    '#fd8702',
-    '#fdc002',
-    '#a2fd02',
-    '#02e2fd',
-    '#0265fd'
+    "#5E4FA2",
+                      "#3288BD",
+                      "#66C2A5",
+                      "#ABDDA4",
+                      "#E6F598",
+                      "#FEE08B",
+                      "#FDAE61",
+                      "#F46D43",
+                      "#D53E4F",
+                      "#9E0142",
+                      "#630000",
   ];
 
   // Color scaling for the heatmap
   colors = chroma.scale(this.scaleColorsST);
 
   // Numbers used for the color scale dialog
-  scaleNumbersST: any[] = ['0', '20', '40', '60', '80', '100'];
+  scaleNumbersST: any[] = ['0', '10', '20', '30', '40', '50', '60', '70', '80', '90', '100'];
 
   // LayersST
   isNewLayer = false;
@@ -2489,9 +2494,9 @@ export class ToolsSidebarComponent implements OnInit {
   changeScaleModeST(event) {
     this.scaleNumbersST = []
     if(event.checked) {
-      this.scaleNumbersST = ['Min', '', '', '', '', 'Max'];
+      this.scaleNumbersST = ['Min', '', '', '', '', '', '', '', '', 'Max'];
     } else {
-      this.scaleNumbersST = ['0', '20', '40', '60', '80', '100'];
+      this.scaleNumbersST = ['10', '20', '30', '40', '50', '60', '70', '80', '90', '100'];
     }
   }
 
