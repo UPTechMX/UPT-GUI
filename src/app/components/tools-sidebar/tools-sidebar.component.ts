@@ -1409,7 +1409,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: 'Success!',
               detail: 'Results successfully generated.',
             });
-            //this.getUPBuffers();
+            this.getUPBuffers();
             this.getUPResults();
           }
         }
