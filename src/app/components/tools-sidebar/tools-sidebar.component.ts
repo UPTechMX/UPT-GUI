@@ -445,17 +445,17 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Colors used for the color scale dialog
   scaleColorsST = [
-    "#5E4FA2",
-                      "#3288BD",
-                      "#66C2A5",
-                      "#ABDDA4",
-                      "#E6F598",
-                      "#FEE08B",
-                      "#FDAE61",
-                      "#F46D43",
-                      "#D53E4F",
-                      "#9E0142",
-                      "#630000",
+    '#5E4FA2',
+                      '#3288BD',
+                      '#66C2A5',
+                      '#ABDDA4',
+                      '#E6F598',
+                      '#FEE08B',
+                      '#FDAE61',
+                      '#F46D43',
+                      '#D53E4F',
+                      '#9E0142',
+                      '#630000',
   ];
 
   // Color scaling for the heatmap
@@ -645,7 +645,7 @@ export class ToolsSidebarComponent implements OnInit {
     });
     let lyrId = [];
     this.wfsSelectedStudyArea.forEach((lyr) => {
-      lyr.id = lyr.id.replace("pub_","");
+      lyr.id = lyr.id.replace('pub_', '');
       lyrId.push(lyr.id);
     });
     this.wfsUptService.importUptWfs(lyrId).subscribe(
@@ -688,7 +688,7 @@ export class ToolsSidebarComponent implements OnInit {
     console.log(this.wfsSelectedStudyArea);
     this.wfsSelectedStudyArea.forEach((lyr) => {
       console.log(lyr);
-      lyr.id = lyr.id.replace("pub_","");
+      lyr.id = lyr.id.replace('pub_', '');
       lyrId.push(lyr.id);
     });
     console.log(lyrId)
@@ -1085,7 +1085,7 @@ export class ToolsSidebarComponent implements OnInit {
       );
       Object.values(copyScenario).forEach(
         (scenario) => {
-          scenario.scenarioId = scenario.scenarioId.replace("priv_","").replace("pub_","");
+          scenario.scenarioId = scenario.scenarioId.replace('priv_', '').replace('pub_', '');
         }
       );
       this.resultsService.getScenarios(copyScenario).subscribe(
@@ -1309,16 +1309,16 @@ export class ToolsSidebarComponent implements OnInit {
       this.okayResults = true;
       copyScenarios.forEach(
         (scenario) => {
-          if(scenario.scenarioId.includes("pub_")) {
-            scenario.scenarioId = scenario.scenarioId.replace("pub_","")
+          if (scenario.scenarioId.includes('pub_')) {
+            scenario.scenarioId = scenario.scenarioId.replace('pub_', '')
             pubScenarios.push(scenario)
-          } else if(scenario.scenarioId.includes("priv_")) {
-            scenario.scenarioId = scenario.scenarioId.replace("priv_","")
+          } else if (scenario.scenarioId.includes('priv_')) {
+            scenario.scenarioId = scenario.scenarioId.replace('priv_', '')
             privScenarios.push(scenario)
           }
         }
       );
-      if(pubScenarios.length > 0 && privScenarios.length > 0) {
+      if (pubScenarios.length > 0 && privScenarios.length > 0) {
         this.resultsService.calculateScenariosBoth(privScenarios, pubScenarios).subscribe(
           () => {},
           (error) => {
@@ -1328,7 +1328,7 @@ export class ToolsSidebarComponent implements OnInit {
             interval = setInterval(() => this.getStatusUP(interval), 5000);
           }
         );
-      } else if(pubScenarios.length > 0) {
+      } else if (pubScenarios.length > 0) {
         this.resultsService.calculatePublicScenarios(pubScenarios).subscribe(
           () => {},
           (error) => {
@@ -1338,7 +1338,7 @@ export class ToolsSidebarComponent implements OnInit {
             interval = setInterval(() => this.getStatusUP(interval), 5000);
           }
         );
-      } else if(privScenarios.length > 0) {
+      } else if (privScenarios.length > 0) {
         this.resultsService.calculateScenarios(privScenarios).subscribe(
           () => {},
           (error) => {
@@ -1369,7 +1369,7 @@ export class ToolsSidebarComponent implements OnInit {
     );
     Object.values(copyScenario).forEach(
       (scenario) => {
-        scenario.scenarioId = scenario.scenarioId.replace("priv_","").replace("pub_","");
+        scenario.scenarioId = scenario.scenarioId.replace('priv_', '').replace('pub_', '');
       }
     );
     this.statusService.statusUP(copyScenario).subscribe(
@@ -1425,7 +1425,7 @@ export class ToolsSidebarComponent implements OnInit {
     let copyScenario = this.selectedScenarios;
     copyScenario.forEach(
       (scenario) => {
-        scenario.scenarioId = scenario.scenarioId.replace("priv_","").replace("pub_","");
+        scenario.scenarioId = scenario.scenarioId.replace('priv_', '').replace('pub_', '');
       }
     );
     this.resultsService.getUPBuffers(copyScenario).subscribe(
@@ -1514,10 +1514,10 @@ export class ToolsSidebarComponent implements OnInit {
         name: this.scenarioName,
         indicators: this.selIndText,
         isBase: this.isBaseUP ? 1 : 0,
-        studyArea: this.selectedStudyAreaUP.id.replace("priv_","").replace("pub_",""),
-        studyAreaId: this.selectedStudyAreaUP.id.replace("priv_","").replace("pub_",""),
+        studyArea: this.selectedStudyAreaUP.id.replace('priv_', '').replace('pub_', ''),
+        studyAreaId: this.selectedStudyAreaUP.id.replace('priv_', '').replace('pub_', ''),
       };
-      if(this.selectedStudyAreaUP.id.includes("priv_")) {
+      if (this.selectedStudyAreaUP.id.includes('priv_')) {
         this.scenarioService.postScenario(this.newScenario).subscribe(
           (scenario) => {
             if (!scenario.name.toLowerCase().includes('error')) {
@@ -1570,7 +1570,7 @@ export class ToolsSidebarComponent implements OnInit {
             this.selectedScenarios = [];
           }
         );
-      } else if(this.selectedStudyAreaUP.id.includes("pub_")) {
+      } else if (this.selectedStudyAreaUP.id.includes('pub_')) {
         this.scenarioService.postPublicScenario(this.newScenario).subscribe(
           (scenario) => {
             if (!scenario.name.toLowerCase().includes('error')) {
@@ -1644,16 +1644,16 @@ export class ToolsSidebarComponent implements OnInit {
   loadUPLayers() {
     if (this.scenarioManage) {
       let tmpScenario = this.scenarioManage.scenarioId;
-      if(tmpScenario.includes("priv_")) {
-        tmpScenario = tmpScenario.replace("priv_","")
+      if (tmpScenario.includes('priv_')) {
+        tmpScenario = tmpScenario.replace('priv_', '')
         this.nodeService.getUPTables(tmpScenario).subscribe(
           (tables) => (this.layersUP = tables),
           (error) => {
             this.logErrorHandler(error);
           }
         );
-      } else if(tmpScenario.includes("pub_")) {
-        tmpScenario = tmpScenario.replace("pub_","")
+      } else if (tmpScenario.includes('pub_')) {
+        tmpScenario = tmpScenario.replace('pub_', '')
         this.nodeService.getUPPublicTables(tmpScenario).subscribe(
           (tables) => (this.layersUP = tables),
           (error) => {
@@ -1698,7 +1698,7 @@ export class ToolsSidebarComponent implements OnInit {
   loadDataColumnsUP(event) {
     if (event.node.type.toLowerCase() === 'layer') {
       let directory = event.node.parent.data;
-      if(directory.includes("my_data")) {
+      if (directory.includes('my_data')) {
         this.listService.getColumn(event.node.data).subscribe(
           (listManageDataUP) => {
             this.colFieldsNameArrayUP = [];
@@ -1712,7 +1712,7 @@ export class ToolsSidebarComponent implements OnInit {
             this.logErrorHandler(error);
           }
         );
-      } else if(directory.includes("public_data")) {
+      } else if (directory.includes('public_data')) {
         this.listService.getPublicColumn(event.node.data).subscribe(
           (listManageDataUP) => {
             this.colFieldsNameArrayUP = [];
@@ -1734,16 +1734,16 @@ export class ToolsSidebarComponent implements OnInit {
   loadTablesUP() {
     if (this.upTablesScenario) {
       let tmpScenario = this.upTablesScenario.scenarioId;
-      if(tmpScenario.includes("priv_")) {
-        tmpScenario = tmpScenario.replace("priv_","")
+      if (tmpScenario.includes('priv_')) {
+        tmpScenario = tmpScenario.replace('priv_', '')
         this.nodeService.getUPTables(tmpScenario).subscribe(
           (tables) => (this.tablesUP = tables),
           (error) => {
             this.logErrorHandler(error);
           }
         );
-      } else if(tmpScenario.includes("pub_")) {
-        tmpScenario = tmpScenario.replace("pub_","")
+      } else if (tmpScenario.includes('pub_')) {
+        tmpScenario = tmpScenario.replace('pub_', '')
         this.nodeService.getUPPublicTables(tmpScenario).subscribe(
           (tables) => (this.tablesUP = tables),
           (error) => {
@@ -1776,9 +1776,9 @@ export class ToolsSidebarComponent implements OnInit {
     });
     this.messageService.clear('confirmDeleteTableUP');
     let tmpScenario = this.upTablesScenario.scenarioId;
-    if(tmpScenario.includes("priv_")) {
+    if (tmpScenario.includes('priv_')) {
       this.upMiscService
-      .deleteTableUP(tmpScenario.replace("priv_",""), this.selectedTable.data)
+      .deleteTableUP(tmpScenario.replace('priv_', ''), this.selectedTable.data)
       .subscribe(
         () => {},
         (error) => {
@@ -1794,9 +1794,9 @@ export class ToolsSidebarComponent implements OnInit {
           this.loadUPLayers();
         }
       );
-    } else if(tmpScenario.includes("pub_")) {
+    } else if (tmpScenario.includes('pub_')) {
       this.upMiscService
-      .deletePublicTableUP(tmpScenario.replace("pub_",""), this.selectedTable.data)
+      .deletePublicTableUP(tmpScenario.replace('pub_', ''), this.selectedTable.data)
       .subscribe(
         () => {},
         (error) => {
@@ -1838,9 +1838,9 @@ export class ToolsSidebarComponent implements OnInit {
       layerUPName: this.selectedLayerUP.data,
       table: this.columnDataGP,
       tableUP: this.listDataUP,
-      scenarioId: this.scenarioManage.scenarioId.replace("priv_","").replace("pub_",""),
+      scenarioId: this.scenarioManage.scenarioId.replace('priv_', '').replace('pub_', ''),
     };
-    if(directory.includes("my_data")) {
+    if (directory.includes('my_data')) {
       this.dataCopyService.copyDataUP(this.dataCopy).subscribe(
         () => {},
         (error) => {
@@ -1865,7 +1865,7 @@ export class ToolsSidebarComponent implements OnInit {
           this.hideManageDataUP();
         }
       );
-    } else if(directory.includes("public_data")) {
+    } else if (directory.includes('public_data')) {
       this.dataCopyService.copyPublicDataUP(this.dataCopy).subscribe(
         () => {},
         (error) => {
@@ -1900,7 +1900,7 @@ export class ToolsSidebarComponent implements OnInit {
     this.scenarioService.getScenarios().subscribe(
       (scenarios) => {
         scenarios.forEach(scenario => {
-          scenario.scenarioId = "priv_" + scenario.scenarioId;
+          scenario.scenarioId = 'priv_' + scenario.scenarioId;
         });
         tmpScenarioArray = scenarios;
       },
@@ -1911,7 +1911,7 @@ export class ToolsSidebarComponent implements OnInit {
         this.scenarioService.getPublicScenarios().subscribe(
           (scenarios) => {
             scenarios.forEach(scenario => {
-              scenario.scenarioId = "pub_" + scenario.scenarioId;
+              scenario.scenarioId = 'pub_' + scenario.scenarioId;
             });
             tmpScenarioArray = tmpScenarioArray.concat(scenarios);
           },
@@ -1944,8 +1944,8 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to update the Scenario
   updateScenario() {
-    if(this.scenarioManage.scenarioId.includes("priv_")) {
-      this.scenarioManage.scenarioId = this.scenarioManage.scenarioId.replace("priv_","");
+    if (this.scenarioManage.scenarioId.includes('priv_')) {
+      this.scenarioManage.scenarioId = this.scenarioManage.scenarioId.replace('priv_', '');
       this.scenarioService.putScenario(this.scenarioManage).subscribe(
         () => {
           this.messageService.add({
@@ -1969,8 +1969,8 @@ export class ToolsSidebarComponent implements OnInit {
           this.hideEditScenario();
         }
       );
-    } else if(this.scenarioManage.scenarioId.includes("pub_")) {
-      this.scenarioManage.scenarioId = this.scenarioManage.scenarioId.replace("pub_","");
+    } else if (this.scenarioManage.scenarioId.includes('pub_')) {
+      this.scenarioManage.scenarioId = this.scenarioManage.scenarioId.replace('pub_', '');
       this.scenarioService.putPublicScenario(this.scenarioManage).subscribe(
         () => {
           this.messageService.add({
@@ -2017,8 +2017,8 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to delete the selected Scenario
   confirmDeleteScenario() {
-    if(this.scenarioManage.scenarioId.includes("priv_")) {
-      this.scenarioManage.scenarioId = this.scenarioManage.scenarioId.replace("priv_","");
+    if (this.scenarioManage.scenarioId.includes('priv_')) {
+      this.scenarioManage.scenarioId = this.scenarioManage.scenarioId.replace('priv_', '');
       this.scenarioService.deleteScenario(this.scenarioManage).subscribe(
         () => {
           this.messageService.add({
@@ -2044,8 +2044,8 @@ export class ToolsSidebarComponent implements OnInit {
           this.hideEditScenario();
         }
       );
-    } else if(this.scenarioManage.scenarioId.includes("pub_")) {
-      this.scenarioManage.scenarioId = this.scenarioManage.scenarioId.replace("pub_","");
+    } else if (this.scenarioManage.scenarioId.includes('pub_')) {
+      this.scenarioManage.scenarioId = this.scenarioManage.scenarioId.replace('pub_', '');
       this.scenarioService.deletePublicScenario(this.scenarioManage).subscribe(
         () => {
           this.messageService.add({
@@ -2082,13 +2082,13 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to get the Assumptions related to the selected Scenario
   loadAssumptions() {
     if (this.asmptScenarioManage) {
-      if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+      if (this.asmptScenarioManage.scenarioId.includes('priv_')) {
         this.assumptionService
-        .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+        .getAssumptions(this.asmptScenarioManage.scenarioId.replace('priv_', ''))
         .subscribe(
           (assumptions) => {
             assumptions.forEach(assumption => {
-              assumption.id = "priv_" + assumption.id;
+              assumption.id = 'priv_' + assumption.id;
             });
             this.assumptions = assumptions;
           },
@@ -2096,13 +2096,13 @@ export class ToolsSidebarComponent implements OnInit {
             this.logErrorHandler(error);
           }
         );
-      } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+      } else if (this.asmptScenarioManage.scenarioId.includes('pub_')) {
         this.assumptionService
-        .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+        .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace('pub_', ''))
         .subscribe(
           (assumptions) => {
             assumptions.forEach(assumption => {
-              assumption.id = "pub_" + assumption.id;
+              assumption.id = 'pub_' + assumption.id;
             });
             this.assumptions = assumptions;
           },
@@ -2122,9 +2122,9 @@ export class ToolsSidebarComponent implements OnInit {
       summary: 'In process!',
       detail: 'Your file is being uploaded!',
     });
-    if(this.asmptStudyAreaFile.id.includes("priv_")) {
+    if (this.asmptStudyAreaFile.id.includes('priv_')) {
       this.assumptionService
-      .uploadAssumption(this.asmptStudyAreaFile.id.replace("priv_",""), event.files[0])
+      .uploadAssumption(this.asmptStudyAreaFile.id.replace('priv_', ''), event.files[0])
       .subscribe(
         () => {},
         (error) => {
@@ -2133,13 +2133,13 @@ export class ToolsSidebarComponent implements OnInit {
         },
         () => {
           if (this.asmptScenarioManage) {
-            if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+            if (this.asmptScenarioManage.scenarioId.includes('priv_')) {
               this.assumptionService
-              .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+              .getAssumptions(this.asmptScenarioManage.scenarioId.replace('priv_', ''))
               .subscribe(
                 (assumptions) => {
                   assumptions.forEach(assumption => {
-                    assumption.id = "priv_" + assumption.id;
+                    assumption.id = 'priv_' + assumption.id;
                   });
                   this.assumptions = assumptions;
                 },
@@ -2147,13 +2147,13 @@ export class ToolsSidebarComponent implements OnInit {
                   this.logErrorHandler(error);
                 }
               );
-            } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+            } else if (this.asmptScenarioManage.scenarioId.includes('pub_')) {
               this.assumptionService
-              .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+              .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace('pub_', ''))
               .subscribe(
                 (assumptions) => {
                   assumptions.forEach(assumption => {
-                    assumption.id = "pub_" + assumption.id;
+                    assumption.id = 'pub_' + assumption.id;
                   });
                   this.assumptions = assumptions;
                 },
@@ -2171,9 +2171,9 @@ export class ToolsSidebarComponent implements OnInit {
           this.unblockDocument();
         }
       );
-    } else if(this.asmptStudyAreaFile.id.includes("pub_")) {
+    } else if (this.asmptStudyAreaFile.id.includes('pub_')) {
       this.assumptionService
-      .uploadPublicAssumption(this.asmptStudyAreaFile.id.replace("pub_",""), event.files[0])
+      .uploadPublicAssumption(this.asmptStudyAreaFile.id.replace('pub_', ''), event.files[0])
       .subscribe(
         () => {},
         (error) => {
@@ -2182,13 +2182,13 @@ export class ToolsSidebarComponent implements OnInit {
         },
         () => {
           if (this.asmptScenarioManage) {
-            if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+            if (this.asmptScenarioManage.scenarioId.includes('priv_')) {
               this.assumptionService
-              .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+              .getAssumptions(this.asmptScenarioManage.scenarioId.replace('priv_', ''))
               .subscribe(
                 (assumptions) => {
                   assumptions.forEach(assumption => {
-                    assumption.id = "priv_" + assumption.id;
+                    assumption.id = 'priv_' + assumption.id;
                   });
                   this.assumptions = assumptions;
                 },
@@ -2196,13 +2196,13 @@ export class ToolsSidebarComponent implements OnInit {
                   this.logErrorHandler(error);
                 }
               );
-            } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+            } else if (this.asmptScenarioManage.scenarioId.includes('pub_')) {
               this.assumptionService
-              .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+              .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace('pub_', ''))
               .subscribe(
                 (assumptions) => {
                   assumptions.forEach(assumption => {
-                    assumption.id = "pub_" + assumption.id;
+                    assumption.id = 'pub_' + assumption.id;
                   });
                   this.assumptions = assumptions;
                 },
@@ -2240,8 +2240,8 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to either save or update an assumption, depending on its tag
   saveAssumption() {
     if (this.isNewAssumption) {
-      if(this.assumptionManage.id.includes("priv_")) {
-        this.assumptionManage.id = this.assumptionManage.id.replace("priv_","");
+      if (this.assumptionManage.id.includes('priv_')) {
+        this.assumptionManage.id = this.assumptionManage.id.replace('priv_', '');
         this.assumptionService.createAssumption(this.assumptionManage).subscribe(
           () =>
             this.messageService.add({
@@ -2259,13 +2259,13 @@ export class ToolsSidebarComponent implements OnInit {
               detail: 'Assumption created successfully!',
             });
             if (this.asmptScenarioManage) {
-              if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+              if (this.asmptScenarioManage.scenarioId.includes('priv_')) {
                 this.assumptionService
-                .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+                .getAssumptions(this.asmptScenarioManage.scenarioId.replace('priv_', ''))
                 .subscribe(
                   (assumptions) => {
                     assumptions.forEach(assumption => {
-                      assumption.id = "priv_" + assumption.id;
+                      assumption.id = 'priv_' + assumption.id;
                     });
                     this.assumptions = assumptions;
                   },
@@ -2273,13 +2273,13 @@ export class ToolsSidebarComponent implements OnInit {
                     this.logErrorHandler(error);
                   }
                 );
-              } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+              } else if (this.asmptScenarioManage.scenarioId.includes('pub_')) {
                 this.assumptionService
-                .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+                .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace('pub_', ''))
                 .subscribe(
                   (assumptions) => {
                     assumptions.forEach(assumption => {
-                      assumption.id = "pub_" + assumption.id;
+                      assumption.id = 'pub_' + assumption.id;
                     });
                     this.assumptions = assumptions;
                   },
@@ -2293,8 +2293,8 @@ export class ToolsSidebarComponent implements OnInit {
             this.editAssumptions = false;
           }
         );
-      } else if(this.assumptionManage.id.includes("pub_")) {
-        this.assumptionManage.id = this.assumptionManage.id.replace("pub_","");
+      } else if (this.assumptionManage.id.includes('pub_')) {
+        this.assumptionManage.id = this.assumptionManage.id.replace('pub_', '');
         this.assumptionService.createPublicAssumption(this.assumptionManage).subscribe(
           () =>
             this.messageService.add({
@@ -2312,13 +2312,13 @@ export class ToolsSidebarComponent implements OnInit {
               detail: 'Assumption created successfully!',
             });
             if (this.asmptScenarioManage) {
-              if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+              if (this.asmptScenarioManage.scenarioId.includes('priv_')) {
                 this.assumptionService
-                .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+                .getAssumptions(this.asmptScenarioManage.scenarioId.replace('priv_', ''))
                 .subscribe(
                   (assumptions) => {
                     assumptions.forEach(assumption => {
-                      assumption.id = "priv_" + assumption.id;
+                      assumption.id = 'priv_' + assumption.id;
                     });
                     this.assumptions = assumptions;
                   },
@@ -2326,13 +2326,13 @@ export class ToolsSidebarComponent implements OnInit {
                     this.logErrorHandler(error);
                   }
                 );
-              } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+              } else if (this.asmptScenarioManage.scenarioId.includes('pub_')) {
                 this.assumptionService
-                .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+                .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace('pub_', ''))
                 .subscribe(
                   (assumptions) => {
                     assumptions.forEach(assumption => {
-                      assumption.id = "pub_" + assumption.id;
+                      assumption.id = 'pub_' + assumption.id;
                     });
                     this.assumptions = assumptions;
                   },
@@ -2348,8 +2348,8 @@ export class ToolsSidebarComponent implements OnInit {
         );
       } 
     } else {
-      if(this.assumptionManage.id.includes("priv_")) {
-        this.assumptionManage.id = this.assumptionManage.id.replace("priv_","");
+      if (this.assumptionManage.id.includes('priv_')) {
+        this.assumptionManage.id = this.assumptionManage.id.replace('priv_', '');
         this.assumptionService.updateAssumption(this.assumptionManage).subscribe(
           () =>
             this.messageService.add({
@@ -2367,13 +2367,13 @@ export class ToolsSidebarComponent implements OnInit {
               detail: 'Assumption updated successfully!',
             });
             if (this.asmptScenarioManage) {
-              if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+              if (this.asmptScenarioManage.scenarioId.includes('priv_')) {
                 this.assumptionService
-                .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+                .getAssumptions(this.asmptScenarioManage.scenarioId.replace('priv_', ''))
                 .subscribe(
                   (assumptions) => {
                     assumptions.forEach(assumption => {
-                      assumption.id = "priv_" + assumption.id;
+                      assumption.id = 'priv_' + assumption.id;
                     });
                     this.assumptions = assumptions;
                   },
@@ -2381,13 +2381,13 @@ export class ToolsSidebarComponent implements OnInit {
                     this.logErrorHandler(error);
                   }
                 );
-              } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+              } else if (this.asmptScenarioManage.scenarioId.includes('pub_')) {
                 this.assumptionService
-                .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+                .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace('pub_', ''))
                 .subscribe(
                   (assumptions) => {
                     assumptions.forEach(assumption => {
-                      assumption.id = "pub_" + assumption.id;
+                      assumption.id = 'pub_' + assumption.id;
                     });
                     this.assumptions = assumptions;
                   },
@@ -2401,8 +2401,8 @@ export class ToolsSidebarComponent implements OnInit {
             this.editAssumptions = false;
           }
         );
-      } else if(this.assumptionManage.id.includes("pub_")) {
-        this.assumptionManage.id = this.assumptionManage.id.replace("pub_","");
+      } else if (this.assumptionManage.id.includes('pub_')) {
+        this.assumptionManage.id = this.assumptionManage.id.replace('pub_', '');
         this.assumptionService.updatePublicAssumption(this.assumptionManage).subscribe(
           () =>
             this.messageService.add({
@@ -2420,13 +2420,13 @@ export class ToolsSidebarComponent implements OnInit {
               detail: 'Assumption updated successfully!',
             });
             if (this.asmptScenarioManage) {
-              if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+              if (this.asmptScenarioManage.scenarioId.includes('priv_')) {
                 this.assumptionService
-                .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+                .getAssumptions(this.asmptScenarioManage.scenarioId.replace('priv_', ''))
                 .subscribe(
                   (assumptions) => {
                     assumptions.forEach(assumption => {
-                      assumption.id = "priv_" + assumption.id;
+                      assumption.id = 'priv_' + assumption.id;
                     });
                     this.assumptions = assumptions;
                   },
@@ -2434,13 +2434,13 @@ export class ToolsSidebarComponent implements OnInit {
                     this.logErrorHandler(error);
                   }
                 );
-              } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+              } else if (this.asmptScenarioManage.scenarioId.includes('pub_')) {
                 this.assumptionService
-                .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+                .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace('pub_', ''))
                 .subscribe(
                   (assumptions) => {
                     assumptions.forEach(assumption => {
-                      assumption.id = "pub_" + assumption.id;
+                      assumption.id = 'pub_' + assumption.id;
                     });
                     this.assumptions = assumptions;
                   },
@@ -2482,8 +2482,8 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to delete an assumption
   confirmDeleteAssumption() {
-    if(this.assumptionManage.id.includes("priv_")) {
-      this.assumptionManage.id = this.assumptionManage.id.replace("priv_","");
+    if (this.assumptionManage.id.includes('priv_')) {
+      this.assumptionManage.id = this.assumptionManage.id.replace('priv_', '');
       this.assumptionService.deleteAssumption(this.assumptionManage).subscribe(
         () =>
           this.messageService.add({
@@ -2496,13 +2496,13 @@ export class ToolsSidebarComponent implements OnInit {
         },
         () => {
           if (this.asmptScenarioManage) {
-            if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+            if (this.asmptScenarioManage.scenarioId.includes('priv_')) {
               this.assumptionService
-              .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+              .getAssumptions(this.asmptScenarioManage.scenarioId.replace('priv_', ''))
               .subscribe(
                 (assumptions) => {
                   assumptions.forEach(assumption => {
-                    assumption.id = "priv_" + assumption.id;
+                    assumption.id = 'priv_' + assumption.id;
                   });
                   this.assumptions = assumptions;
                 },
@@ -2510,13 +2510,13 @@ export class ToolsSidebarComponent implements OnInit {
                   this.logErrorHandler(error);
                 }
               );
-            } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+            } else if (this.asmptScenarioManage.scenarioId.includes('pub_')) {
               this.assumptionService
-              .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+              .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace('pub_', ''))
               .subscribe(
                 (assumptions) => {
                   assumptions.forEach(assumption => {
-                    assumption.id = "pub_" + assumption.id;
+                    assumption.id = 'pub_' + assumption.id;
                   });
                   this.assumptions = assumptions;
                 },
@@ -2536,8 +2536,8 @@ export class ToolsSidebarComponent implements OnInit {
           this.editAssumptions = false;
         }
       );
-    } else if(this.assumptionManage.id.includes("pub_")) {
-      this.assumptionManage.id = this.assumptionManage.id.replace("pub_","");
+    } else if (this.assumptionManage.id.includes('pub_')) {
+      this.assumptionManage.id = this.assumptionManage.id.replace('pub_', '');
       this.assumptionService.deletePublicAssumption(this.assumptionManage).subscribe(
         () =>
           this.messageService.add({
@@ -2550,13 +2550,13 @@ export class ToolsSidebarComponent implements OnInit {
         },
         () => {
           if (this.asmptScenarioManage) {
-            if(this.asmptScenarioManage.scenarioId.includes("priv_")) {
+            if (this.asmptScenarioManage.scenarioId.includes('priv_')) {
               this.assumptionService
-              .getAssumptions(this.asmptScenarioManage.scenarioId.replace("priv_",""))
+              .getAssumptions(this.asmptScenarioManage.scenarioId.replace('priv_', ''))
               .subscribe(
                 (assumptions) => {
                   assumptions.forEach(assumption => {
-                    assumption.id = "priv_" + assumption.id;
+                    assumption.id = 'priv_' + assumption.id;
                   });
                   this.assumptions = assumptions;
                 },
@@ -2564,13 +2564,13 @@ export class ToolsSidebarComponent implements OnInit {
                   this.logErrorHandler(error);
                 }
               );
-            } else if(this.asmptScenarioManage.scenarioId.includes("pub_")) {
+            } else if (this.asmptScenarioManage.scenarioId.includes('pub_')) {
               this.assumptionService
-              .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace("pub_",""))
+              .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace('pub_', ''))
               .subscribe(
                 (assumptions) => {
                   assumptions.forEach(assumption => {
-                    assumption.id = "pub_" + assumption.id;
+                    assumption.id = 'pub_' + assumption.id;
                   });
                   this.assumptions = assumptions;
                 },
@@ -3244,7 +3244,7 @@ export class ToolsSidebarComponent implements OnInit {
   // Changes to fix or free scale
   changeScaleModeST(event) {
     this.scaleNumbersST = []
-    if(event.checked) {
+    if (event.checked) {
       this.scaleNumbersST = ['Min', '', '', '', '', '', '', '', '', 'Max'];
     } else {
       this.scaleNumbersST = ['10', '20', '30', '40', '50', '60', '70', '80', '90', '100'];
@@ -3431,8 +3431,8 @@ export class ToolsSidebarComponent implements OnInit {
       let layerId = event.node.data.toString();
       let directory = event.node.parent.data.toString();
       this.tmpLayerId = event.node.data.toString();
-      if(directory.includes("my_data")) {
-        layerId = layerId.replace("priv_","");
+      if (directory.includes('my_data')) {
+        layerId = layerId.replace('priv_', '');
         this.listService.getSTColumnWithId(layerId).subscribe(
           (listManageDataST) => {
             this.colFieldsNameArrayST = [];
@@ -3448,8 +3448,8 @@ export class ToolsSidebarComponent implements OnInit {
             this.logErrorHandler(error);
           }
         );
-      } else if(directory.includes("public_data")) {
-        layerId = layerId.replace("pub_","");
+      } else if (directory.includes('public_data')) {
+        layerId = layerId.replace('pub_', '');
         this.listService.getSTPublicColumnWithId(layerId).subscribe(
           (listManageDataST) => {
             this.colFieldsNameArrayST = [];
@@ -3502,8 +3502,8 @@ export class ToolsSidebarComponent implements OnInit {
       let layerId = event.node.data.toString();
       let directory = event.node.parent.data.toString();
       this.tmpLayerId = event.node.data.toString();
-      if(directory.includes("my_data")) {
-        layerId = layerId.replace("priv_","");
+      if (directory.includes('my_data')) {
+        layerId = layerId.replace('priv_', '');
         this.listService.getSTColumnWithId(layerId).subscribe(
           (listManageDataST) => {
             this.colFieldsNameArrayST = [];
@@ -3519,8 +3519,8 @@ export class ToolsSidebarComponent implements OnInit {
             this.logErrorHandler(error);
           }
         );
-      } else if(directory.includes("public_data")) {
-        layerId = layerId.replace("pub_","");
+      } else if (directory.includes('public_data')) {
+        layerId = layerId.replace('pub_', '');
         this.listService.getSTPublicColumnWithId(layerId).subscribe(
           (listManageDataST) => {
             this.colFieldsNameArrayST = [];
@@ -3551,8 +3551,8 @@ export class ToolsSidebarComponent implements OnInit {
       let layerId = event.node.data.toString();
       let directory = event.node.parent.data.toString();
       this.tmpLayerId = event.node.data.toString();
-      if(directory.includes("my_data")) {
-        layerId = layerId.replace("priv_","");
+      if (directory.includes('my_data')) {
+        layerId = layerId.replace('priv_', '');
         this.listService.getSTColumnFiltersWithId(layerId).subscribe(
           (listManageDataFiltersST) => {
             this.colFieldsNameArrayST = [];
@@ -3568,8 +3568,8 @@ export class ToolsSidebarComponent implements OnInit {
             this.logErrorHandler(error);
           }
         );
-      } else if(directory.includes("public_data")) {
-        layerId = layerId.replace("pub_","");
+      } else if (directory.includes('public_data')) {
+        layerId = layerId.replace('pub_', '');
         this.listService.getSTPublicColumnWithId(layerId).subscribe(
           (listManageDataFiltersST) => {
             this.colFieldsNameArrayST = [];
@@ -3603,8 +3603,8 @@ export class ToolsSidebarComponent implements OnInit {
     if (this.stdAreaSTDistances != null) {
       let tmpId = this.stdAreaSTDistances.id;
       let tmpLyrName = this.selDistanceLayerST.data;
-      if(tmpLyrName.includes("priv_")) {
-        tmpLyrName = tmpLyrName.replace("priv_","");
+      if (tmpLyrName.includes('priv_')) {
+        tmpLyrName = tmpLyrName.replace('priv_', '');
         this.blockDocument();
         this.messageService.add({
           severity: 'info',
@@ -3615,7 +3615,7 @@ export class ToolsSidebarComponent implements OnInit {
         this.columnFieldsArrayST.forEach((data) =>
           this.columnDataGP.push(data.name)
         );
-        tmpId = tmpId.replace("priv_","").replace("pub_","");
+        tmpId = tmpId.replace('priv_', '').replace('pub_', '');
         this.dataCopyST = {
           layerName: tmpLyrName,
           layerSTName: this.selTableST.data,
@@ -3646,8 +3646,8 @@ export class ToolsSidebarComponent implements OnInit {
             this.unblockDocument();
           }
         );
-      } else if(tmpLyrName.includes("pub_")) {
-        tmpLyrName = tmpLyrName.replace("pub_","");
+      } else if (tmpLyrName.includes('pub_')) {
+        tmpLyrName = tmpLyrName.replace('pub_', '');
         this.blockDocument();
         this.messageService.add({
           severity: 'info',
@@ -3658,7 +3658,7 @@ export class ToolsSidebarComponent implements OnInit {
         this.columnFieldsArrayST.forEach((data) =>
           this.columnDataGP.push(data.name)
         );
-        tmpId = tmpId.replace("priv_","").replace("pub_","");
+        tmpId = tmpId.replace('priv_', '').replace('pub_', '');
         this.dataCopyST = {
           layerName: tmpLyrName,
           layerSTName: this.selTableST.data,
@@ -3708,10 +3708,10 @@ export class ToolsSidebarComponent implements OnInit {
         summary: 'In Progress!',
         detail: 'Your operation is being processed.',
       });
-      if(this.tmpLayerId.includes("priv_")) {
+      if (this.tmpLayerId.includes('priv_')) {
         
         this.matchLayer = {
-          layerId: this.tmpLayerId.replace("priv_",""),
+          layerId: this.tmpLayerId.replace('priv_', ''),
           layerLabel: this.layerSTLabel,
           field: this.layerSTField.name,
           mmuCode: this.layerSTMMU.name,
@@ -3741,8 +3741,8 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageLayer) {
               let tmpId = this.stdAreaManageLayer.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.layerSTService.getLayerST(corrId).subscribe(
                   (layers) => {
                     this.layersSTManage = layers;
@@ -3762,8 +3762,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
                   (layers) => {
                     this.layersSTManage = layers;
@@ -3787,9 +3787,9 @@ export class ToolsSidebarComponent implements OnInit {
             this.unblockDocument();
           }
         );
-      } else if(this.tmpLayerId.includes("pub_")) {
+      } else if (this.tmpLayerId.includes('pub_')) {
         this.matchLayer = {
-          layerId: this.tmpLayerId.replace("pub_",""),
+          layerId: this.tmpLayerId.replace('pub_', ''),
           layerLabel: this.layerSTLabel,
           field: this.layerSTField.name,
           mmuCode: this.layerSTMMU.name,
@@ -3819,8 +3819,8 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageLayer) {
               let tmpId = this.stdAreaManageLayer.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.layerSTService.getLayerST(corrId).subscribe(
                   (layers) => {
                     this.layersSTManage = layers;
@@ -3840,8 +3840,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
                   (layers) => {
                     this.layersSTManage = layers;
@@ -3883,9 +3883,9 @@ export class ToolsSidebarComponent implements OnInit {
       summary: 'In Progress!',
       detail: 'Your operation is being processed.',
     });
-    if(this.tmpLayerId.includes("priv_")) {
+    if (this.tmpLayerId.includes('priv_')) {
       this.matchFilter = {
-        filterId: this.tmpLayerId.replace("priv_",""),
+        filterId: this.tmpLayerId.replace('priv_', ''),
         filterLabel: this.filterSTLabel,
       };
       this.dataCopyService.copyFiltersST(this.matchFilter).subscribe(
@@ -3911,10 +3911,10 @@ export class ToolsSidebarComponent implements OnInit {
           if (this.stdAreaManageFilter) {
             let tmpId = this.stdAreaManageFilter.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.layerSTService
-                .getFiltersST(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .getFiltersST(this.stdAreaManageFilter.id.toString().replace('pub_', '').replace('priv_', ''))
                 .subscribe(
                   (lyrs) => (this.filtersSTManage = lyrs),
                   (error) => {
@@ -3931,10 +3931,10 @@ export class ToolsSidebarComponent implements OnInit {
                     );
                   }
                 );
-              } else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              } else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.layerSTService
-                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace('pub_', '').replace('priv_', ''))
                 .subscribe(
                   (lyrs) => (this.filtersSTManage = lyrs),
                   (error) => {
@@ -3956,9 +3956,9 @@ export class ToolsSidebarComponent implements OnInit {
           this.unblockDocument();
         }
       );
-    } else if(this.tmpLayerId.includes("pub_")) {
+    } else if (this.tmpLayerId.includes('pub_')) {
       this.matchFilter = {
-        filterId: this.tmpLayerId.replace("pub_",""),
+        filterId: this.tmpLayerId.replace('pub_', ''),
         filterLabel: this.filterSTLabel,
       };
       this.dataCopyService.copyPublicFiltersST(this.matchFilter).subscribe(
@@ -3984,10 +3984,10 @@ export class ToolsSidebarComponent implements OnInit {
           if (this.stdAreaManageFilter) {
             let tmpId = this.stdAreaManageFilter.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.layerSTService
-                .getFiltersST(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .getFiltersST(this.stdAreaManageFilter.id.toString().replace('pub_', '').replace('priv_', ''))
                 .subscribe(
                   (lyrs) => (this.filtersSTManage = lyrs),
                   (error) => {
@@ -4004,10 +4004,10 @@ export class ToolsSidebarComponent implements OnInit {
                     );
                   }
                 );
-              } else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              } else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.layerSTService
-                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace('pub_', '').replace('priv_', ''))
                 .subscribe(
                   (lyrs) => (this.filtersSTManage = lyrs),
                   (error) => {
@@ -4041,8 +4041,8 @@ export class ToolsSidebarComponent implements OnInit {
       this.settingsString = '';
       let tmpId = this.selectedStudyAreaST.id.toString();
       let corrId;
-      if(tmpId.includes("priv_")) {
-        corrId = tmpId.replace("priv_","");
+      if (tmpId.includes('priv_')) {
+        corrId = tmpId.replace('priv_', '');
         this.layersService.getLayers(corrId).subscribe(
           (layers) => (this.layerSettings = layers),
           (error) => {
@@ -4065,7 +4065,7 @@ export class ToolsSidebarComponent implements OnInit {
         this.layersService.getFilters(corrId).subscribe(
           (filters) => {
             filters.forEach((filter) => {
-              filter.id = "priv_" + filter.id.toString()
+              filter.id = 'priv_' + filter.id.toString()
             });
             this.filterList = filters;
           },
@@ -4076,7 +4076,7 @@ export class ToolsSidebarComponent implements OnInit {
             this.layersService.getFilterSTPubStdArea(corrId).subscribe(
               (filters) => {
                 filters.forEach((filter) => {
-                  filter.id = "pub_" + filter.id.toString()
+                  filter.id = 'pub_' + filter.id.toString()
                 });
                 this.filterList = this.filterList.concat(filters);
               },
@@ -4088,8 +4088,8 @@ export class ToolsSidebarComponent implements OnInit {
             );
           }
         );
-      } else if(tmpId.includes("pub_")) {
-        corrId = tmpId.replace("pub_","");
+      } else if (tmpId.includes('pub_')) {
+        corrId = tmpId.replace('pub_', '');
         this.layersService.getLayersPubStdArea(corrId).subscribe(
           (layers) => (this.layerSettings = layers),
           (error) => {
@@ -4112,7 +4112,7 @@ export class ToolsSidebarComponent implements OnInit {
         this.layersService.getPublicFilters(corrId).subscribe(
           (filters) => {
             filters.forEach((filter) => {
-              filter.id = "priv_" + filter.id.toString()
+              filter.id = 'priv_' + filter.id.toString()
             });
             this.filterList = filters;
           },
@@ -4123,7 +4123,7 @@ export class ToolsSidebarComponent implements OnInit {
             this.layersService.getPublicFilterSTPubStdArea(corrId).subscribe(
               (filters) => {
                 filters.forEach((filter) => {
-                  filter.id = "pub_" + filter.id.toString()
+                  filter.id = 'pub_' + filter.id.toString()
                 });
                 this.filterList = this.filterList.concat(filters);
               },
@@ -4144,20 +4144,21 @@ export class ToolsSidebarComponent implements OnInit {
   evaluateLayer() {
     let tmpStngs = [];
     let tmpPubStngs = [];
-    let tmpStrStngs = "";
-    let tmpStrPubStngs = "";
+    let tmpStrStngs = '';
+    let tmpStrPubStngs = '';
     let stdAreaId = this.selectedStudyAreaST.id;
     this.stResult = true;
     this.selectedFiltersArrayST = [];
     this.selectedPublicFiltersArrayST = [];
     this.selectedFiltersST.forEach(
       (fltr) => {
-        if(fltr.includes("priv_")) {
-          fltr = fltr.replace("priv_","");
-          this.selectedFiltersArrayST.push(fltr);
-        } else if(fltr.includes("pub_")) {
-          fltr = fltr.replace("pub_","");
-          this.selectedPublicFiltersArrayST.push(+fltr);
+        let tmpFltrId = fltr;
+        if (fltr.includes('priv_')) {
+          tmpFltrId = tmpFltrId.replace('priv_', '');
+          this.selectedFiltersArrayST.push(tmpFltrId);
+        } else if (fltr.includes('pub_')) {
+          tmpFltrId = tmpFltrId.replace('pub_', '');
+          this.selectedPublicFiltersArrayST.push(+tmpFltrId);
         }
       }
     );
@@ -4178,26 +4179,27 @@ export class ToolsSidebarComponent implements OnInit {
       this.selectedLayersST = [];
       this.selectedPublicLayersST = [];
       this.selSetting.forEach((setting) => {
-        let tmpStngLyrId = '';
-        if(setting.st_layer_id.includes("priv_")) {
-          tmpStngLyrId = setting.st_layer_id.replace("priv_","");
+        let tmpStngLyrId = setting.st_layer_id;
+        if (setting.st_layer_id.includes('priv_')) {
+          tmpStngLyrId = tmpStngLyrId.replace('priv_', '');
           this.selectedLayersST.push(tmpStngLyrId);
-        } else if(setting.st_layer_id.includes("pub_")) {
-          tmpStngLyrId = setting.st_layer_id.replace("pub_","");
+        } else if (setting.st_layer_id.includes('pub_')) {
+          tmpStngLyrId = tmpStngLyrId.replace('pub_', '');
           this.selectedPublicLayersST.push(tmpStngLyrId);
         }
       });
       this.selSetting.forEach(
         (stng) => {
-          let tmpStngLyrId = '';
-          if(stng.st_layer_id.includes("priv_")) {
-            tmpStngLyrId = stng.st_layer_id.replace("priv_","");
-            stng.st_layer_id = tmpStngLyrId;
-            tmpStngs.push(stng);
-          } else if(stng.st_layer_id.includes("pub_")) {
-            tmpStngLyrId = stng.st_layer_id.replace("pub_","");
-            stng.st_layer_id = tmpStngLyrId;
-            tmpPubStngs.push(stng);
+          let tmpStng = stng;
+          let tmpStngLyrId = stng.st_layer_id;
+          if (stng.st_layer_id.includes('priv_')) {
+            tmpStngLyrId = tmpStngLyrId.replace('priv_', '');
+            tmpStng.st_layer_id = tmpStngLyrId;
+            tmpStngs.push(tmpStng);
+          } else if (stng.st_layer_id.includes('pub_')) {
+            tmpStngLyrId = tmpStngLyrId.replace('pub_', '');
+            tmpStng.st_layer_id = tmpStngLyrId;
+            tmpPubStngs.push(tmpStng);
           }
           stng.smaller_better = stng.smaller_better ? 1 : 0;
         }
@@ -4208,8 +4210,8 @@ export class ToolsSidebarComponent implements OnInit {
       console.log(tmpStrStngs);
       console.log(tmpStrPubStngs);
       this.blockDocument();
-      if(stdAreaId.includes("priv_")) {
-        stdAreaId = stdAreaId.replace("priv_","");
+      if (stdAreaId.includes('priv_')) {
+        stdAreaId = stdAreaId.replace('priv_', '');
         this.stEvaluationService
         .postLayer(
           stdAreaId,
@@ -4236,8 +4238,8 @@ export class ToolsSidebarComponent implements OnInit {
             this.unblockDocument();
           }
         );
-      } else if(stdAreaId.includes("pub_")) {
-        stdAreaId = stdAreaId.replace("pub_","");
+      } else if (stdAreaId.includes('pub_')) {
+        stdAreaId = stdAreaId.replace('pub_', '');
         this.stEvaluationService
         .postPublicLayer(
           stdAreaId,
@@ -4277,8 +4279,8 @@ export class ToolsSidebarComponent implements OnInit {
       summary: 'In Progress!',
       detail: 'Your operation is being processed.',
     });
-    if(stdAreaEval.includes("priv_")) {
-      stdAreaEval = stdAreaEval.replace("priv_","");
+    if (stdAreaEval.includes('priv_')) {
+      stdAreaEval = stdAreaEval.replace('priv_', '');
       this.stEvaluationService.postStdArea(stdAreaEval).subscribe(
         () => {},
         (error) => {
@@ -4292,8 +4294,8 @@ export class ToolsSidebarComponent implements OnInit {
           );
         }
       );
-    } else if(stdAreaEval.includes("pub_")) {
-      stdAreaEval = stdAreaEval.replace("pub_","");
+    } else if (stdAreaEval.includes('pub_')) {
+      stdAreaEval = stdAreaEval.replace('pub_', '');
       this.stEvaluationService.postStdArea(stdAreaEval).subscribe(
         () => {},
         (error) => {
@@ -4482,12 +4484,12 @@ export class ToolsSidebarComponent implements OnInit {
         centerTo: true,
         optionalStyles: [],
       };
-      if(this.isFreeScaleST) {
+      if (this.isFreeScaleST) {
         this.colors = this.colors.domain([geoVals[0], geoVals[geoVals.length - 1]]);
         this.filterRangeST[0] = geoVals[0],
         this.filterRangeST[1] = geoVals[geoVals.length - 1];
       } else {
-        this.colors = this.colors.domain([0,100]);
+        this.colors = this.colors.domain([0, 100]);
       }
       try {
         this.valuesST.forEach((val) => {
@@ -4533,7 +4535,7 @@ export class ToolsSidebarComponent implements OnInit {
         });
         this.unblockDocument();
         this.oskariHeatmap['style'] = JSON.stringify(this.layerOptions['optionalStyles']);
-      } catch(e) {
+      } catch (e) {
         this.unblockDocument();
         this.messageService.add({
           severity: 'error',
@@ -4655,8 +4657,8 @@ export class ToolsSidebarComponent implements OnInit {
     if (this.stdAreaManageLayer) {
       let tmpId = this.stdAreaManageLayer.id.toString();
       let corrId;
-      if(tmpId.includes("priv_")) {
-        corrId = tmpId.replace("priv_","");
+      if (tmpId.includes('priv_')) {
+        corrId = tmpId.replace('priv_', '');
         this.layerSTService.getLayerST(corrId).subscribe(
           (layers) => {
             this.layersSTManage = layers;
@@ -4676,8 +4678,8 @@ export class ToolsSidebarComponent implements OnInit {
           }
         );
       }
-      else if(tmpId.includes("pub_")) {
-        corrId = tmpId.replace("pub_","");
+      else if (tmpId.includes('pub_')) {
+        corrId = tmpId.replace('pub_', '');
         this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
           (layers) => {
             this.layersSTManage = layers;
@@ -4740,8 +4742,8 @@ export class ToolsSidebarComponent implements OnInit {
     if (this.stdAreaManageFilter) {
       let tmpId = this.stdAreaManageFilter.id.toString();
       let corrId;
-      if(tmpId.includes("priv_")) {
-        corrId = tmpId.replace("priv_","");
+      if (tmpId.includes('priv_')) {
+        corrId = tmpId.replace('priv_', '');
         this.layerSTService.getFiltersST(corrId).subscribe(
           (layers) => {
             this.filtersSTManage = layers;
@@ -4761,8 +4763,8 @@ export class ToolsSidebarComponent implements OnInit {
           }
         );
       }
-      else if(tmpId.includes("pub_")) {
-        corrId = tmpId.replace("pub_","");
+      else if (tmpId.includes('pub_')) {
+        corrId = tmpId.replace('pub_', '');
         this.layerSTService.getFilterSTPubStdArea(corrId).subscribe(
           (layers) => {
             this.filtersSTManage = layers;
@@ -4790,8 +4792,8 @@ export class ToolsSidebarComponent implements OnInit {
     if (this.stdAreaManageSetting) {
       let tmpId = this.stdAreaManageSetting.id.toString();
       let corrId;
-      if(tmpId.includes("priv_")) {
-        corrId = tmpId.replace("priv_","");
+      if (tmpId.includes('priv_')) {
+        corrId = tmpId.replace('priv_', '');
         this.settingsService.getSettings(corrId).subscribe(
           (settings) => (this.settingsSTManage = settings),
           (error) => {
@@ -4812,8 +4814,8 @@ export class ToolsSidebarComponent implements OnInit {
           }
         );
       }
-      else if(tmpId.includes("pub_")) {
-        corrId = tmpId.replace("pub_","");
+      else if (tmpId.includes('pub_')) {
+        corrId = tmpId.replace('pub_', '');
         this.settingsService.getSettings(corrId).subscribe(
           (settings) => (this.settingsSTManage = settings),
           (error) => {
@@ -4842,7 +4844,7 @@ export class ToolsSidebarComponent implements OnInit {
     this.isNewLayer = false;
     this.manageLayer = this.cloneLayer(event.data);
     let cpLayer = event.data;
-    if(!isUndefined(cpLayer.user_layer_id)) {
+    if (!isUndefined(cpLayer.user_layer_id)) {
       let tmpId = cpLayer.user_layer_id;
       this.listService.getSTColumnWithId(tmpId).subscribe(
         (columns) => {
@@ -4856,7 +4858,7 @@ export class ToolsSidebarComponent implements OnInit {
           this.logErrorHandler(error);
         }
       );
-    } else if(!isUndefined(cpLayer.public_layer_id)) {
+    } else if (!isUndefined(cpLayer.public_layer_id)) {
       let tmpId = cpLayer.public_layer_id;
       this.listService.getSTPublicColumnWithId(tmpId).subscribe(
         (columns) => {
@@ -4877,7 +4879,7 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to save the selected layer
   saveLayer() {
     if (this.isNewLayer) {
-      if(!isUndefined(this.manageLayer.user_layer_id)) {
+      if (!isUndefined(this.manageLayer.user_layer_id)) {
         this.layerSTService.createLayerST(this.manageLayer).subscribe(
           () =>
             this.messageService.add({
@@ -4897,8 +4899,8 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageSetting) {
               let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -4919,8 +4921,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -4945,8 +4947,8 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageLayer) {
               let tmpId = this.stdAreaManageLayer.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.layerSTService.getLayerST(corrId).subscribe(
                   (layers) => {
                     this.layersSTManage = layers;
@@ -4966,8 +4968,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
                   (layers) => {
                     this.layersSTManage = layers;
@@ -4989,7 +4991,7 @@ export class ToolsSidebarComponent implements OnInit {
               }
             }
             if (this.selectedStudyAreaST) {
-              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace("pub_","").replace("priv_","")).subscribe(
+              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace('pub_', '').replace('priv_', '')).subscribe(
                 (lyrs) => (this.layerSettings = lyrs),
                 (error) => {
                   this.logErrorHandler(error);
@@ -5003,7 +5005,7 @@ export class ToolsSidebarComponent implements OnInit {
             this.editLayers = false;
           }
         );
-      } else if(!isUndefined(this.manageLayer.public_layer_id)) {
+      } else if (!isUndefined(this.manageLayer.public_layer_id)) {
         this.layerSTService.createPublicLayerST(this.manageLayer).subscribe(
           () =>
             this.messageService.add({
@@ -5023,8 +5025,8 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageSetting) {
               let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -5045,8 +5047,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -5071,8 +5073,8 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageLayer) {
               let tmpId = this.stdAreaManageLayer.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.layerSTService.getLayerST(corrId).subscribe(
                   (layers) => {
                     this.layersSTManage = layers;
@@ -5092,8 +5094,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
                   (layers) => {
                     this.layersSTManage = layers;
@@ -5115,7 +5117,7 @@ export class ToolsSidebarComponent implements OnInit {
               }
             }
             if (this.selectedStudyAreaST) {
-              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace("pub_","").replace("priv_","")).subscribe(
+              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace('pub_', '').replace('priv_', '')).subscribe(
                 (lyrs) => (this.layerSettings = lyrs),
                 (error) => {
                   this.logErrorHandler(error);
@@ -5131,7 +5133,7 @@ export class ToolsSidebarComponent implements OnInit {
         );
       }
     } else {
-      if(!isUndefined(this.manageLayer.user_layer_id)) {
+      if (!isUndefined(this.manageLayer.user_layer_id)) {
         this.layerSTService.updateLayerST(this.manageLayer).subscribe(
           () =>
             this.messageService.add({
@@ -5151,8 +5153,8 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageSetting) {
               let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -5173,8 +5175,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -5199,8 +5201,8 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageLayer) {
               let tmpId = this.stdAreaManageLayer.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.layerSTService.getLayerST(corrId).subscribe(
                   (layers) => {
                     this.layersSTManage = layers;
@@ -5220,8 +5222,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
                   (layers) => {
                     this.layersSTManage = layers;
@@ -5243,7 +5245,7 @@ export class ToolsSidebarComponent implements OnInit {
               }
             }
             if (this.selectedStudyAreaST) {
-              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace("pub_","").replace("priv_","")).subscribe(
+              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace('pub_', '').replace('priv_', '')).subscribe(
                 (lyrs) => (this.layerSettings = lyrs),
                 (error) => {
                   this.logErrorHandler(error);
@@ -5258,7 +5260,7 @@ export class ToolsSidebarComponent implements OnInit {
             this.editLayers = false;
           }
         );
-      } else if(!isUndefined(this.manageLayer.public_layer_id)) {
+      } else if (!isUndefined(this.manageLayer.public_layer_id)) {
         this.layerSTService.updatePublicLayerST(this.manageLayer).subscribe(
           () =>
             this.messageService.add({
@@ -5278,8 +5280,8 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageSetting) {
               let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -5300,8 +5302,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -5326,8 +5328,8 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageLayer) {
               let tmpId = this.stdAreaManageLayer.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.layerSTService.getLayerST(corrId).subscribe(
                   (layers) => {
                     this.layersSTManage = layers;
@@ -5347,8 +5349,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
                   (layers) => {
                     this.layersSTManage = layers;
@@ -5370,7 +5372,7 @@ export class ToolsSidebarComponent implements OnInit {
               }
             }
             if (this.selectedStudyAreaST) {
-              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace("pub_","").replace("priv_","")).subscribe(
+              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace('pub_', '').replace('priv_', '')).subscribe(
                 (lyrs) => (this.layerSettings = lyrs),
                 (error) => {
                   this.logErrorHandler(error);
@@ -5413,7 +5415,7 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to delete the selected layer
   confirmDeleteLayer() {
-    if(!isUndefined(this.manageLayer.user_layer_id)) {
+    if (!isUndefined(this.manageLayer.user_layer_id)) {
       this.layerSTService.deleteLayerST(this.manageLayer).subscribe(
         () =>
           this.messageService.add({
@@ -5435,8 +5437,8 @@ export class ToolsSidebarComponent implements OnInit {
           if (this.stdAreaManageSetting) {
             let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -5457,8 +5459,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -5483,8 +5485,8 @@ export class ToolsSidebarComponent implements OnInit {
           if (this.stdAreaManageLayer) {
             let tmpId = this.stdAreaManageLayer.id.toString();
             let corrId;
-            if(tmpId.includes("priv_")) {
-              corrId = tmpId.replace("priv_","");
+            if (tmpId.includes('priv_')) {
+              corrId = tmpId.replace('priv_', '');
               this.layerSTService.getLayerST(corrId).subscribe(
                 (layers) => {
                   this.layersSTManage = layers;
@@ -5504,8 +5506,8 @@ export class ToolsSidebarComponent implements OnInit {
                 }
               );
             }
-            else if(tmpId.includes("pub_")) {
-              corrId = tmpId.replace("pub_","");
+            else if (tmpId.includes('pub_')) {
+              corrId = tmpId.replace('pub_', '');
               this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
                 (layers) => {
                   this.layersSTManage = layers;
@@ -5527,7 +5529,7 @@ export class ToolsSidebarComponent implements OnInit {
             }
           }
           if (this.selectedStudyAreaST) {
-            this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace("pub_","").replace("priv_","")).subscribe(
+            this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace('pub_', '').replace('priv_', '')).subscribe(
               (layers) => (this.layerSettings = layers),
               (error) => {
                 this.logErrorHandler(error);
@@ -5541,7 +5543,7 @@ export class ToolsSidebarComponent implements OnInit {
           this.editLayers = false;
         }
       );
-    } else if(!isUndefined(this.manageLayer.public_layer_id)) {
+    } else if (!isUndefined(this.manageLayer.public_layer_id)) {
       this.layerSTService.deletePublicLayerST(this.manageLayer).subscribe(
         () =>
           this.messageService.add({
@@ -5563,8 +5565,8 @@ export class ToolsSidebarComponent implements OnInit {
           if (this.stdAreaManageSetting) {
             let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -5585,8 +5587,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -5611,8 +5613,8 @@ export class ToolsSidebarComponent implements OnInit {
           if (this.stdAreaManageLayer) {
             let tmpId = this.stdAreaManageLayer.id.toString();
             let corrId;
-            if(tmpId.includes("priv_")) {
-              corrId = tmpId.replace("priv_","");
+            if (tmpId.includes('priv_')) {
+              corrId = tmpId.replace('priv_', '');
               this.layerSTService.getLayerST(corrId).subscribe(
                 (layers) => {
                   this.layersSTManage = layers;
@@ -5632,8 +5634,8 @@ export class ToolsSidebarComponent implements OnInit {
                 }
               );
             }
-            else if(tmpId.includes("pub_")) {
-              corrId = tmpId.replace("pub_","");
+            else if (tmpId.includes('pub_')) {
+              corrId = tmpId.replace('pub_', '');
               this.layerSTService.getLayerSTPubStdArea(corrId).subscribe(
                 (layers) => {
                   this.layersSTManage = layers;
@@ -5655,7 +5657,7 @@ export class ToolsSidebarComponent implements OnInit {
             }
           }
           if (this.selectedStudyAreaST) {
-            this.layersService.getLayers(this.selectedStudyAreaST.id.replace("pub_","").replace("priv_","")).subscribe(
+            this.layersService.getLayers(this.selectedStudyAreaST.id.replace('pub_', '').replace('priv_', '')).subscribe(
               (layers) => (this.layerSettings = layers),
               (error) => {
                 this.logErrorHandler(error);
@@ -5687,7 +5689,7 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to update the selected filter
   saveFilter() {
     if (this.isNewFilter) {
-      if(!isUndefined(this.manageFilter.user_layer_id)) {
+      if (!isUndefined(this.manageFilter.user_layer_id)) {
         this.layerSTService.createFilterST(this.manageFilter).subscribe(
           () =>
             this.messageService.add({
@@ -5707,8 +5709,8 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageSetting) {
               let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -5729,8 +5731,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -5755,10 +5757,10 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageFilter) {
               let tmpId = this.stdAreaManageFilter.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.layerSTService
-                .getFiltersST(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .getFiltersST(this.stdAreaManageFilter.id.toString().replace('pub_', '').replace('priv_', ''))
                 .subscribe(
                   (lyrs) => (this.filtersSTManage = lyrs),
                   (error) => {
@@ -5775,10 +5777,10 @@ export class ToolsSidebarComponent implements OnInit {
                     );
                   }
                 );
-              } else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("priv_","");
+              } else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.layerSTService
-                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace('pub_', '').replace('priv_', ''))
                 .subscribe(
                   (lyrs) => (this.filtersSTManage = lyrs),
                   (error) => {
@@ -5798,7 +5800,7 @@ export class ToolsSidebarComponent implements OnInit {
               }
             }
             if (this.selectedStudyAreaST) {
-              this.layersService.getFilters(this.selectedStudyAreaST.id.toString().replace("pub_","").replace("priv_","")).subscribe(
+              this.layersService.getFilters(this.selectedStudyAreaST.id.toString().replace('pub_', '').replace('priv_', '')).subscribe(
                 (lyrs) => (this.layerSettings = lyrs),
                 (error) => {
                   this.logErrorHandler(error);
@@ -5812,7 +5814,7 @@ export class ToolsSidebarComponent implements OnInit {
             this.editLayers = false;
           }
         );
-      } else if(!isUndefined(this.manageLayer.public_layer_id)) {
+      } else if (!isUndefined(this.manageLayer.public_layer_id)) {
         this.layerSTService.createPublicLayerST(this.manageLayer).subscribe(
           () =>
             this.messageService.add({
@@ -5832,8 +5834,8 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageSetting) {
               let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -5854,8 +5856,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -5880,10 +5882,10 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageFilter) {
               let tmpId = this.stdAreaManageFilter.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.layerSTService
-                .getFiltersST(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .getFiltersST(this.stdAreaManageFilter.id.toString().replace('pub_', '').replace('priv_', ''))
                 .subscribe(
                   (lyrs) => (this.filtersSTManage = lyrs),
                   (error) => {
@@ -5900,10 +5902,10 @@ export class ToolsSidebarComponent implements OnInit {
                     );
                   }
                 );
-              } else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              } else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.layerSTService
-                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace('pub_', '').replace('priv_', ''))
                 .subscribe(
                   (lyrs) => (this.filtersSTManage = lyrs),
                   (error) => {
@@ -5923,7 +5925,7 @@ export class ToolsSidebarComponent implements OnInit {
               }
             }
             if (this.selectedStudyAreaST) {
-              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace("pub_","").replace("priv_","")).subscribe(
+              this.layersService.getLayers(this.selectedStudyAreaST.id.toString().replace('pub_', '').replace('priv_', '')).subscribe(
                 (lyrs) => (this.layerSettings = lyrs),
                 (error) => {
                   this.logErrorHandler(error);
@@ -5939,7 +5941,7 @@ export class ToolsSidebarComponent implements OnInit {
         );
       }
     } else {
-      if(!isUndefined(this.manageFilter.user_layer_id)) {
+      if (!isUndefined(this.manageFilter.user_layer_id)) {
         this.layerSTService.updateFilterST(this.manageFilter).subscribe(
           () =>
             this.messageService.add({
@@ -5959,10 +5961,10 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageFilter) {
               let tmpId = this.stdAreaManageFilter.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.layerSTService
-                .getFiltersST(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .getFiltersST(this.stdAreaManageFilter.id.toString().replace('pub_', '').replace('priv_', ''))
                 .subscribe(
                   (lyrs) => (this.filtersSTManage = lyrs),
                   (error) => {
@@ -5979,10 +5981,10 @@ export class ToolsSidebarComponent implements OnInit {
                     );
                   }
                 );
-              } else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              } else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.layerSTService
-                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace('pub_', '').replace('priv_', ''))
                 .subscribe(
                   (lyrs) => (this.filtersSTManage = lyrs),
                   (error) => {
@@ -6014,8 +6016,8 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageSetting) {
               let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -6036,8 +6038,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -6064,7 +6066,7 @@ export class ToolsSidebarComponent implements OnInit {
           }
         );
       }
-      else if(!isUndefined(this.manageFilter.public_layer_id)) {
+      else if (!isUndefined(this.manageFilter.public_layer_id)) {
         this.layerSTService.updatePublicFilterST(this.manageFilter).subscribe(
           () =>
             this.messageService.add({
@@ -6084,10 +6086,10 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageFilter) {
               let tmpId = this.stdAreaManageFilter.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.layerSTService
-                .getFiltersST(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .getFiltersST(this.stdAreaManageFilter.id.toString().replace('pub_', '').replace('priv_', ''))
                 .subscribe(
                   (lyrs) => (this.filtersSTManage = lyrs),
                   (error) => {
@@ -6104,10 +6106,10 @@ export class ToolsSidebarComponent implements OnInit {
                     );
                   }
                 );
-              } else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              } else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.layerSTService
-                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace("pub_","").replace("priv_",""))
+                .getFilterSTPubStdArea(this.stdAreaManageFilter.id.toString().replace('pub_', '').replace('priv_', ''))
                 .subscribe(
                   (lyrs) => (this.filtersSTManage = lyrs),
                   (error) => {
@@ -6139,8 +6141,8 @@ export class ToolsSidebarComponent implements OnInit {
             if (this.stdAreaManageSetting) {
               let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -6161,8 +6163,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -6216,7 +6218,7 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to delete the selected filter
   confirmDeleteFilter() {
-    if(!isUndefined(this.manageFilter.user_layer_id)) {
+    if (!isUndefined(this.manageFilter.user_layer_id)) {
       this.layerSTService.deleteFilterST(this.manageFilter).subscribe(
         () =>
           this.messageService.add({
@@ -6238,8 +6240,8 @@ export class ToolsSidebarComponent implements OnInit {
           if (this.stdAreaManageSetting) {
             let tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
-            if(tmpId.includes("priv_")) {
-              corrId = tmpId.replace("priv_","");
+            if (tmpId.includes('priv_')) {
+              corrId = tmpId.replace('priv_', '');
               this.settingsService.getSettings(corrId).subscribe(
                 (settings) => (this.settingsSTManage = settings),
                 (error) => {
@@ -6260,8 +6262,8 @@ export class ToolsSidebarComponent implements OnInit {
                 }
               );
             }
-            else if(tmpId.includes("pub_")) {
-              corrId = tmpId.replace("pub_","");
+            else if (tmpId.includes('pub_')) {
+              corrId = tmpId.replace('pub_', '');
               this.settingsService.getSettings(corrId).subscribe(
                 (settings) => (this.settingsSTManage = settings),
                 (error) => {
@@ -6286,8 +6288,8 @@ export class ToolsSidebarComponent implements OnInit {
           if (this.stdAreaManageFilter) {
             let tmpId = this.stdAreaManageFilter.id.toString();
             let corrId;
-            if(tmpId.includes("priv_")) {
-              corrId = tmpId.replace("priv_","");
+            if (tmpId.includes('priv_')) {
+              corrId = tmpId.replace('priv_', '');
               this.layerSTService.getFiltersST(corrId).subscribe(
                 (layers) => {
                   this.filtersSTManage = layers;
@@ -6307,8 +6309,8 @@ export class ToolsSidebarComponent implements OnInit {
                 }
               );
             }
-            else if(tmpId.includes("pub_")) {
-              corrId = tmpId.replace("pub_","");
+            else if (tmpId.includes('pub_')) {
+              corrId = tmpId.replace('pub_', '');
               this.layerSTService.getFilterSTPubStdArea(corrId).subscribe(
                 (layers) => {
                   this.filtersSTManage = layers;
@@ -6330,7 +6332,7 @@ export class ToolsSidebarComponent implements OnInit {
             }
           }
           if (this.selectedStudyAreaST) {
-            this.layersService.getFilters(this.selectedStudyAreaST.id.replace("pub_","").replace("priv_","")).subscribe(
+            this.layersService.getFilters(this.selectedStudyAreaST.id.replace('pub_', '').replace('priv_', '')).subscribe(
               (fltr) => (this.filterList = fltr),
               (error) => {
                 this.logErrorHandler(error);
@@ -6340,7 +6342,7 @@ export class ToolsSidebarComponent implements OnInit {
           this.editFilters = false;
         }
       );
-    } else if(!isUndefined(this.manageFilter.public_layer_id)) {
+    } else if (!isUndefined(this.manageFilter.public_layer_id)) {
       this.layerSTService.deletePublicFilterST(this.manageFilter).subscribe(
         () =>
           this.messageService.add({
@@ -6362,8 +6364,8 @@ export class ToolsSidebarComponent implements OnInit {
           if (this.stdAreaManageSetting) {
             let tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
-            if(tmpId.includes("priv_")) {
-              corrId = tmpId.replace("priv_","");
+            if (tmpId.includes('priv_')) {
+              corrId = tmpId.replace('priv_', '');
               this.settingsService.getSettings(corrId).subscribe(
                 (settings) => (this.settingsSTManage = settings),
                 (error) => {
@@ -6384,8 +6386,8 @@ export class ToolsSidebarComponent implements OnInit {
                 }
               );
             }
-            else if(tmpId.includes("pub_")) {
-              corrId = tmpId.replace("pub_","");
+            else if (tmpId.includes('pub_')) {
+              corrId = tmpId.replace('pub_', '');
               this.settingsService.getSettings(corrId).subscribe(
                 (settings) => (this.settingsSTManage = settings),
                 (error) => {
@@ -6410,8 +6412,8 @@ export class ToolsSidebarComponent implements OnInit {
           if (this.stdAreaManageFilter) {
             let tmpId = this.stdAreaManageFilter.id.toString();
             let corrId;
-            if(tmpId.includes("priv_")) {
-              corrId = tmpId.replace("priv_","");
+            if (tmpId.includes('priv_')) {
+              corrId = tmpId.replace('priv_', '');
               this.layerSTService.getFiltersST(corrId).subscribe(
                 (layers) => {
                   this.filtersSTManage = layers;
@@ -6431,8 +6433,8 @@ export class ToolsSidebarComponent implements OnInit {
                 }
               );
             }
-            else if(tmpId.includes("pub_")) {
-              corrId = tmpId.replace("pub_","");
+            else if (tmpId.includes('pub_')) {
+              corrId = tmpId.replace('pub_', '');
               this.layerSTService.getFilterSTPubStdArea(corrId).subscribe(
                 (layers) => {
                   this.filtersSTManage = layers;
@@ -6454,7 +6456,7 @@ export class ToolsSidebarComponent implements OnInit {
             }
           }
           if (this.selectedStudyAreaST) {
-            this.layersService.getFilters(this.selectedStudyAreaST.id.replace("pub_","").replace("priv_","")).subscribe(
+            this.layersService.getFilters(this.selectedStudyAreaST.id.replace('pub_', '').replace('priv_', '')).subscribe(
               (fltr) => (this.filterList = fltr),
               (error) => {
                 this.logErrorHandler(error);
@@ -6776,7 +6778,7 @@ export class ToolsSidebarComponent implements OnInit {
       this.manageSetting.smaller_better = this.manageSetting.smaller_better
         ? 1
         : 0;
-      if(!isUndefined(this.manageSetting.st_layer_id)) {
+      if (!isUndefined(this.manageSetting.st_layer_id)) {
         this.settingsService.postSettings(this.manageSetting).subscribe(
           () =>
             this.messageService.add({
@@ -6795,8 +6797,8 @@ export class ToolsSidebarComponent implements OnInit {
             });
             let tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
-            if(tmpId.includes("priv_")) {
-              corrId = tmpId.replace("priv_","");
+            if (tmpId.includes('priv_')) {
+              corrId = tmpId.replace('priv_', '');
               this.settingsService.getSettings(corrId).subscribe(
                 (settings) => (this.settingsSTManage = settings),
                 (error) => {
@@ -6817,8 +6819,8 @@ export class ToolsSidebarComponent implements OnInit {
                 }
               );
             }
-            else if(tmpId.includes("pub_")) {
-              corrId = tmpId.replace("pub_","");
+            else if (tmpId.includes('pub_')) {
+              corrId = tmpId.replace('pub_', '');
               this.settingsService.getSettings(corrId).subscribe(
                 (settings) => (this.settingsSTManage = settings),
                 (error) => {
@@ -6855,7 +6857,7 @@ export class ToolsSidebarComponent implements OnInit {
             this.editSettings = false;
           }
         );
-      } else if(!isUndefined(this.manageSetting.st_layer_id)) {
+      } else if (!isUndefined(this.manageSetting.st_layer_id)) {
         this.settingsService.postPublicSettings(this.manageSetting).subscribe(
           () =>
             this.messageService.add({
@@ -6874,8 +6876,8 @@ export class ToolsSidebarComponent implements OnInit {
             });
             let tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
-            if(tmpId.includes("priv_")) {
-              corrId = tmpId.replace("priv_","");
+            if (tmpId.includes('priv_')) {
+              corrId = tmpId.replace('priv_', '');
               this.settingsService.getSettings(corrId).subscribe(
                 (settings) => (this.settingsSTManage = settings),
                 (error) => {
@@ -6896,8 +6898,8 @@ export class ToolsSidebarComponent implements OnInit {
                 }
               );
             }
-            else if(tmpId.includes("pub_")) {
-              corrId = tmpId.replace("pub_","");
+            else if (tmpId.includes('pub_')) {
+              corrId = tmpId.replace('pub_', '');
               this.settingsService.getSettings(corrId).subscribe(
                 (settings) => (this.settingsSTManage = settings),
                 (error) => {
@@ -6937,7 +6939,7 @@ export class ToolsSidebarComponent implements OnInit {
       }
       
     } else {
-      if(!isUndefined(this.manageSetting.st_layer_id)) {
+      if (!isUndefined(this.manageSetting.st_layer_id)) {
         this.manageSetting.smaller_better = this.manageSetting.smaller_better
         ? 1
         : 0;
@@ -6959,8 +6961,8 @@ export class ToolsSidebarComponent implements OnInit {
           });
           let tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
-            if(tmpId.includes("priv_")) {
-              corrId = tmpId.replace("priv_","");
+            if (tmpId.includes('priv_')) {
+              corrId = tmpId.replace('priv_', '');
               this.settingsService.getSettings(corrId).subscribe(
                 (settings) => (this.settingsSTManage = settings),
                 (error) => {
@@ -6981,8 +6983,8 @@ export class ToolsSidebarComponent implements OnInit {
                 }
               );
             }
-            else if(tmpId.includes("pub_")) {
-              corrId = tmpId.replace("pub_","");
+            else if (tmpId.includes('pub_')) {
+              corrId = tmpId.replace('pub_', '');
               this.settingsService.getSettings(corrId).subscribe(
                 (settings) => (this.settingsSTManage = settings),
                 (error) => {
@@ -7019,7 +7021,7 @@ export class ToolsSidebarComponent implements OnInit {
           this.editSettings = false;
         }
       );
-      } else if(!isUndefined(this.manageSetting.st_layer_id)) {
+      } else if (!isUndefined(this.manageSetting.st_layer_id)) {
         this.manageSetting.smaller_better = this.manageSetting.smaller_better
         ? 1
         : 0;
@@ -7041,8 +7043,8 @@ export class ToolsSidebarComponent implements OnInit {
           });
           let tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
-            if(tmpId.includes("priv_")) {
-              corrId = tmpId.replace("priv_","");
+            if (tmpId.includes('priv_')) {
+              corrId = tmpId.replace('priv_', '');
               this.settingsService.getSettings(corrId).subscribe(
                 (settings) => (this.settingsSTManage = settings),
                 (error) => {
@@ -7063,8 +7065,8 @@ export class ToolsSidebarComponent implements OnInit {
                 }
               );
             }
-            else if(tmpId.includes("pub_")) {
-              corrId = tmpId.replace("pub_","");
+            else if (tmpId.includes('pub_')) {
+              corrId = tmpId.replace('pub_', '');
               this.settingsService.getSettings(corrId).subscribe(
                 (settings) => (this.settingsSTManage = settings),
                 (error) => {
@@ -7130,7 +7132,7 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to delete the selected settings
   confirmDeleteSettings() {
-    if(!isUndefined(this.manageSetting.st_layer_id)) {
+    if (!isUndefined(this.manageSetting.st_layer_id)) {
       this.settingsService.deleteSettings(this.manageSetting).subscribe(
         () =>
           this.messageService.add({
@@ -7151,8 +7153,8 @@ export class ToolsSidebarComponent implements OnInit {
           });
           let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -7173,8 +7175,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -7210,7 +7212,7 @@ export class ToolsSidebarComponent implements OnInit {
           this.editSettings = false;
         }
       );
-    } else if(!isUndefined(this.manageSetting.st_layer_id)) {
+    } else if (!isUndefined(this.manageSetting.st_layer_id)) {
       this.settingsService.deletePublicSettings(this.manageSetting).subscribe(
         () =>
           this.messageService.add({
@@ -7231,8 +7233,8 @@ export class ToolsSidebarComponent implements OnInit {
           });
           let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
-              if(tmpId.includes("priv_")) {
-                corrId = tmpId.replace("priv_","");
+              if (tmpId.includes('priv_')) {
+                corrId = tmpId.replace('priv_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
@@ -7253,8 +7255,8 @@ export class ToolsSidebarComponent implements OnInit {
                   }
                 );
               }
-              else if(tmpId.includes("pub_")) {
-                corrId = tmpId.replace("pub_","");
+              else if (tmpId.includes('pub_')) {
+                corrId = tmpId.replace('pub_', '');
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
