@@ -4152,7 +4152,7 @@ export class ToolsSidebarComponent implements OnInit {
     this.selectedPublicFiltersArrayST = [];
     this.selectedFiltersST.forEach(
       (fltr) => {
-        let tmpFltrId = fltr;
+        let tmpFltrId = Object.assign({}, fltr);
         if (fltr.includes('priv_')) {
           tmpFltrId = tmpFltrId.replace('priv_', '');
           this.selectedFiltersArrayST.push(tmpFltrId);
@@ -4179,7 +4179,7 @@ export class ToolsSidebarComponent implements OnInit {
       this.selectedLayersST = [];
       this.selectedPublicLayersST = [];
       this.selSetting.forEach((setting) => {
-        let tmpStngLyrId = setting.st_layer_id;
+        let tmpStngLyrId = Object.assign({}, setting.st_layer_id);
         if (setting.st_layer_id.includes('priv_')) {
           tmpStngLyrId = tmpStngLyrId.replace('priv_', '');
           this.selectedLayersST.push(tmpStngLyrId);
@@ -4190,8 +4190,8 @@ export class ToolsSidebarComponent implements OnInit {
       });
       this.selSetting.forEach(
         (stng) => {
-          let tmpStng = stng;
-          let tmpStngLyrId = stng.st_layer_id;
+          let tmpStng = Object.assign({}, stng);
+          let tmpStngLyrId = tmpStng.st_layer_id;
           if (stng.st_layer_id.includes('priv_')) {
             tmpStngLyrId = tmpStngLyrId.replace('priv_', '');
             tmpStng.st_layer_id = tmpStngLyrId;
