@@ -508,7 +508,21 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Oskari variables for displaying data on map (ST)
   rn = 'MapModulePlugin.AddFeaturesToMapRequest';
-  layerOptions = {};
+  layerOptions = {
+    layerId: '',
+    layerInspireName: '',
+    layerOrganizationName: '',
+    showLayer: true,
+    opacity: 85,
+    layerName: '',
+    layerDescription: '',
+    layerPermissions: {
+      publish: 'publication_permission_ok',
+    },
+    centerTo: true,
+    optionalStyles: [],
+  };
+  
   geojsonObject: any;
   fullGeojson: any;
 
