@@ -4160,9 +4160,10 @@ export class ToolsSidebarComponent implements OnInit {
     this.stResult = true;
     this.selectedFiltersArrayST = [];
     this.selectedPublicFiltersArrayST = [];
+    console.log(this.selectedFiltersST);
     this.selectedFiltersST.forEach(
       (fltr) => {
-        let tmpFltrId = Object.assign({}, fltr);
+        let tmpFltrId = fltr;
         if (fltr.includes('priv_')) {
           tmpFltrId = tmpFltrId.replace('priv_', '');
           this.selectedFiltersArrayST.push(tmpFltrId);
