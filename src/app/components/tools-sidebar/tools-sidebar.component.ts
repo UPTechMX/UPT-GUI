@@ -2108,6 +2108,8 @@ export class ToolsSidebarComponent implements OnInit {
                 assumption.id = 'priv_' + assumption.id;
               });
               this.assumptions = assumptions;
+            } else {
+              this.assumptions.length = 0;
             }
           },
           (error) => {
@@ -2125,6 +2127,8 @@ export class ToolsSidebarComponent implements OnInit {
                 assumption.id = 'pub_' + assumption.id;
               });
               this.assumptions = assumptions;
+            } else {
+              this.assumptions.length = 0;
             }
           },
           (error) => {
