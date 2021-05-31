@@ -2094,29 +2094,38 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to get the Assumptions related to the selected Scenario
   loadAssumptions() {
     if (this.asmptScenarioManage) {
-      if (this.asmptScenarioManage.scenarioId.includes('priv_')) {
+      console.log(this.asmptScenarioManage);
+      const tmpScenario = Object.assign({}, this.asmptScenarioManage);
+      let tmpScenarioId = tmpScenario.scenarioId;
+      if (tmpScenarioId.includes('priv_')) {
+        tmpScenarioId = tmpScenarioId.replace('priv_', '');
         this.assumptionService
-        .getAssumptions(this.asmptScenarioManage.scenarioId.replace('priv_', ''))
+        .getAssumptions(tmpScenarioId)
         .subscribe(
           (assumptions) => {
-            assumptions.forEach(assumption => {
-              assumption.id = 'priv_' + assumption.id;
-            });
-            this.assumptions = assumptions;
+            if(assumptions[0].study_area !== null) {
+              assumptions.forEach(assumption => {
+                assumption.id = 'priv_' + assumption.id;
+              });
+              this.assumptions = assumptions;
+            }
           },
           (error) => {
             this.logErrorHandler(error);
           }
         );
-      } else if (this.asmptScenarioManage.scenarioId.includes('pub_')) {
+      } else if (tmpScenarioId.includes('pub_')) {
+        tmpScenarioId = tmpScenarioId.replace('pub_', '');
         this.assumptionService
-        .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace('pub_', ''))
+        .getPublicAssumptions(tmpScenarioId)
         .subscribe(
           (assumptions) => {
-            assumptions.forEach(assumption => {
-              assumption.id = 'pub_' + assumption.id;
-            });
-            this.assumptions = assumptions;
+            if(assumptions[0].study_area !== null) {
+              assumptions.forEach(assumption => {
+                assumption.id = 'pub_' + assumption.id;
+              });
+              this.assumptions = assumptions;
+            }
           },
           (error) => {
             this.logErrorHandler(error);
@@ -2134,9 +2143,12 @@ export class ToolsSidebarComponent implements OnInit {
       summary: 'In process!',
       detail: 'Your file is being uploaded!',
     });
-    if (this.asmptStudyAreaFile.id.includes('priv_')) {
+    const tmpStudyAreaFileAsmpt = Object.assign({}, this.asmptStudyAreaFile);
+    let tmpStudyAreaId = tmpStudyAreaFileAsmpt.id;
+    if (tmpStudyAreaId.includes('priv_')) {
+      tmpStudyAreaId = tmpStudyAreaId.replace('priv_', '');
       this.assumptionService
-      .uploadAssumption(this.asmptStudyAreaFile.id.replace('priv_', ''), event.files[0])
+      .uploadAssumption(tmpStudyAreaId, event.files[0])
       .subscribe(
         () => {},
         (error) => {
@@ -2144,37 +2156,7 @@ export class ToolsSidebarComponent implements OnInit {
           this.logErrorHandler(error);
         },
         () => {
-          if (this.asmptScenarioManage) {
-            if (this.asmptScenarioManage.scenarioId.includes('priv_')) {
-              this.assumptionService
-              .getAssumptions(this.asmptScenarioManage.scenarioId.replace('priv_', ''))
-              .subscribe(
-                (assumptions) => {
-                  assumptions.forEach(assumption => {
-                    assumption.id = 'priv_' + assumption.id;
-                  });
-                  this.assumptions = assumptions;
-                },
-                (error) => {
-                  this.logErrorHandler(error);
-                }
-              );
-            } else if (this.asmptScenarioManage.scenarioId.includes('pub_')) {
-              this.assumptionService
-              .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace('pub_', ''))
-              .subscribe(
-                (assumptions) => {
-                  assumptions.forEach(assumption => {
-                    assumption.id = 'pub_' + assumption.id;
-                  });
-                  this.assumptions = assumptions;
-                },
-                (error) => {
-                  this.logErrorHandler(error);
-                }
-              );
-            }
-          }
+          this.loadAssumptions();
           this.messageService.add({
             severity: 'success',
             summary: 'Success!',
@@ -2183,9 +2165,10 @@ export class ToolsSidebarComponent implements OnInit {
           this.unblockDocument();
         }
       );
-    } else if (this.asmptStudyAreaFile.id.includes('pub_')) {
+    } else if (tmpStudyAreaId.includes('pub_')) {
+      tmpStudyAreaId = tmpStudyAreaId.replace('pub_', '');
       this.assumptionService
-      .uploadPublicAssumption(this.asmptStudyAreaFile.id.replace('pub_', ''), event.files[0])
+      .uploadPublicAssumption(tmpStudyAreaId, event.files[0])
       .subscribe(
         () => {},
         (error) => {
@@ -2193,37 +2176,7 @@ export class ToolsSidebarComponent implements OnInit {
           this.logErrorHandler(error);
         },
         () => {
-          if (this.asmptScenarioManage) {
-            if (this.asmptScenarioManage.scenarioId.includes('priv_')) {
-              this.assumptionService
-              .getAssumptions(this.asmptScenarioManage.scenarioId.replace('priv_', ''))
-              .subscribe(
-                (assumptions) => {
-                  assumptions.forEach(assumption => {
-                    assumption.id = 'priv_' + assumption.id;
-                  });
-                  this.assumptions = assumptions;
-                },
-                (error) => {
-                  this.logErrorHandler(error);
-                }
-              );
-            } else if (this.asmptScenarioManage.scenarioId.includes('pub_')) {
-              this.assumptionService
-              .getPublicAssumptions(this.asmptScenarioManage.scenarioId.replace('pub_', ''))
-              .subscribe(
-                (assumptions) => {
-                  assumptions.forEach(assumption => {
-                    assumption.id = 'pub_' + assumption.id;
-                  });
-                  this.assumptions = assumptions;
-                },
-                (error) => {
-                  this.logErrorHandler(error);
-                }
-              );
-            }
-          }
+          this.loadAssumptions();
           this.messageService.add({
             severity: 'success',
             summary: 'Success!',
