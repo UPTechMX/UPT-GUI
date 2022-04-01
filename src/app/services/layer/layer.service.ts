@@ -9,7 +9,7 @@ import { NormalizationMethod } from 'src/app/interfaces/normalization-method';
   providedIn: 'root'
 })
 // Service that requests the study areas for the UPT,
-// and gets the layers and filters for a selected study area for UrbanHotspots.
+// and gets the layers and filters for a selected study area for SuitAbility.
 export class LayerService {
 
   constructor(private http: HttpClient) { }

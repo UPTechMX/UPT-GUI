@@ -7,7 +7,7 @@
                 <ng-template #gpWhite>
                     <img style="height: 2em;" src="{{oskariUrl}}/PLID/assets/img/GeoPortal blanco.png" class="ml-2 img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="Geoportal logo white">
                 </ng-template>
-                <img style="height: 2em;" *ngIf="suitabilityActive && !urbPerActive" src="{{oskariUrl}}/PLID/assets/img/UH blanco.png" class="ml-5 pl-2 img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="UrbanHotspots logo">
+                <img style="height: 2em;" *ngIf="suitabilityActive && !urbPerActive" src="{{oskariUrl}}/PLID/assets/img/ST V2 BN.png" class="ml-5 pl-2 img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="SuitAbility logo">
                 <img style="height: 2em;" *ngIf="urbPerActive && !suitabilityActive" src="{{oskariUrl}}/PLID/assets/img/UP blanco.png" class="ml-5 pl-2img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="UrbanPerformance logo">
             </div>
             <ul class="navbar-nav ml-auto">
@@ -17,7 +17,7 @@
                     <div class="dropdown-menu" role="menu" style="left: -32px;">
                         <ul class="list-inline p-1" *ngIf="uptWindow.__session_active; else loggedOut">
                             <li class="list-inline-item" (click)="stStatus();">
-                                <img style="height: 1.8em" src="{{oskariUrl}}/PLID/assets/img/UH_icon_logo.png" class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="UrbanHotspots">
+                                <img style="height: 1.8em" src="{{oskariUrl}}/PLID/assets/img/st-small.png" class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="SuitAbility">
                             </li>
                             <li class="list-inline-item" (click)="upStatus();">
                                 <img style="height: 1.8em" src="{{oskariUrl}}/PLID/assets/img/up-small.png" class="img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="UrbanPerformance">
@@ -29,7 +29,7 @@
                         <ng-template #loggedOut>
                             <ul class="list-inline p-1">
                                 <li class="list-inline-item" (click)="promptLogin()">
-                                    <img style="height: 1.8em" src="{{oskariUrl}}/PLID/assets/img/UH_icon_logo.png" class="disabled img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="Suitability">
+                                    <img style="height: 1.8em" src="{{oskariUrl}}/PLID/assets/img/st-small.png" class="disabled img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="Suitability">
                                 </li>
                                 <li class="list-inline-item" (click)="promptLogin()">
                                     <img style="height: 1.8em" src="{{oskariUrl}}/PLID/assets/img/up-small.png" class="disabled img-fluid ${3|rounded-top,rounded-right,rounded-bottom,rounded-left,rounded-circle,|}" alt="UrbanPerformance">

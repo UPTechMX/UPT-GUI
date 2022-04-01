@@ -11,7 +11,7 @@ const httpOptions = {
 @Injectable({
   providedIn: 'root'
 })
-// Service used to manage UrbanHotspots layer settings (CRUD)
+// Service used to manage SuitAbility layer settings (CRUD)
 export class SettingsService {
 
   constructor(private http: HttpClient) { }

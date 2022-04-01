@@ -27,7 +27,7 @@
         </div>
     </ng-template>
 </p-toast>
-<!--PrimeNG dialog which shows the color scale used for UrbanHotspots-->
+<!--PrimeNG dialog which shows the color scale used for SuitAbility-->
 <p-dialog [showHeader]="false" [(visible)]="displayColorScaleST" [maximizable]="false" [resizable]="false" [draggable]="false" [baseZIndex]="1150" styleClass="colorScaleST" [contentStyle]="{'opacity': 0.75}">
     <div class="ui-g ui-fluid ui-rtl" dir="rtl" style="font-size: 12px;">
         INDEX
@@ -236,7 +236,7 @@
         </div>
     </ng-template>
 </p-toast>
-<!--PrimeNG toast which asks for confirmation to delete an UrbanHotspots Layer.-->
+<!--PrimeNG toast which asks for confirmation to delete an SuitAbility Layer.-->
 <p-toast [modal]="true" key="confirmDeleteLayer" position="center" [baseZIndex]="5000">
     <ng-template let-o let-message pTemplate="message">
         <div style="text-align: center">
@@ -254,7 +254,7 @@
         </div>
     </ng-template>
 </p-toast>
-<!--PrimeNG toast which asks for confirmaton to delete an UrbanHotspots Filter-->
+<!--PrimeNG toast which asks for confirmaton to delete an SuitAbility Filter-->
 <p-toast [modal]="true" key="confirmDeleteFilter" position="center" [baseZIndex]="5000">
     <ng-template let-o let-message pTemplate="message">
         <div style="text-align: center">
@@ -272,7 +272,7 @@
         </div>
     </ng-template>
 </p-toast>
-<!--PrimeNG toast which asks for confirmation to restore UrbanHotspots settings to default value.-->
+<!--PrimeNG toast which asks for confirmation to restore SuitAbility settings to default value.-->
 <p-toast [modal]="true" key="confirmDeleteSettings" position="center" [baseZIndex]="5000">
     <ng-template let-o let-message pTemplate="message">
         <div style="text-align: center">
@@ -327,7 +327,7 @@
         </div>
     </p-footer>
 </p-dialog>
-<!--PrimeNG dialog which allows the user to save the results of an UrbanHotspots evaluation into Oskari as a layer.-->
+<!--PrimeNG dialog which allows the user to save the results of an SuitAbility evaluation into Oskari as a layer.-->
 <p-dialog header="Save Heatmap to Geoportal" [(visible)]="displaySaveHeatmap" [focusOnShow]="false" [responsive]="true" showEffect="fade" [modal]="true" [style]="{width: '450px'}" [maximizable]="false" [baseZIndex]="1150">
     <div class="suitability">
         <div class="ui-g ui-fluid" *ngIf="oskariHeatmap">
@@ -400,7 +400,7 @@
         </div>
     </p-footer>
 </p-dialog>
-<!--PrimeNG dialog that allows the user to create/edit the settings of an UrbanHotspots Layer.-->
+<!--PrimeNG dialog that allows the user to create/edit the settings of an SuitAbility Layer.-->
 <p-dialog header="Settings Details" [(visible)]="editSettings" [focusOnShow]="false" [responsive]="true" showEffect="fade" [modal]="true" [style]="{width: '300px'}" [maximizable]="false" [baseZIndex]="1150">
     <div class="suitability">
         <div class="ui-g ui-fluid" *ngIf="manageSetting">
@@ -464,7 +464,7 @@
         </div>
     </p-footer>
 </p-dialog>
-<!--PrimeNG dialog that allows the user to create/edit an UrbanHotspots Filter.-->
+<!--PrimeNG dialog that allows the user to create/edit an SuitAbility Filter.-->
 <p-dialog header="Filter Details" [(visible)]="editFilters" [focusOnShow]="false" [responsive]="true" showEffect="fade" [modal]="true" [style]="{width: '300px'}" [maximizable]="false" [baseZIndex]="1150">
     <div class="suitability">
         <div class="ui-g ui-fluid" *ngIf="manageFilter">
@@ -485,7 +485,7 @@
         </div>
     </p-footer>
 </p-dialog>
-<!--PrimeNG dialog that allows the user to create/edit an UrbanHotspots Layer.-->
+<!--PrimeNG dialog that allows the user to create/edit an SuitAbility Layer.-->
 <p-dialog header="Layer Details" [(visible)]="editLayers" [focusOnShow]="false" [responsive]="true" showEffect="fade" [modal]="true" [style]="{width: '300px'}" [maximizable]="false" [baseZIndex]="1150">
     <div class="suitability">
         <div class="ui-g ui-fluid" *ngIf="manageLayer">
@@ -819,11 +819,11 @@
         </div>
     </div>
 </p-dialog>
-<!--PrimeNG dialog for the advanced functionalities of UrbanHotspots.-->
+<!--PrimeNG dialog for the advanced functionalities of SuitAbility.-->
 <p-dialog [focusOnShow]="false" [baseZIndex]="1150" styleClass="suitability" header="Advanced Options" [positionTop]="0" [maximizable]="true" [(visible)]="displayDataST" [style]="{'width': '75em'}" [contentStyle]="{'max-height':'90vh'}">
     <div class="gp_modal suitability">
         <ngb-tabset type="pills" justify="justified">
-            <!--Section which allows the user to import layers from the geoportal into UrbanHotspots as layers for its own evaluations, as well as viewing UrbanHotspots Layers per study area.-->
+            <!--Section which allows the user to import layers from the geoportal into SuitAbility as layers for its own evaluations, as well as viewing SuitAbility Layers per study area.-->
             <ngb-tab>
                 <ng-template ngbTabTitle>
                     Layers
@@ -924,7 +924,7 @@
                     </div>
                 </ng-template>
             </ngb-tab>
-            <!--Section which allows the user to import layers from the geoportal into UrbanHotspots as filters for its own evaluations, as well as viewing UrbanHotspots Filters per study area.-->
+            <!--Section which allows the user to import layers from the geoportal into SuitAbility as filters for its own evaluations, as well as viewing SuitAbility Filters per study area.-->
             <ngb-tab>
                 <ng-template ngbTabTitle>
                     Filters
@@ -1746,7 +1746,7 @@
     </p-footer>
 </p-dialog>
 <!--PrimeNG which contains the main UrbanHotspot tool.-->
-<p-dialog [focusOnShow]="false" [baseZIndex]="1150" [positionTop]="0" [responsive]="true" [maximizable]="true" [style]="{'width': '60em'}" [blockScroll]="true" styleClass="suitability" header="UrbanHotspots" [(visible)]="displayST" [contentStyle]="{'max-height':'80vh'}">
+<p-dialog [focusOnShow]="false" [baseZIndex]="1150" [positionTop]="0" [responsive]="true" [maximizable]="true" [style]="{'width': '60em'}" [blockScroll]="true" styleClass="suitability" header="SuitAbility" [(visible)]="displayST" [contentStyle]="{'max-height':'80vh'}">
     <p-accordion (onClose)="closeAccordionST()" (onOpen)="openAccordionST()" [activeIndex]="accordionST" styleClass="suitability" expandIcon="pi pi-fw pi-chevron-down" collapseIcon="pi pi-fw pi-chevron-up">
         <p-accordionTab>
             <div class="gp_modal suitability" id="suitability">
@@ -2008,11 +2008,11 @@
         </div>-->
     </ul>
 </p-sidebar>
-<!--PrimeNG overlayPanel which contains additional info about UrbanHotspots.-->
+<!--PrimeNG overlayPanel which contains additional info about SuitAbility.-->
 <p-overlayPanel [baseZIndex]="4000" [style]="{width: '40em'}" #stInfo>
     <h6 class="pt-2 pl-2 text-uppercase results-text">About</h6>
     <div class="results-text mx-3 my-3 text-justify">
-        <p>The Urban Hotspots tool identifies optimal locations for a specific activity within a city. To simplify the decision-making process the tool maps multiple variables in one single index. To create such an index, users can select layers and create
+        <p>The SuitAbility tool identifies optimal locations for a specific activity within a city. To simplify the decision-making process the tool maps multiple variables in one single index. To create such an index, users can select layers and create
             maps in minutes. Aditionally, they can define their own normalization rules, assign weights to each layer and filter the dataset to redefine their study area.</p>
         <hr class="gp_teal">
         <p>With the tool decision makers and practitioners can perform agile assessments in urban environments to map infrastructure gap hotspots, identify the optimal location for urban services and housing projects or to understand the overall distribution
@@ -2020,7 +2020,7 @@
         <hr class="gp_teal">
     </div>
 </p-overlayPanel>
-<!--PrimeNG overlayPanel which contains additional info about UrbanHotspots.-->
+<!--PrimeNG overlayPanel which contains additional info about SuitAbility.-->
 <p-overlayPanel [baseZIndex]="4000" [style]="{width: '30em'}" #upInfo>
     <div class="results-text mx-3 my-3 text-justify">
         <p>To use this tool you must have uploaded the assumptions and criteria tables in your geoportal.</p>

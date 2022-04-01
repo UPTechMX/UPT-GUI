@@ -58,7 +58,7 @@ declare var Oskari: any;
 
 export class ToolsSidebarComponent implements OnInit {
   /**
-   *  Misc. Variables: General use variables that aren't used by either UrbanHotspots or UrbanPerformance
+   *  Misc. Variables: General use variables that aren't used by either SuitAbility or UrbanPerformance
    */
   @Input()
   uptWindow: Window & {
@@ -522,7 +522,7 @@ export class ToolsSidebarComponent implements OnInit {
     centerTo: true,
     optionalStyles: [],
   };
-  
+
   geojsonObject: any;
   fullGeojson: any;
 
@@ -4443,7 +4443,7 @@ export class ToolsSidebarComponent implements OnInit {
         showLayer: true,
         opacity: 85,
         layerName: 'Index Values',
-        layerDescription: 'Displays index values of UrbanHotspots evaluations.',
+        layerDescription: 'Displays index values of SuitAbility evaluations.',
         layerPermissions: {
           publish: 'publication_permission_ok',
         },
@@ -4538,7 +4538,7 @@ export class ToolsSidebarComponent implements OnInit {
         showLayer: true,
         opacity: 85,
         layerName: 'Index Values',
-        layerDescription: 'Displays index values of UrbanHotspots evaluations.',
+        layerDescription: 'Displays index values of SuitAbility evaluations.',
         layerPermissions: {
           publish: 'publication_permission_ok',
         },
