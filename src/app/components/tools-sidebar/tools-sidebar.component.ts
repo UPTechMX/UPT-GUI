@@ -7232,6 +7232,7 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to save settings according to its default status.
   saveSettings() {
     const tmpStng = { ...this.manageSetting };
+    console.log(tmpStng);
     let tmpStngLyrId;
     if (this.isNewSetting || this.isDefaultSetting) {
       this.manageSetting.smaller_better = this.manageSetting.smaller_better
@@ -7340,9 +7341,13 @@ export class ToolsSidebarComponent implements OnInit {
           }
         );
       } else if (tmpStng.st_public_layer_id) {
+        console.log(tmpStng);
+
         tmpStngLyrId = tmpStng.st_public_layer_id;
         // tmpStngLyrId = tmpStngLyrId.replace("pub_", "");
         tmpStng.st_layer_id = tmpStngLyrId;
+        console.log("TRYING TO POST");
+
         this.settingsService.postPublicSettings(tmpStng).subscribe(
           () =>
             this.messageService.add({
