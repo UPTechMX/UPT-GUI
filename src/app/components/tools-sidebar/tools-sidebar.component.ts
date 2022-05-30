@@ -4278,38 +4278,45 @@ export class ToolsSidebarComponent implements OnInit {
         let tmpStngLyrId;
         if (tmpStng.st_layer_id) {
           tmpStngLyrId = tmpStng.st_layer_id;
+          this.selectedLayersST.push(tmpStngLyrId);
         } else if (tmpStng.st_public_layer_id) {
           tmpStngLyrId = tmpStng.st_public_layer_id;
-        }
-        if (setting.st_layer_id.includes("priv_")) {
-          console.log("ENTRANDO PRIV");
-          tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
-          this.selectedLayersST.push(tmpStngLyrId);
-        } else if (setting.st_layer_id.includes("pub_")) {
-          console.log("ENTRANDO PUB");
-          tmpStngLyrId = tmpStngLyrId.replace("pub_", "");
           this.selectedPublicLayersST.push(tmpStngLyrId);
         }
+        // if (setting.st_layer_id.includes("priv_")) {
+        //   console.log("ENTRANDO PRIV");
+        //   tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
+        //   this.selectedLayersST.push(tmpStngLyrId);
+        // } else if (setting.st_layer_id.includes("pub_")) {
+        //   console.log("ENTRANDO PUB");
+        //   tmpStngLyrId = tmpStngLyrId.replace("pub_", "");
+        //   this.selectedPublicLayersST.push(tmpStngLyrId);
+        // }
       });
       console.log(this.selSetting);
       this.selSetting.forEach((stng) => {
-        const tmpStng = Object.assign({}, stng);
+        const tmpStng = { ...stng };
+        stng.smaller_better = stng.smaller_better ? 1 : 0;
         let tmpStngLyrId;
         if (tmpStng.st_layer_id) {
           tmpStngLyrId = tmpStng.st_layer_id;
-        } else if (tmpStng.st_public_layer_id) {
-          tmpStngLyrId = tmpStng.st_public_layer_id;
-        }
-        if (stng.st_layer_id.includes("priv_")) {
-          tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
           tmpStng.st_layer_id = tmpStngLyrId;
           tmpStngs.push(tmpStng);
-        } else if (stng.st_layer_id.includes("pub_")) {
-          tmpStngLyrId = tmpStngLyrId.replace("pub_", "");
+        } else if (tmpStng.st_public_layer_id) {
+          tmpStngLyrId = tmpStng.st_public_layer_id;
           tmpStng.st_layer_id = tmpStngLyrId;
           tmpPubStngs.push(tmpStng);
         }
-        stng.smaller_better = stng.smaller_better ? 1 : 0;
+        // if (stng.st_layer_id.includes("priv_")) {
+        //   tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
+        //   tmpStng.st_layer_id = tmpStngLyrId;
+        //   tmpStngs.push(tmpStng);
+        // } else if (stng.st_layer_id.includes("pub_")) {
+        //   tmpStngLyrId = tmpStngLyrId.replace("pub_", "");
+        //   tmpStng.st_layer_id = tmpStngLyrId;
+        //   tmpPubStngs.push(tmpStng);
+        // }
+        // stng.smaller_better = stng.smaller_better ? 1 : 0;
       });
       console.log(this.selSetting);
       tmpStrStngs = JSON.stringify(tmpStngs);
