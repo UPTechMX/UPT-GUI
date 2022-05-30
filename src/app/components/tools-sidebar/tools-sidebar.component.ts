@@ -7239,7 +7239,7 @@ export class ToolsSidebarComponent implements OnInit {
         : 0;
       if (tmpStng.st_layer_id) {
         tmpStngLyrId = tmpStng.st_layer_id;
-        tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
+        // tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
         tmpStng.st_layer_id = tmpStngLyrId;
         this.settingsService.postSettings(tmpStng).subscribe(
           () =>
@@ -7341,7 +7341,7 @@ export class ToolsSidebarComponent implements OnInit {
         );
       } else if (tmpStng.st_public_layer_id) {
         tmpStngLyrId = tmpStng.st_public_layer_id;
-        tmpStngLyrId = tmpStngLyrId.replace("pub_", "");
+        // tmpStngLyrId = tmpStngLyrId.replace("pub_", "");
         tmpStng.st_layer_id = tmpStngLyrId;
         this.settingsService.postPublicSettings(tmpStng).subscribe(
           () =>
