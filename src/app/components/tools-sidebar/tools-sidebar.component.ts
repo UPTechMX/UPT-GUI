@@ -710,13 +710,10 @@ export class ToolsSidebarComponent implements OnInit {
       detail: "Your operation is being processed.",
     });
     const lyrId = [];
-    console.log(this.wfsSelectedStudyArea);
     this.wfsSelectedStudyArea.forEach((lyr) => {
-      console.log(lyr);
       lyr.id = lyr.id.replace("pub_", "");
       lyrId.push(lyr.id);
     });
-    console.log(lyrId);
     this.wfsUptService.deleteUptWfs(lyrId).subscribe(
       () => {},
       (error) => {
@@ -2125,7 +2122,6 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to get the Assumptions related to the selected Scenario
   loadAssumptions() {
     if (this.asmptScenarioManage) {
-      console.log(this.asmptScenarioManage);
       const tmpScenario = Object.assign({}, this.asmptScenarioManage);
       let tmpScenarioId = tmpScenario.scenarioId;
       if (tmpScenarioId.includes("priv_")) {
@@ -4270,11 +4266,8 @@ export class ToolsSidebarComponent implements OnInit {
       this.settingsString = "";
       this.selectedLayersST = [];
       this.selectedPublicLayersST = [];
-      console.log(this.selSetting);
       this.selSetting.forEach((setting) => {
         const tmpStng = { ...setting };
-        console.log(tmpStng);
-
         let tmpStngLyrId;
         if (tmpStng.st_layer_id) {
           tmpStngLyrId = tmpStng.st_layer_id;
@@ -4293,7 +4286,6 @@ export class ToolsSidebarComponent implements OnInit {
         //   this.selectedPublicLayersST.push(tmpStngLyrId);
         // }
       });
-      console.log(this.selSetting);
       this.selSetting.forEach((stng) => {
         const tmpStng = { ...stng };
         stng.smaller_better = stng.smaller_better ? 1 : 0;
@@ -4318,7 +4310,6 @@ export class ToolsSidebarComponent implements OnInit {
         // }
         // stng.smaller_better = stng.smaller_better ? 1 : 0;
       });
-      console.log(this.selSetting);
       tmpStrStngs = JSON.stringify(tmpStngs);
       tmpStrPubStngs = JSON.stringify(tmpPubStngs);
       this.blockDocument();
@@ -7240,13 +7231,14 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to save settings according to its default status.
   saveSettings() {
-    const tmpStng = Object.assign({}, this.manageSetting);
-    let tmpStngLyrId = tmpStng.st_layer_id;
+    const tmpStng = { ...this.manageSetting };
+    let tmpStngLyrId;
     if (this.isNewSetting || this.isDefaultSetting) {
       this.manageSetting.smaller_better = this.manageSetting.smaller_better
         ? 1
         : 0;
-      if (tmpStngLyrId.includes("priv_")) {
+      if (tmpStng.st_layer_id) {
+        tmpStngLyrId = tmpStng.st_layer_id;
         tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
         tmpStng.st_layer_id = tmpStngLyrId;
         this.settingsService.postSettings(tmpStng).subscribe(
@@ -7347,7 +7339,8 @@ export class ToolsSidebarComponent implements OnInit {
             this.editSettings = false;
           }
         );
-      } else if (tmpStngLyrId.includes("pub_")) {
+      } else if (tmpStng.st_public_layer_id) {
+        tmpStngLyrId = tmpStng.st_public_layer_id;
         tmpStngLyrId = tmpStngLyrId.replace("pub_", "");
         tmpStng.st_layer_id = tmpStngLyrId;
         this.settingsService.postPublicSettings(tmpStng).subscribe(
