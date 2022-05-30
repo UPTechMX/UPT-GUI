@@ -7448,8 +7448,8 @@ export class ToolsSidebarComponent implements OnInit {
         );
       }
     } else {
-      if (tmpStngLyrId.includes("priv_")) {
-        tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
+      if (tmpStng.st_layer_id) {
+        tmpStngLyrId = tmpStng.st_layer_id;
         tmpStng.st_layer_id = tmpStngLyrId;
         this.manageSetting.smaller_better = this.manageSetting.smaller_better
           ? 1
@@ -7552,8 +7552,8 @@ export class ToolsSidebarComponent implements OnInit {
             this.editSettings = false;
           }
         );
-      } else if (tmpStngLyrId.includes("pub_")) {
-        tmpStngLyrId = tmpStngLyrId.replace("pub_", "");
+      } else if (tmpStng.st_public_layer_id) {
+        tmpStngLyrId = tmpStng.st_public_layer_id;
         tmpStng.st_layer_id = tmpStngLyrId;
         this.manageSetting.smaller_better = this.manageSetting.smaller_better
           ? 1
