@@ -4272,7 +4272,7 @@ export class ToolsSidebarComponent implements OnInit {
       this.selectedPublicLayersST = [];
       console.log(this.selSetting);
       this.selSetting.forEach((setting) => {
-        const tmpStng = Object.assign({}, setting);
+        const tmpStng = { ...setting };
         console.log(tmpStng);
 
         let tmpStngLyrId;
