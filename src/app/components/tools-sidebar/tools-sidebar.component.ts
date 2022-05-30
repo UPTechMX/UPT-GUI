@@ -4273,7 +4273,12 @@ export class ToolsSidebarComponent implements OnInit {
       console.log(this.selSetting);
       this.selSetting.forEach((setting) => {
         const tmpStng = Object.assign({}, setting);
-        let tmpStngLyrId = tmpStng.st_layer_id ?? tmpStng.st_public_layer_id;
+        let tmpStngLyrId;
+        if (tmpStng.st_layer_id) {
+          tmpStngLyrId = tmpStng.st_layer_id;
+        } else if (tmpStng.st_public_layer_id) {
+          tmpStngLyrId = tmpStng.st_public_layer_id;
+        }
         if (setting.st_layer_id.includes("priv_")) {
           tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
           this.selectedLayersST.push(tmpStngLyrId);
@@ -4285,7 +4290,12 @@ export class ToolsSidebarComponent implements OnInit {
       console.log(this.selSetting);
       this.selSetting.forEach((stng) => {
         const tmpStng = Object.assign({}, stng);
-        let tmpStngLyrId = tmpStng.st_layer_id ?? tmpStng.st_public_layer_id;
+        let tmpStngLyrId;
+        if (tmpStng.st_layer_id) {
+          tmpStngLyrId = tmpStng.st_layer_id;
+        } else if (tmpStng.st_public_layer_id) {
+          tmpStngLyrId = tmpStng.st_public_layer_id;
+        }
         if (stng.st_layer_id.includes("priv_")) {
           tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
           tmpStng.st_layer_id = tmpStngLyrId;
