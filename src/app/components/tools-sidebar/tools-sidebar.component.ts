@@ -7782,7 +7782,7 @@ export class ToolsSidebarComponent implements OnInit {
           this.editSettings = false;
         }
       );
-    } else if (!isUndefined(this.manageSetting.st_layer_id)) {
+    } else if (!isUndefined(this.manageSetting.st_public_layer_id)) {
       this.settingsService.deletePublicSettings(this.manageSetting).subscribe(
         () =>
           this.messageService.add({
