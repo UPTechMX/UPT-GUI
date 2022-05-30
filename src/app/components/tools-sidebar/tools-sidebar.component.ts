@@ -4283,8 +4283,12 @@ export class ToolsSidebarComponent implements OnInit {
         }
         if (setting.st_layer_id.includes("priv_")) {
           tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
+          console.log("ENTRANDO PRIV");
+
           this.selectedLayersST.push(tmpStngLyrId);
         } else if (setting.st_layer_id.includes("pub_")) {
+          console.log("ENTRANDO PUB");
+
           tmpStngLyrId = tmpStngLyrId.replace("pub_", "");
           this.selectedPublicLayersST.push(tmpStngLyrId);
         }
