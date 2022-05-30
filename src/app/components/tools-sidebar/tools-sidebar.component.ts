@@ -4273,6 +4273,8 @@ export class ToolsSidebarComponent implements OnInit {
       console.log(this.selSetting);
       this.selSetting.forEach((setting) => {
         const tmpStng = Object.assign({}, setting);
+        console.log(tmpStng);
+
         let tmpStngLyrId;
         if (tmpStng.st_layer_id) {
           tmpStngLyrId = tmpStng.st_layer_id;
