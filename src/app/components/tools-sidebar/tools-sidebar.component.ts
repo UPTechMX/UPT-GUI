@@ -4242,8 +4242,8 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to evaluate the selected Layers and Filters
   evaluateLayer() {
-    const tmpStngs = [];
-    const tmpPubStngs = [];
+    let tmpStngs = [];
+    let tmpPubStngs = [];
     let tmpStrStngs = "";
     let tmpStrPubStngs = "";
     let stdAreaId = this.selectedStudyAreaST.id;
@@ -4251,16 +4251,15 @@ export class ToolsSidebarComponent implements OnInit {
     this.selectedFiltersArrayST = [];
     this.selectedPublicFiltersArrayST = [];
     this.selectedFiltersST.forEach((fltr) => {
-      let tmpFltrId = fltr;
       if (fltr.includes("priv_")) {
-        tmpFltrId = tmpFltrId.replace("priv_", "");
-        this.selectedFiltersArrayST.push(tmpFltrId);
+        fltr = fltr.replace("priv_", "");
+        this.selectedFiltersArrayST.push(fltr);
       } else if (fltr.includes("pub_")) {
-        tmpFltrId = tmpFltrId.replace("pub_", "");
-        this.selectedPublicFiltersArrayST.push(+tmpFltrId);
+        fltr = fltr.replace("pub_", "");
+        this.selectedPublicFiltersArrayST.push(+fltr);
       }
     });
-    if (this.selSetting.length === 0 || this.selSetting == null) {
+    if (this.selSetting.length == 0 || this.selSetting == null) {
       this.messageService.add({
         severity: "error",
         summary: "Error!",
@@ -4277,65 +4276,25 @@ export class ToolsSidebarComponent implements OnInit {
       this.selectedLayersST = [];
       this.selectedPublicLayersST = [];
       this.selSetting.forEach((setting) => {
-        const tmpStng = { ...setting };
-        let tmpStngLyrId;
-        if (tmpStng.st_layer_id) {
-          tmpStngLyrId = tmpStng.st_layer_id;
-          this.selectedLayersST.push(tmpStngLyrId);
-        } else if (tmpStng.st_public_layer_id) {
-          tmpStngLyrId = tmpStng.st_public_layer_id;
-          this.selectedPublicLayersST.push(tmpStngLyrId);
+        if (!isUndefined(setting.st_layer_id)) {
+          this.selectedLayersST.push(setting.st_layer_id);
+        } else if (!isUndefined(setting.st_public_layer_id)) {
+          this.selectedPublicLayersST.push(setting.st_public_layer_id);
         }
-        // if (setting.st_layer_id.includes("priv_")) {
-        //   console.log("ENTRANDO PRIV");
-        //   tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
-        //   this.selectedLayersST.push(tmpStngLyrId);
-        // } else if (setting.st_layer_id.includes("pub_")) {
-        //   console.log("ENTRANDO PUB");
-        //   tmpStngLyrId = tmpStngLyrId.replace("pub_", "");
-        //   this.selectedPublicLayersST.push(tmpStngLyrId);
-        // }
       });
       this.selSetting.forEach((stng) => {
-        const tmpStng = { ...stng };
-        stng.smaller_better = stng.smaller_better ? 1 : 0;
-        let tmpStngLyrId;
-        if (tmpStng.st_layer_id) {
-          tmpStngLyrId = tmpStng.st_layer_id;
-          tmpStng.st_layer_id = tmpStngLyrId;
-          tmpStngs.push(tmpStng);
-        } else if (tmpStng.st_public_layer_id) {
-          tmpStngLyrId = tmpStng.st_public_layer_id;
-          tmpStng.st_layer_id = tmpStngLyrId;
-          tmpPubStngs.push(tmpStng);
+        if (!isUndefined(stng.st_layer_id)) {
+          tmpStngs.push(stng);
+        } else if (!isUndefined(stng.st_public_layer_id)) {
+          tmpPubStngs.push(stng);
         }
-        // if (stng.st_layer_id.includes("priv_")) {
-        //   tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
-        //   tmpStng.st_layer_id = tmpStngLyrId;
-        //   tmpStngs.push(tmpStng);
-        // } else if (stng.st_layer_id.includes("pub_")) {
-        //   tmpStngLyrId = tmpStngLyrId.replace("pub_", "");
-        //   tmpStng.st_layer_id = tmpStngLyrId;
-        //   tmpPubStngs.push(tmpStng);
-        // }
-        // stng.smaller_better = stng.smaller_better ? 1 : 0;
+        stng.smaller_better = stng.smaller_better ? 1 : 0;
       });
       tmpStrStngs = JSON.stringify(tmpStngs);
       tmpStrPubStngs = JSON.stringify(tmpPubStngs);
       this.blockDocument();
       if (stdAreaId.includes("priv_")) {
         stdAreaId = stdAreaId.replace("priv_", "");
-        console.log(
-          stdAreaId,
-          this.selectedLayersST,
-          this.selectedPublicLayersST,
-          this.selectedFiltersArrayST,
-          this.selectedPublicFiltersArrayST,
-          tmpStrStngs,
-          tmpStrPubStngs,
-          this.joinMethod.value
-        );
-
         this.stEvaluationService
           .postLayer(
             stdAreaId,
@@ -4364,16 +4323,6 @@ export class ToolsSidebarComponent implements OnInit {
           );
       } else if (stdAreaId.includes("pub_")) {
         stdAreaId = stdAreaId.replace("pub_", "");
-        console.log(
-          stdAreaId,
-          this.selectedLayersST,
-          this.selectedPublicLayersST,
-          this.selectedFiltersArrayST,
-          this.selectedPublicFiltersArrayST,
-          tmpStrStngs,
-          tmpStrPubStngs,
-          this.joinMethod.value
-        );
         this.stEvaluationService
           .postPublicLayer(
             stdAreaId,
