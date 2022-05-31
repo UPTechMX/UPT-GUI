@@ -7201,18 +7201,12 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Sends a request to save settings according to its default status.
   saveSettings() {
-    const tmpStng = { ...this.manageSetting };
-    console.log(tmpStng);
-    let tmpStngLyrId;
     if (this.isNewSetting || this.isDefaultSetting) {
       this.manageSetting.smaller_better = this.manageSetting.smaller_better
         ? 1
         : 0;
-      if (tmpStng.st_layer_id) {
-        tmpStngLyrId = tmpStng.st_layer_id;
-        // tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
-        tmpStng.st_layer_id = tmpStngLyrId;
-        this.settingsService.postSettings(tmpStng).subscribe(
+      if (!isUndefined(this.manageSetting.st_layer_id)) {
+        this.settingsService.postSettings(this.manageSetting).subscribe(
           () =>
             this.messageService.add({
               severity: "info",
@@ -7228,7 +7222,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Settings created successfully!",
             });
-            const tmpId = this.stdAreaManageSetting.id.toString();
+            let tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
               corrId = tmpId.replace("priv_", "");
@@ -7310,15 +7304,8 @@ export class ToolsSidebarComponent implements OnInit {
             this.editSettings = false;
           }
         );
-      } else if (tmpStng.st_public_layer_id) {
-        console.log(tmpStng);
-
-        tmpStngLyrId = tmpStng.st_public_layer_id;
-        // tmpStngLyrId = tmpStngLyrId.replace("pub_", "");
-        tmpStng.st_layer_id = tmpStngLyrId;
-        console.log("TRYING TO POST");
-
-        this.settingsService.postPublicSettings(tmpStng).subscribe(
+      } else if (!isUndefined(this.manageSetting.st_public_layer_id)) {
+        this.settingsService.postPublicSettings(this.manageSetting).subscribe(
           () =>
             this.messageService.add({
               severity: "info",
@@ -7334,7 +7321,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Settings created successfully!",
             });
-            const tmpId = this.stdAreaManageSetting.id.toString();
+            let tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
               corrId = tmpId.replace("priv_", "");
@@ -7418,13 +7405,11 @@ export class ToolsSidebarComponent implements OnInit {
         );
       }
     } else {
-      if (tmpStng.st_layer_id) {
-        tmpStngLyrId = tmpStng.st_layer_id;
-        tmpStng.st_layer_id = tmpStngLyrId;
+      if (!isUndefined(this.manageSetting.st_layer_id)) {
         this.manageSetting.smaller_better = this.manageSetting.smaller_better
           ? 1
           : 0;
-        this.settingsService.putSettings(tmpStng).subscribe(
+        this.settingsService.putSettings(this.manageSetting).subscribe(
           () =>
             this.messageService.add({
               severity: "info",
@@ -7440,7 +7425,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Settings updated successfully!",
             });
-            const tmpId = this.stdAreaManageSetting.id.toString();
+            let tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
               corrId = tmpId.replace("priv_", "");
@@ -7522,13 +7507,11 @@ export class ToolsSidebarComponent implements OnInit {
             this.editSettings = false;
           }
         );
-      } else if (tmpStng.st_public_layer_id) {
-        tmpStngLyrId = tmpStng.st_public_layer_id;
-        tmpStng.st_layer_id = tmpStngLyrId;
+      } else if (!isUndefined(this.manageSetting.st_public_layer_id)) {
         this.manageSetting.smaller_better = this.manageSetting.smaller_better
           ? 1
           : 0;
-        this.settingsService.putPublicSettings(tmpStng).subscribe(
+        this.settingsService.putPublicSettings(this.manageSetting).subscribe(
           () =>
             this.messageService.add({
               severity: "info",
@@ -7544,7 +7527,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Settings updated successfully!",
             });
-            const tmpId = this.stdAreaManageSetting.id.toString();
+            let tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
               corrId = tmpId.replace("priv_", "");
