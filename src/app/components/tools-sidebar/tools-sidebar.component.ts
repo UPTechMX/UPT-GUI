@@ -4199,6 +4199,8 @@ export class ToolsSidebarComponent implements OnInit {
             );
           }
         );
+        console.log(this.layerSettings);
+
         this.filterList = [];
         this.selectedFiltersST = [];
         this.layersService.getPublicFilters(corrId).subscribe(
