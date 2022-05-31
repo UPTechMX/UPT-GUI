@@ -673,21 +673,24 @@ export class ToolsSidebarComponent implements OnInit {
       lyr.id = lyr.id.replace("pub_", "");
       lyrId.push(lyr.id);
     });
-    this.wfsUptService.importUptWfs(lyrId).subscribe(
-      () => {},
-      (error) => {
-        this.logErrorHandler(error);
-        this.unblockDocument();
-      },
-      () => {
-        this.messageService.add({
-          severity: "success",
-          summary: "Success!",
-          detail: "Feature data was imported successfully!",
-        });
-        this.unblockDocument();
-      }
-    );
+    console.log(this.wfsSelectedStudyArea);
+    console.log(lyrId);
+
+    // this.wfsUptService.importUptWfs(lyrId).subscribe(
+    //   () => {},
+    //   (error) => {
+    //     this.logErrorHandler(error);
+    //     this.unblockDocument();
+    //   },
+    //   () => {
+    //     this.messageService.add({
+    //       severity: "success",
+    //       summary: "Success!",
+    //       detail: "Feature data was imported successfully!",
+    //     });
+    //     this.unblockDocument();
+    //   }
+    // );
   }
 
   deleteUptWfs() {
