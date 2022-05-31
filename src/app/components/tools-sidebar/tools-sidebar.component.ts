@@ -4325,6 +4325,17 @@ export class ToolsSidebarComponent implements OnInit {
       this.blockDocument();
       if (stdAreaId.includes("priv_")) {
         stdAreaId = stdAreaId.replace("priv_", "");
+        console.log(
+          stdAreaId,
+          this.selectedLayersST,
+          this.selectedPublicLayersST,
+          this.selectedFiltersArrayST,
+          this.selectedPublicFiltersArrayST,
+          tmpStrStngs,
+          tmpStrPubStngs,
+          this.joinMethod.value
+        );
+
         this.stEvaluationService
           .postLayer(
             stdAreaId,
@@ -4353,6 +4364,16 @@ export class ToolsSidebarComponent implements OnInit {
           );
       } else if (stdAreaId.includes("pub_")) {
         stdAreaId = stdAreaId.replace("pub_", "");
+        console.log(
+          stdAreaId,
+          this.selectedLayersST,
+          this.selectedPublicLayersST,
+          this.selectedFiltersArrayST,
+          this.selectedPublicFiltersArrayST,
+          tmpStrStngs,
+          tmpStrPubStngs,
+          this.joinMethod.value
+        );
         this.stEvaluationService
           .postPublicLayer(
             stdAreaId,
