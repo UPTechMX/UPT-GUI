@@ -4176,14 +4176,23 @@ export class ToolsSidebarComponent implements OnInit {
       } else if (tmpId.includes("pub_")) {
         corrId = tmpId.replace("pub_", "");
         this.layersService.getLayersPubStdArea(corrId).subscribe(
-          (layers) => (this.layerSettings = layers),
+          (layers) => {
+            layers.forEach((layer) => {
+              layer["st_layer_id"] = layer["st_public_layer_id"];
+            });
+            this.layerSettings = layers;
+          },
           (error) => {
             this.logErrorHandler(error);
           },
           () => {
             this.layersService.getPublicLayersPubStdArea(corrId).subscribe(
-              (layers) =>
-                (this.layerSettings = this.layerSettings.concat(layers)),
+              (layers) => {
+                layers.forEach((layer) => {
+                  layer["st_layer_id"] = layer["st_public_layer_id"];
+                });
+                this.layerSettings = this.layerSettings.concat(layers);
+              },
               (error) => {
                 this.logErrorHandler(error);
               },
@@ -4199,7 +4208,6 @@ export class ToolsSidebarComponent implements OnInit {
             );
           }
         );
-        console.log(this.layerSettings);
 
         this.filterList = [];
         this.selectedFiltersST = [];
