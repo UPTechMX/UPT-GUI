@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpHeaders, HttpParams } from "@angular/common/http";
-import { Observable, of } from "rxjs";
+import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
 import { SelectItem } from "primeng/api";
 
@@ -27,13 +27,10 @@ export class WfsUptService {
   public importUptWfs(ids: string[]): Observable<any> {
     try {
       let body = new HttpParams({ fromObject: { studyAreasId: ids } });
-      console.log(body);
-
-      return of([]);
-      // return this.http.post<any>(
-      //   "/action?action_route=UPTImportPublicLayerData",
-      //   body
-      // );
+      return this.http.post<any>(
+        "/action?action_route=UPTImportPublicLayerData",
+        body
+      );
     } catch (e) {
       console.log(e);
     }

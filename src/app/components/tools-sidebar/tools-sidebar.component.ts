@@ -857,6 +857,8 @@ export class ToolsSidebarComponent implements OnInit {
   loadUptWfsLayers() {
     this.wfsUptService.getUptWfsLayers().subscribe(
       (lyr) => {
+        console.log(lyr);
+
         this.wfsStudyArea = lyr;
       },
       (error) => {
