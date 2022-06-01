@@ -676,21 +676,21 @@ export class ToolsSidebarComponent implements OnInit {
     console.log(this.wfsSelectedStudyArea);
     console.log(lyrId);
 
-    // this.wfsUptService.importUptWfs(lyrId).subscribe(
-    //   () => {},
-    //   (error) => {
-    //     this.logErrorHandler(error);
-    //     this.unblockDocument();
-    //   },
-    //   () => {
-    //     this.messageService.add({
-    //       severity: "success",
-    //       summary: "Success!",
-    //       detail: "Feature data was imported successfully!",
-    //     });
-    //     this.unblockDocument();
-    //   }
-    // );
+    this.wfsUptService.importUptWfs(lyrId).subscribe(
+      () => {},
+      (error) => {
+        this.logErrorHandler(error);
+        this.unblockDocument();
+      },
+      () => {
+        this.messageService.add({
+          severity: "success",
+          summary: "Success!",
+          detail: "Feature data was imported successfully!",
+        });
+        this.unblockDocument();
+      }
+    );
   }
 
   deleteUptWfs() {
