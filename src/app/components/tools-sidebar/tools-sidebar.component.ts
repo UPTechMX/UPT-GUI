@@ -673,9 +673,6 @@ export class ToolsSidebarComponent implements OnInit {
       lyr.id = lyr.id.replace("pub_", "");
       lyrId.push(lyr.id);
     });
-    console.log(this.wfsSelectedStudyArea);
-    console.log(lyrId);
-
     this.wfsUptService.importUptWfs(lyrId).subscribe(
       () => {},
       (error) => {
@@ -857,8 +854,6 @@ export class ToolsSidebarComponent implements OnInit {
   loadUptWfsLayers() {
     this.wfsUptService.getUptWfsLayers().subscribe(
       (lyr) => {
-        console.log(lyr);
-
         this.wfsStudyArea = lyr;
       },
       (error) => {
@@ -3281,6 +3276,10 @@ export class ToolsSidebarComponent implements OnInit {
    * Functions for ST
    */
   // Reverses color scale
+  /**
+   * Functions for ST
+   */
+  // Reverses color scale
   reverseColorScaleST() {
     this.scaleColorsST = this.scaleColorsST.reverse();
     this.colors = chroma.scale(this.scaleColorsST);
@@ -3485,7 +3484,7 @@ export class ToolsSidebarComponent implements OnInit {
   loadSTDataDistanceColumns(event) {
     if (event.node.type.toLowerCase() !== "directory") {
       let layerId = event.node.data.toString();
-      const directory = event.node.parent.data.toString();
+      let directory = event.node.parent.data.toString();
       this.tmpLayerId = event.node.data.toString();
       if (directory.includes("my_data")) {
         layerId = layerId.replace("priv_", "");
@@ -3555,7 +3554,7 @@ export class ToolsSidebarComponent implements OnInit {
   loadDataColumnST(event) {
     if (event.node.type.toLowerCase() !== "directory") {
       let layerId = event.node.data.toString();
-      const directory = event.node.parent.data.toString();
+      let directory = event.node.parent.data.toString();
       this.tmpLayerId = event.node.data.toString();
       if (directory.includes("my_data")) {
         layerId = layerId.replace("priv_", "");
@@ -3604,7 +3603,7 @@ export class ToolsSidebarComponent implements OnInit {
   loadDataColumnFiltersST(event) {
     if (event.node.type.toLowerCase() !== "directory") {
       let layerId = event.node.data.toString();
-      const directory = event.node.parent.data.toString();
+      let directory = event.node.parent.data.toString();
       this.tmpLayerId = event.node.data.toString();
       if (directory.includes("my_data")) {
         layerId = layerId.replace("priv_", "");
@@ -3789,7 +3788,7 @@ export class ToolsSidebarComponent implements OnInit {
               this.loadSTOptions();
             }
             if (this.stdAreaManageLayer) {
-              const tmpId = this.stdAreaManageLayer.id.toString();
+              let tmpId = this.stdAreaManageLayer.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -3870,7 +3869,7 @@ export class ToolsSidebarComponent implements OnInit {
               this.loadSTOptions();
             }
             if (this.stdAreaManageLayer) {
-              const tmpId = this.stdAreaManageLayer.id.toString();
+              let tmpId = this.stdAreaManageLayer.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -3965,7 +3964,7 @@ export class ToolsSidebarComponent implements OnInit {
             this.loadSTOptions();
           }
           if (this.stdAreaManageFilter) {
-            const tmpId = this.stdAreaManageFilter.id.toString();
+            let tmpId = this.stdAreaManageFilter.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
               corrId = tmpId.replace("priv_", "");
@@ -4052,7 +4051,7 @@ export class ToolsSidebarComponent implements OnInit {
             this.loadSTOptions();
           }
           if (this.stdAreaManageFilter) {
-            const tmpId = this.stdAreaManageFilter.id.toString();
+            let tmpId = this.stdAreaManageFilter.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
               corrId = tmpId.replace("priv_", "");
@@ -4382,7 +4381,7 @@ export class ToolsSidebarComponent implements OnInit {
         },
         () => {
           interval = setInterval(
-            () => this.getPublicStatusST(interval, stdAreaEval),
+            () => this.getStatusST(interval, stdAreaEval),
             5000
           );
         }
@@ -4434,49 +4433,6 @@ export class ToolsSidebarComponent implements OnInit {
     );
   }
 
-  getPublicStatusST(i, sa) {
-    let statusFlag = false;
-    this.stEvaluationService.statusEvaluateST(sa).subscribe(
-      (sts) => {
-        this.statusST = sts;
-      },
-      () => {},
-      () => {
-        if (this.statusST.length > 0) {
-          this.clearEvaluation();
-          this.showEvaluation();
-          this.statusST.forEach((s) => {
-            this.procHtml +=
-              '<div class="ui-md-4">' +
-              s.event +
-              '</div><div class="ui-md-2">' +
-              s.layer_id +
-              '</div><div class="ui-md-2">' +
-              s.created_on +
-              '</div><div class="ui-md-4">' +
-              s.value +
-              "</div>";
-            if (
-              s.event.toLowerCase() === "all distances finished" ||
-              s.value.toLowerCase() === "all distances finished"
-            ) {
-              statusFlag = true;
-            }
-          });
-          if (statusFlag) {
-            clearInterval(i);
-            this.messageService.add({
-              severity: "success",
-              summary: "Success!",
-              detail: "Distance evaluation completed!",
-            });
-            this.getSTPublicDistanceLayers(sa);
-          }
-        }
-      }
-    );
-  }
-
   // Sends a request to get the distance layers generated by the distance module
   getSTDistanceLayers(sa) {
     this.stEvaluationService.getDistanceLayers(sa).subscribe(
@@ -4502,37 +4458,12 @@ export class ToolsSidebarComponent implements OnInit {
     );
   }
 
-  // Sends a request to get the distance layers generated by the distance module
-  getSTPublicDistanceLayers(sa) {
-    this.stEvaluationService.getPublicDistanceLayers(sa).subscribe(
-      (layers) => (this.distanceLayerST = layers),
-      (error) => {
-        this.logErrorHandler(error);
-      },
-      () => {
-        this.distanceLayerST.forEach((lyr) => {
-          setTimeout(() => {
-            Oskari.getSandbox()
-              .findRegisteredModuleInstance("MyPlacesImport")
-              .getService()
-              .addLayerToService(lyr, false);
-            Oskari.getSandbox()
-              .findRegisteredModuleInstance("MyPlacesImport")
-              .getTab()
-              .refresh();
-          }, 500);
-        });
-        this.loadSTStudyArea();
-      }
-    );
-  }
-
   // Prints the result from the ST evaluation process into the map
   printGeoJSON() {
     let geoVals = [];
-    if (this.geojsonObject.features !== null) {
+    if (this.geojsonObject["features"] !== null) {
       const heatmapStdArea = this.selectedStudyAreaST.id;
-      this.geojsonObject.features.forEach((feature) => {
+      this.geojsonObject["features"].forEach((feature) => {
         geoVals.push(feature.properties.value);
       });
       const set = new Set(geoVals);
@@ -4550,12 +4481,12 @@ export class ToolsSidebarComponent implements OnInit {
       };
       this.layerOptions = {
         layerId: "UH_OUTPUT",
-        layerInspireName: "Index Values",
+        layerInspireName: "Contagion Hotspots",
         layerOrganizationName: "World Bank Group",
         showLayer: true,
         opacity: 85,
-        layerName: "Index Values",
-        layerDescription: "Displays index values of SuitAbility evaluations.",
+        layerName: "Contagion Hotspots",
+        layerDescription: "Displays predicted contagion hotspots.",
         layerPermissions: {
           publish: "publication_permission_ok",
         },
@@ -4575,7 +4506,7 @@ export class ToolsSidebarComponent implements OnInit {
       try {
         this.valuesST.forEach((val) => {
           if (val >= this.filterRangeST[0] && val <= this.filterRangeST[1]) {
-            this.layerOptions.optionalStyles.push({
+            this.layerOptions["optionalStyles"].push({
               property: { key: "value", value: val },
               stroke: {
                 color: this.colors(val).toString(),
@@ -4585,7 +4516,7 @@ export class ToolsSidebarComponent implements OnInit {
               },
             });
           } else {
-            this.layerOptions.optionalStyles.push({
+            this.layerOptions["optionalStyles"].push({
               property: { key: "value", value: val },
               stroke: {
                 color: "transparent",
@@ -4615,8 +4546,8 @@ export class ToolsSidebarComponent implements OnInit {
           detail: "Process completed successfully!",
         });
         this.unblockDocument();
-        this.oskariHeatmap.style = JSON.stringify(
-          this.layerOptions.optionalStyles
+        this.oskariHeatmap["style"] = JSON.stringify(
+          this.layerOptions["optionalStyles"]
         );
       } catch (e) {
         this.unblockDocument();
@@ -4645,15 +4576,15 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Adjusts the results from the ST evaluation process to show values according to the subset by score slider
   filterGeoJSON(event) {
-    if (this.geojsonObject != null && this.geojsonObject.features != null) {
+    if (this.geojsonObject != null && this.geojsonObject["features"] != null) {
       this.layerOptions = {
         layerId: "UH_OUTPUT",
-        layerInspireName: "Index Values",
+        layerInspireName: "Contagion Hotspots",
         layerOrganizationName: "World Bank Group",
         showLayer: true,
         opacity: 85,
-        layerName: "Index Values",
-        layerDescription: "Displays index values of SuitAbility evaluations.",
+        layerName: "Contagion Hotspots",
+        layerDescription: "Displays predicted contagion hotspots.",
         layerPermissions: {
           publish: "publication_permission_ok",
         },
@@ -4662,7 +4593,7 @@ export class ToolsSidebarComponent implements OnInit {
       };
       this.valuesST.forEach((val) => {
         if (val >= event.values[0] && val <= event.values[1]) {
-          this.layerOptions.optionalStyles.push({
+          this.layerOptions["optionalStyles"].push({
             property: { key: "value", value: val },
             stroke: {
               color: this.colors(val).toString(),
@@ -4672,7 +4603,7 @@ export class ToolsSidebarComponent implements OnInit {
             },
           });
         } else {
-          this.layerOptions.optionalStyles.push({
+          this.layerOptions["optionalStyles"].push({
             property: { key: "value", value: val },
             stroke: {
               color: "transparent",
@@ -4694,8 +4625,8 @@ export class ToolsSidebarComponent implements OnInit {
         this.geojsonObject,
         this.layerOptions,
       ]);
-      this.oskariHeatmap.style = JSON.stringify(
-        this.layerOptions.optionalStyles
+      this.oskariHeatmap["style"] = JSON.stringify(
+        this.layerOptions["optionalStyles"]
       );
     }
   }
@@ -4738,7 +4669,7 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to load the registered layers for the selected study area
   loadManageLayers() {
     if (this.stdAreaManageLayer) {
-      const tmpId = this.stdAreaManageLayer.id.toString();
+      let tmpId = this.stdAreaManageLayer.id.toString();
       let corrId;
       if (tmpId.includes("priv_")) {
         corrId = tmpId.replace("priv_", "");
@@ -4822,7 +4753,7 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to load the registered filters for the selected study area
   loadManageFilters() {
     if (this.stdAreaManageFilter) {
-      const tmpId = this.stdAreaManageFilter.id.toString();
+      let tmpId = this.stdAreaManageFilter.id.toString();
       let corrId;
       if (tmpId.includes("priv_")) {
         corrId = tmpId.replace("priv_", "");
@@ -4871,7 +4802,7 @@ export class ToolsSidebarComponent implements OnInit {
   // Sends a request to load the registered settings for the selected study area
   loadManageSettings() {
     if (this.stdAreaManageSetting) {
-      const tmpId = this.stdAreaManageSetting.id.toString();
+      let tmpId = this.stdAreaManageSetting.id.toString();
       let corrId;
       if (tmpId.includes("priv_")) {
         corrId = tmpId.replace("priv_", "");
@@ -4935,9 +4866,9 @@ export class ToolsSidebarComponent implements OnInit {
   selectLayer(event) {
     this.isNewLayer = false;
     this.manageLayer = this.cloneLayer(event.data);
-    const cpLayer = event.data;
+    let cpLayer = event.data;
     if (!isUndefined(cpLayer.user_layer_id)) {
-      const tmpId = cpLayer.user_layer_id;
+      let tmpId = cpLayer.user_layer_id;
       this.listService.getSTColumnWithId(tmpId).subscribe(
         (columns) => {
           this.colFieldsNameArrayST = [];
@@ -4951,7 +4882,7 @@ export class ToolsSidebarComponent implements OnInit {
         }
       );
     } else if (!isUndefined(cpLayer.public_layer_id)) {
-      const tmpId = cpLayer.public_layer_id;
+      let tmpId = cpLayer.public_layer_id;
       this.listService.getSTPublicColumnWithId(tmpId).subscribe(
         (columns) => {
           this.colFieldsNameArrayST = [];
@@ -4989,7 +4920,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Layer created successfully!",
             });
             if (this.stdAreaManageSetting) {
-              const tmpId = this.stdAreaManageSetting.id.toString();
+              let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -5050,7 +4981,7 @@ export class ToolsSidebarComponent implements OnInit {
               }
             }
             if (this.stdAreaManageLayer) {
-              const tmpId = this.stdAreaManageLayer.id.toString();
+              let tmpId = this.stdAreaManageLayer.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -5143,7 +5074,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Layer created successfully!",
             });
             if (this.stdAreaManageSetting) {
-              const tmpId = this.stdAreaManageSetting.id.toString();
+              let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -5204,7 +5135,7 @@ export class ToolsSidebarComponent implements OnInit {
               }
             }
             if (this.stdAreaManageLayer) {
-              const tmpId = this.stdAreaManageLayer.id.toString();
+              let tmpId = this.stdAreaManageLayer.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -5299,7 +5230,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Layer updated successfully!",
             });
             if (this.stdAreaManageSetting) {
-              const tmpId = this.stdAreaManageSetting.id.toString();
+              let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -5360,7 +5291,7 @@ export class ToolsSidebarComponent implements OnInit {
               }
             }
             if (this.stdAreaManageLayer) {
-              const tmpId = this.stdAreaManageLayer.id.toString();
+              let tmpId = this.stdAreaManageLayer.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -5454,7 +5385,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Layer updated successfully!",
             });
             if (this.stdAreaManageSetting) {
-              const tmpId = this.stdAreaManageSetting.id.toString();
+              let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -5515,7 +5446,7 @@ export class ToolsSidebarComponent implements OnInit {
               }
             }
             if (this.stdAreaManageLayer) {
-              const tmpId = this.stdAreaManageLayer.id.toString();
+              let tmpId = this.stdAreaManageLayer.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -5597,8 +5528,8 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Creates a copy of the selected layer
   cloneLayer(l: LayerST): LayerST {
-    const lyr = {};
-    for (const prop in l) {
+    let lyr = {};
+    for (let prop in l) {
       lyr[prop] = l[prop];
     }
     return lyr as LayerST;
@@ -5639,7 +5570,7 @@ export class ToolsSidebarComponent implements OnInit {
             detail: "Layer deleted successfully!",
           });
           if (this.stdAreaManageSetting) {
-            const tmpId = this.stdAreaManageSetting.id.toString();
+            let tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
               corrId = tmpId.replace("priv_", "");
@@ -5700,7 +5631,7 @@ export class ToolsSidebarComponent implements OnInit {
             }
           }
           if (this.stdAreaManageLayer) {
-            const tmpId = this.stdAreaManageLayer.id.toString();
+            let tmpId = this.stdAreaManageLayer.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
               corrId = tmpId.replace("priv_", "");
@@ -5794,7 +5725,7 @@ export class ToolsSidebarComponent implements OnInit {
             detail: "Layer deleted successfully!",
           });
           if (this.stdAreaManageSetting) {
-            const tmpId = this.stdAreaManageSetting.id.toString();
+            let tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
               corrId = tmpId.replace("priv_", "");
@@ -5855,7 +5786,7 @@ export class ToolsSidebarComponent implements OnInit {
             }
           }
           if (this.stdAreaManageLayer) {
-            const tmpId = this.stdAreaManageLayer.id.toString();
+            let tmpId = this.stdAreaManageLayer.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
               corrId = tmpId.replace("priv_", "");
@@ -5964,7 +5895,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Layer created successfully!",
             });
             if (this.stdAreaManageSetting) {
-              const tmpId = this.stdAreaManageSetting.id.toString();
+              let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -6025,7 +5956,7 @@ export class ToolsSidebarComponent implements OnInit {
               }
             }
             if (this.stdAreaManageFilter) {
-              const tmpId = this.stdAreaManageFilter.id.toString();
+              let tmpId = this.stdAreaManageFilter.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -6128,7 +6059,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Layer created successfully!",
             });
             if (this.stdAreaManageSetting) {
-              const tmpId = this.stdAreaManageSetting.id.toString();
+              let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -6189,7 +6120,7 @@ export class ToolsSidebarComponent implements OnInit {
               }
             }
             if (this.stdAreaManageFilter) {
-              const tmpId = this.stdAreaManageFilter.id.toString();
+              let tmpId = this.stdAreaManageFilter.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -6294,7 +6225,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Filter updated successfully!",
             });
             if (this.stdAreaManageFilter) {
-              const tmpId = this.stdAreaManageFilter.id.toString();
+              let tmpId = this.stdAreaManageFilter.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -6363,7 +6294,7 @@ export class ToolsSidebarComponent implements OnInit {
                 );
             }
             if (this.stdAreaManageSetting) {
-              const tmpId = this.stdAreaManageSetting.id.toString();
+              let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -6445,7 +6376,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Filter updated successfully!",
             });
             if (this.stdAreaManageFilter) {
-              const tmpId = this.stdAreaManageFilter.id.toString();
+              let tmpId = this.stdAreaManageFilter.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -6514,7 +6445,7 @@ export class ToolsSidebarComponent implements OnInit {
                 );
             }
             if (this.stdAreaManageSetting) {
-              const tmpId = this.stdAreaManageSetting.id.toString();
+              let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
               if (tmpId.includes("priv_")) {
                 corrId = tmpId.replace("priv_", "");
@@ -6584,8 +6515,8 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Creates a copy of the selected filter
   cloneFilter(l: LayerST): LayerST {
-    const lyr = {};
-    for (const prop in l) {
+    let lyr = {};
+    for (let prop in l) {
       lyr[prop] = l[prop];
     }
     return lyr as LayerST;
@@ -6626,7 +6557,7 @@ export class ToolsSidebarComponent implements OnInit {
             detail: "Filter deleted successfully!",
           });
           if (this.stdAreaManageSetting) {
-            const tmpId = this.stdAreaManageSetting.id.toString();
+            let tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
               corrId = tmpId.replace("priv_", "");
@@ -6687,7 +6618,7 @@ export class ToolsSidebarComponent implements OnInit {
             }
           }
           if (this.stdAreaManageFilter) {
-            const tmpId = this.stdAreaManageFilter.id.toString();
+            let tmpId = this.stdAreaManageFilter.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
               corrId = tmpId.replace("priv_", "");
@@ -6772,7 +6703,7 @@ export class ToolsSidebarComponent implements OnInit {
             detail: "Filter deleted successfully!",
           });
           if (this.stdAreaManageSetting) {
-            const tmpId = this.stdAreaManageSetting.id.toString();
+            let tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
               corrId = tmpId.replace("priv_", "");
@@ -6833,7 +6764,7 @@ export class ToolsSidebarComponent implements OnInit {
             }
           }
           if (this.stdAreaManageFilter) {
-            const tmpId = this.stdAreaManageFilter.id.toString();
+            let tmpId = this.stdAreaManageFilter.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
               corrId = tmpId.replace("priv_", "");
@@ -6991,8 +6922,8 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Creates a copy of the selected normMethod
   cloneNormMethod(n: NormalizationMethod): NormalizationMethod {
-    const nrm = {};
-    for (const prop in n) {
+    let nrm = {};
+    for (let prop in n) {
       nrm[prop] = n[prop];
     }
     return nrm as NormalizationMethod;
@@ -7133,8 +7064,8 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Creates a copy of the selected joinMethod
   cloneJoinMethod(n: NormalizationMethod): NormalizationMethod {
-    const nrm = {};
-    for (const prop in n) {
+    let nrm = {};
+    for (let prop in n) {
       nrm[prop] = n[prop];
     }
     return nrm as NormalizationMethod;
@@ -7620,8 +7551,8 @@ export class ToolsSidebarComponent implements OnInit {
 
   // Creates a copy of the selected settings
   cloneSettings(s: Settings): Settings {
-    const stng = {};
-    for (const prop in s) {
+    let stng = {};
+    for (let prop in s) {
       stng[prop] = s[prop];
     }
     return stng as Settings;
@@ -7661,7 +7592,7 @@ export class ToolsSidebarComponent implements OnInit {
             summary: "Success!",
             detail: "Settings deleted successfully!",
           });
-          const tmpId = this.stdAreaManageSetting.id.toString();
+          let tmpId = this.stdAreaManageSetting.id.toString();
           let corrId;
           if (tmpId.includes("priv_")) {
             corrId = tmpId.replace("priv_", "");
@@ -7759,7 +7690,7 @@ export class ToolsSidebarComponent implements OnInit {
             summary: "Success!",
             detail: "Settings deleted successfully!",
           });
-          const tmpId = this.stdAreaManageSetting.id.toString();
+          let tmpId = this.stdAreaManageSetting.id.toString();
           let corrId;
           if (tmpId.includes("priv_")) {
             corrId = tmpId.replace("priv_", "");
