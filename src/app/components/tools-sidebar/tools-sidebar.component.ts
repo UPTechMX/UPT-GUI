@@ -4273,19 +4273,21 @@ export class ToolsSidebarComponent implements OnInit {
         if (!isUndefined(setting.st_layer_id)) {
           setting.st_layer_id = setting.st_layer_id.replace("priv_", "");
           this.selectedLayersST.push(setting.st_layer_id);
+          tmpStngs.push(setting);
         } else if (!isUndefined(setting.st_public_layer_id)) {
           setting.st_layer_id = setting.st_public_layer_id.replace("pub_", "");
           this.selectedPublicLayersST.push(setting.st_public_layer_id);
+          tmpPubStngs.push(setting);
         }
+        setting.smaller_better = setting.smaller_better ? 1 : 0;
       });
-      this.selSetting.forEach((stng) => {
-        if (!isUndefined(stng.st_layer_id)) {
-          tmpStngs.push(stng);
-        } else if (!isUndefined(stng.st_public_layer_id)) {
-          tmpPubStngs.push(stng);
-        }
-        stng.smaller_better = stng.smaller_better ? 1 : 0;
-      });
+      // this.selSetting.forEach((stng) => {
+      //   if (!isUndefined(stng.st_layer_id)) {
+      //     tmpStngs.push(stng);
+      //   } else if (!isUndefined(stng.st_public_layer_id)) {
+      //     tmpPubStngs.push(stng);
+      //   }
+      // });
       tmpStrStngs = JSON.stringify(tmpStngs);
       tmpStrPubStngs = JSON.stringify(tmpPubStngs);
       this.blockDocument();
