@@ -4186,8 +4186,10 @@ export class ToolsSidebarComponent implements OnInit {
           },
           () => {
             this.layersService.getPublicLayersPubStdArea(corrId).subscribe(
-              (layers) =>
-                (this.layerSettings = this.layerSettings.concat(layers)),
+              (layers) => {
+                this.layerSettings = this.layerSettings.concat(layers);
+                console.log(this.layerSettings);
+              },
               (error) => {
                 this.logErrorHandler(error);
               },
