@@ -4180,7 +4180,10 @@ export class ToolsSidebarComponent implements OnInit {
       } else if (tmpId.includes("pub_")) {
         corrId = tmpId.replace("pub_", "");
         this.layersService.getLayersPubStdArea(corrId).subscribe(
-          (layers) => (this.layerSettings = layers),
+          (layers) => {
+            this.layerSettings = layers;
+            console.log(layers);
+          },
           (error) => {
             this.logErrorHandler(error);
           },
@@ -4188,7 +4191,7 @@ export class ToolsSidebarComponent implements OnInit {
             this.layersService.getPublicLayersPubStdArea(corrId).subscribe(
               (layers) => {
                 this.layerSettings = this.layerSettings.concat(layers);
-                console.log(this.layerSettings);
+                console.log(layers);
               },
               (error) => {
                 this.logErrorHandler(error);
