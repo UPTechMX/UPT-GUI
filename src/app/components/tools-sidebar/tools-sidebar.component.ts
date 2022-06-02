@@ -4182,7 +4182,6 @@ export class ToolsSidebarComponent implements OnInit {
         this.layersService.getLayersPubStdArea(corrId).subscribe(
           (layers) => {
             this.layerSettings = layers;
-            console.log(layers);
           },
           (error) => {
             this.logErrorHandler(error);
@@ -4191,7 +4190,6 @@ export class ToolsSidebarComponent implements OnInit {
             this.layersService.getPublicLayersPubStdArea(corrId).subscribe(
               (layers) => {
                 this.layerSettings = this.layerSettings.concat(layers);
-                console.log(layers);
               },
               (error) => {
                 this.logErrorHandler(error);
@@ -4917,6 +4915,7 @@ export class ToolsSidebarComponent implements OnInit {
   saveLayer() {
     if (this.isNewLayer) {
       if (!isUndefined(this.manageLayer.user_layer_id)) {
+        this.blockDocument();
         this.layerSTService.createLayerST(this.manageLayer).subscribe(
           () =>
             this.messageService.add({
@@ -4925,6 +4924,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Your layer is being created!",
             }),
           (error) => {
+            this.unblockDocument();
             this.logErrorHandler(error);
           },
           () => {
@@ -4933,6 +4933,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Layer created successfully!",
             });
+            this.unblockDocument();
             if (this.stdAreaManageSetting) {
               let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
@@ -5071,6 +5072,7 @@ export class ToolsSidebarComponent implements OnInit {
           }
         );
       } else if (!isUndefined(this.manageLayer.public_layer_id)) {
+        this.blockDocument();
         this.layerSTService.createPublicLayerST(this.manageLayer).subscribe(
           () =>
             this.messageService.add({
@@ -5079,6 +5081,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Your layer is being created!",
             }),
           (error) => {
+            this.unblockDocument();
             this.logErrorHandler(error);
           },
           () => {
@@ -5087,6 +5090,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Layer created successfully!",
             });
+            this.unblockDocument();
             if (this.stdAreaManageSetting) {
               let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
@@ -5095,6 +5099,7 @@ export class ToolsSidebarComponent implements OnInit {
                 this.settingsService.getSettings(corrId).subscribe(
                   (settings) => (this.settingsSTManage = settings),
                   (error) => {
+                    this.unblockDocument();
                     this.logErrorHandler(error);
                   },
                   () => {
@@ -5227,6 +5232,7 @@ export class ToolsSidebarComponent implements OnInit {
       }
     } else {
       if (!isUndefined(this.manageLayer.user_layer_id)) {
+        this.blockDocument();
         this.layerSTService.updateLayerST(this.manageLayer).subscribe(
           () =>
             this.messageService.add({
@@ -5235,6 +5241,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Your layer is being updated!",
             }),
           (error) => {
+            this.unblockDocument();
             this.logErrorHandler(error);
           },
           () => {
@@ -5243,6 +5250,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Layer updated successfully!",
             });
+            this.unblockDocument();
             if (this.stdAreaManageSetting) {
               let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
@@ -5382,6 +5390,7 @@ export class ToolsSidebarComponent implements OnInit {
           }
         );
       } else if (!isUndefined(this.manageLayer.public_layer_id)) {
+        this.blockDocument();
         this.layerSTService.updatePublicLayerST(this.manageLayer).subscribe(
           () =>
             this.messageService.add({
@@ -5390,6 +5399,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Your layer is being updated!",
             }),
           (error) => {
+            this.unblockDocument();
             this.logErrorHandler(error);
           },
           () => {
@@ -5398,6 +5408,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Layer updated successfully!",
             });
+            this.unblockDocument();
             if (this.stdAreaManageSetting) {
               let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
@@ -5892,6 +5903,7 @@ export class ToolsSidebarComponent implements OnInit {
   saveFilter() {
     if (this.isNewFilter) {
       if (!isUndefined(this.manageFilter.user_layer_id)) {
+        this.blockDocument();
         this.layerSTService.createFilterST(this.manageFilter).subscribe(
           () =>
             this.messageService.add({
@@ -5900,6 +5912,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Your layer is being created!",
             }),
           (error) => {
+            this.unblockDocument();
             this.logErrorHandler(error);
           },
           () => {
@@ -5908,6 +5921,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Layer created successfully!",
             });
+            this.unblockDocument();
             if (this.stdAreaManageSetting) {
               let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
@@ -6056,6 +6070,7 @@ export class ToolsSidebarComponent implements OnInit {
           }
         );
       } else if (!isUndefined(this.manageLayer.public_layer_id)) {
+        this.blockDocument();
         this.layerSTService.createPublicLayerST(this.manageLayer).subscribe(
           () =>
             this.messageService.add({
@@ -6064,6 +6079,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Your layer is being created!",
             }),
           (error) => {
+            this.unblockDocument();
             this.logErrorHandler(error);
           },
           () => {
@@ -6072,6 +6088,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Layer created successfully!",
             });
+            this.unblockDocument();
             if (this.stdAreaManageSetting) {
               let tmpId = this.stdAreaManageSetting.id.toString();
               let corrId;
@@ -6222,6 +6239,7 @@ export class ToolsSidebarComponent implements OnInit {
       }
     } else {
       if (!isUndefined(this.manageFilter.user_layer_id)) {
+        this.blockDocument();
         this.layerSTService.updateFilterST(this.manageFilter).subscribe(
           () =>
             this.messageService.add({
@@ -6230,6 +6248,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Your filter is being updated!",
             }),
           (error) => {
+            this.unblockDocument();
             this.logErrorHandler(error);
           },
           () => {
@@ -6238,6 +6257,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Filter updated successfully!",
             });
+            this.unblockDocument();
             if (this.stdAreaManageFilter) {
               let tmpId = this.stdAreaManageFilter.id.toString();
               let corrId;
@@ -6373,6 +6393,7 @@ export class ToolsSidebarComponent implements OnInit {
           }
         );
       } else if (!isUndefined(this.manageFilter.public_layer_id)) {
+        this.blockDocument();
         this.layerSTService.updatePublicFilterST(this.manageFilter).subscribe(
           () =>
             this.messageService.add({
@@ -6381,6 +6402,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Your filter is being updated!",
             }),
           (error) => {
+            this.unblockDocument();
             this.logErrorHandler(error);
           },
           () => {
@@ -6389,6 +6411,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Filter updated successfully!",
             });
+            this.unblockDocument();
             if (this.stdAreaManageFilter) {
               let tmpId = this.stdAreaManageFilter.id.toString();
               let corrId;
@@ -7161,6 +7184,7 @@ export class ToolsSidebarComponent implements OnInit {
       if (tmpStngLyrId.includes("priv_")) {
         tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
         tmpStng.st_layer_id = tmpStngLyrId;
+        this.blockDocument();
         this.settingsService.postSettings(tmpStng).subscribe(
           () =>
             this.messageService.add({
@@ -7169,6 +7193,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Your settings are being created!",
             }),
           (error) => {
+            this.unblockDocument();
             this.logErrorHandler(error);
           },
           () => {
@@ -7177,6 +7202,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Settings created successfully!",
             });
+            this.unblockDocument();
             const tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
@@ -7238,7 +7264,11 @@ export class ToolsSidebarComponent implements OnInit {
             }
             if (this.selectedStudyAreaST) {
               this.layersService
-                .getLayers(this.selectedStudyAreaST.id)
+                .getLayers(
+                  this.selectedStudyAreaST.id
+                    .replace("pub_", "")
+                    .replace("priv_", "")
+                )
                 .subscribe(
                   (layers) => (this.layerSettings = layers),
                   (error) => {
@@ -7262,6 +7292,7 @@ export class ToolsSidebarComponent implements OnInit {
       } else if (tmpStngLyrId.includes("pub_")) {
         tmpStngLyrId = tmpStngLyrId.replace("pub_", "");
         tmpStng.st_layer_id = tmpStngLyrId;
+        this.blockDocument();
         this.settingsService.postPublicSettings(tmpStng).subscribe(
           () =>
             this.messageService.add({
@@ -7270,6 +7301,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Your settings are being created!",
             }),
           (error) => {
+            this.unblockDocument();
             this.logErrorHandler(error);
           },
           () => {
@@ -7278,6 +7310,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Settings created successfully!",
             });
+            this.unblockDocument();
             const tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
@@ -7339,7 +7372,11 @@ export class ToolsSidebarComponent implements OnInit {
             }
             if (this.selectedStudyAreaST) {
               this.layersService
-                .getLayers(this.selectedStudyAreaST.id)
+                .getLayers(
+                  this.selectedStudyAreaST.id
+                    .replace("pub_", "")
+                    .replace("priv_", "")
+                )
                 .subscribe(
                   (layers) => (this.layerSettings = layers),
                   (error) => {
@@ -7368,6 +7405,7 @@ export class ToolsSidebarComponent implements OnInit {
         this.manageSetting.smaller_better = this.manageSetting.smaller_better
           ? 1
           : 0;
+        this.blockDocument();
         this.settingsService.putSettings(tmpStng).subscribe(
           () =>
             this.messageService.add({
@@ -7376,6 +7414,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Your settings are being updated!",
             }),
           (error) => {
+            this.unblockDocument();
             this.logErrorHandler(error);
           },
           () => {
@@ -7384,6 +7423,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Settings updated successfully!",
             });
+            this.unblockDocument();
             const tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
@@ -7445,7 +7485,11 @@ export class ToolsSidebarComponent implements OnInit {
             }
             if (this.selectedStudyAreaST) {
               this.layersService
-                .getLayers(this.selectedStudyAreaST.id)
+                .getLayers(
+                  this.selectedStudyAreaST.id
+                    .replace("pub_", "")
+                    .replace("priv_", "")
+                )
                 .subscribe(
                   (layers) => (this.layerSettings = layers),
                   (error) => {
@@ -7472,6 +7516,7 @@ export class ToolsSidebarComponent implements OnInit {
         this.manageSetting.smaller_better = this.manageSetting.smaller_better
           ? 1
           : 0;
+        this.blockDocument();
         this.settingsService.putPublicSettings(tmpStng).subscribe(
           () =>
             this.messageService.add({
@@ -7480,6 +7525,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Your settings are being updated!",
             }),
           (error) => {
+            this.unblockDocument();
             this.logErrorHandler(error);
           },
           () => {
@@ -7488,6 +7534,7 @@ export class ToolsSidebarComponent implements OnInit {
               summary: "Success!",
               detail: "Settings updated successfully!",
             });
+            this.unblockDocument();
             const tmpId = this.stdAreaManageSetting.id.toString();
             let corrId;
             if (tmpId.includes("priv_")) {
@@ -7549,7 +7596,11 @@ export class ToolsSidebarComponent implements OnInit {
             }
             if (this.selectedStudyAreaST) {
               this.layersService
-                .getLayers(this.selectedStudyAreaST.id)
+                .getLayers(
+                  this.selectedStudyAreaST.id
+                    .replace("pub_", "")
+                    .replace("priv_", "")
+                )
                 .subscribe(
                   (layers) => (this.layerSettings = layers),
                   (error) => {

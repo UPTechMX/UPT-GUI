@@ -84,7 +84,6 @@ export class StEvaluationService {
       publicFiltersData.forEach((item) => {
         body = body.append("public_filters", item.toString());
       });
-      // console.log(body);
       return this.http
         .post<any>(
           "/action?action_route=LayersSTHandler&action=public_index_values",
