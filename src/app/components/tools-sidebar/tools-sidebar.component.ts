@@ -4271,8 +4271,10 @@ export class ToolsSidebarComponent implements OnInit {
       this.selectedPublicLayersST = [];
       this.selSetting.forEach((setting) => {
         if (!isUndefined(setting.st_layer_id)) {
+          setting.st_layer_id = setting.st_layer_id.replace("priv_", "");
           this.selectedLayersST.push(setting.st_layer_id);
         } else if (!isUndefined(setting.st_public_layer_id)) {
+          setting.st_layer_id = setting.st_public_layer_id.replace("pub_", "");
           this.selectedPublicLayersST.push(setting.st_public_layer_id);
         }
       });
@@ -4317,6 +4319,8 @@ export class ToolsSidebarComponent implements OnInit {
           );
       } else if (stdAreaId.includes("pub_")) {
         stdAreaId = stdAreaId.replace("pub_", "");
+        console.log(stdAreaId);
+
         this.stEvaluationService
           .postPublicLayer(
             stdAreaId,
