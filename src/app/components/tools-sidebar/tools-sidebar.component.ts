@@ -4240,7 +4240,7 @@ export class ToolsSidebarComponent implements OnInit {
     let tmpPubStngs = [];
     let tmpStrStngs = "";
     let tmpStrPubStngs = "";
-    let stdAreaId = { ...this.selectedStudyAreaST.id };
+    let stdAreaId = Object.assign({}, this.selectedStudyAreaST.id);
     this.stResult = true;
     this.selectedFiltersArrayST = [];
     this.selectedPublicFiltersArrayST = [];
