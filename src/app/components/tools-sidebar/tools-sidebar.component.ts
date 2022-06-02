@@ -4240,7 +4240,7 @@ export class ToolsSidebarComponent implements OnInit {
     let tmpPubStngs = [];
     let tmpStrStngs = "";
     let tmpStrPubStngs = "";
-    let stdAreaId = this.selectedStudyAreaST.id;
+    let stdAreaId = { ...this.selectedStudyAreaST.id };
     this.stResult = true;
     this.selectedFiltersArrayST = [];
     this.selectedPublicFiltersArrayST = [];
@@ -4270,16 +4270,20 @@ export class ToolsSidebarComponent implements OnInit {
       this.selectedLayersST = [];
       this.selectedPublicLayersST = [];
       this.selSetting.forEach((setting) => {
-        if (setting.st_layer_id.includes("priv_")) {
-          setting.st_layer_id = setting.st_layer_id.replace("priv_", "");
-          this.selectedLayersST.push(setting.st_layer_id);
-          tmpStngs.push(setting);
-        } else if (setting.st_layer_id.includes("pub_")) {
-          setting.st_layer_id = setting.st_layer_id.replace("pub_", "");
-          this.selectedPublicLayersST.push(setting.st_layer_id);
-          tmpPubStngs.push(setting);
+        let copySetting = { ...setting };
+        if (copySetting.st_layer_id.includes("priv_")) {
+          copySetting.st_layer_id = copySetting.st_layer_id.replace(
+            "priv_",
+            ""
+          );
+          this.selectedLayersST.push(copySetting.st_layer_id);
+          tmpStngs.push(copySetting);
+        } else if (copySetting.st_layer_id.includes("pub_")) {
+          copySetting.st_layer_id = copySetting.st_layer_id.replace("pub_", "");
+          this.selectedPublicLayersST.push(copySetting.st_layer_id);
+          tmpPubStngs.push(copySetting);
         }
-        setting.smaller_better = setting.smaller_better ? 1 : 0;
+        copySetting.smaller_better = copySetting.smaller_better ? 1 : 0;
       });
       // this.selSetting.forEach((stng) => {
       //   if (!isUndefined(stng.st_layer_id)) {
