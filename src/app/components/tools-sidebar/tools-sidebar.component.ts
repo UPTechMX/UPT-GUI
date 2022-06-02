@@ -4270,20 +4270,25 @@ export class ToolsSidebarComponent implements OnInit {
       this.selectedLayersST = [];
       this.selectedPublicLayersST = [];
       this.selSetting.forEach((setting) => {
-        if (!isUndefined(setting.st_layer_id)) {
+        if (setting.st_layer_id.includes("priv_")) {
+          setting.st_layer_id.replace("priv_", "");
           this.selectedLayersST.push(setting.st_layer_id);
-        } else if (!isUndefined(setting.st_public_layer_id)) {
-          this.selectedPublicLayersST.push(setting.st_public_layer_id);
+          tmpStngs.push(setting);
+        } else if (setting.st_layer_id.includes("pub_")) {
+          setting.st_layer_id.replace("pub_", "");
+          this.selectedPublicLayersST.push(setting.st_layer_id);
+          tmpPubStngs.push(setting);
         }
+        setting.smaller_better = setting.smaller_better ? 1 : 0;
       });
-      this.selSetting.forEach((stng) => {
-        if (!isUndefined(stng.st_layer_id)) {
-          tmpStngs.push(stng);
-        } else if (!isUndefined(stng.st_public_layer_id)) {
-          tmpPubStngs.push(stng);
-        }
-        stng.smaller_better = stng.smaller_better ? 1 : 0;
-      });
+      // this.selSetting.forEach((stng) => {
+      //   if (!isUndefined(stng.st_layer_id)) {
+      //     tmpStngs.push(stng);
+      //   } else if (!isUndefined(stng.st_public_layer_id)) {
+      //     tmpPubStngs.push(stng);
+      //   }
+      //   stng.smaller_better = stng.smaller_better ? 1 : 0;
+      // });
       tmpStrStngs = JSON.stringify(tmpStngs);
       tmpStrPubStngs = JSON.stringify(tmpPubStngs);
       this.blockDocument();
