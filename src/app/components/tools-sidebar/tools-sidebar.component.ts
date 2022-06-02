@@ -4271,11 +4271,11 @@ export class ToolsSidebarComponent implements OnInit {
       this.selectedPublicLayersST = [];
       this.selSetting.forEach((setting) => {
         if (setting.st_layer_id.includes("priv_")) {
-          setting.st_layer_id.replace("priv_", "");
+          setting.st_layer_id = setting.st_layer_id.replace("priv_", "");
           this.selectedLayersST.push(setting.st_layer_id);
           tmpStngs.push(setting);
         } else if (setting.st_layer_id.includes("pub_")) {
-          setting.st_layer_id.replace("pub_", "");
+          setting.st_layer_id = setting.st_layer_id.replace("pub_", "");
           this.selectedPublicLayersST.push(setting.st_layer_id);
           tmpPubStngs.push(setting);
         }
