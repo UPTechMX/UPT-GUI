@@ -7177,10 +7177,11 @@ export class ToolsSidebarComponent implements OnInit {
   saveSettings() {
     const tmpStng = Object.assign({}, this.manageSetting);
     let tmpStngLyrId = tmpStng.st_layer_id;
+    tmpStng.smaller_better = tmpStng.smaller_better ? 1 : 0;
     if (this.isNewSetting || this.isDefaultSetting) {
-      this.manageSetting.smaller_better = this.manageSetting.smaller_better
-        ? 1
-        : 0;
+      // this.manageSetting.smaller_better = this.manageSetting.smaller_better
+      //   ? 1
+      //   : 0;
       if (tmpStngLyrId.includes("priv_")) {
         tmpStngLyrId = tmpStngLyrId.replace("priv_", "");
         tmpStng.st_layer_id = tmpStngLyrId;
