@@ -4439,6 +4439,7 @@ export class ToolsSidebarComponent implements OnInit {
               detail: "Distance evaluation completed!",
             });
             this.getSTDistanceLayers(sa);
+            this.showST();
           }
         }
       }
