@@ -4492,13 +4492,13 @@ export class ToolsSidebarComponent implements OnInit {
         geojson: JSON.stringify({ 0: this.geojsonObject }),
       };
       this.layerOptions = {
-        layerId: "UH_OUTPUT",
-        layerInspireName: "Contagion Hotspots",
-        layerOrganizationName: "World Bank Group",
+        layerId: "ST_OUTPUT",
+        layerInspireName: "Suitability Index",
+        layerOrganizationName: "Own datasets",
         showLayer: true,
         opacity: 85,
-        layerName: "Contagion Hotspots",
-        layerDescription: "Displays predicted contagion hotspots.",
+        layerName: "Suitability Index",
+        layerDescription: "Suitability results.",
         layerPermissions: {
           publish: "publication_permission_ok",
         },
